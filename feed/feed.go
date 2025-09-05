@@ -403,14 +403,15 @@ func ServiceWithDefaultFeeds(pgxStore *store.PGXStore) *Service {
 	}))
 	r.Register(Meta{
 		ID:          "con-eurofurence",
-		DisplayName: "🐾 Eurofurence 2024",
-		Description: "Furry\nA feed for all things Eurofurence! Use #eurofurence, #eurofurence2024, #eurofurence28, #ef, #ef2024, or #ef28 to include a post in the feed.\n\nJoin the furry feeds by following @furryli.st",
+		DisplayName: "🐾 Eurofurence",
+		Description: "Furry\nA feed for all things Eurofurence! Use #eurofurence, #eurofurence2025, #eurofurence29, #ef, #ef2025, or #ef29 to include a post in the feed.\n\nJoin the furry feeds by following @furryli.st",
 	}, chronologicalGenerator(chronologicalGeneratorOpts{
 		generatorOpts: generatorOpts{
 			Hashtags: []string{
 				"eurofurence", "ef",
 				"eurofurence2023", "eurofurence27", "ef2023", "ef27",
 				"eurofurence2024", "eurofurence28", "ef2024", "ef28",
+				"eurofurence2025", "eurofurence29", "ef2025", "ef29",
 				// I typoed this like 5 times while making this feed so I'm adding these corrections
 				"euroference",
 			},
