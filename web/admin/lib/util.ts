@@ -32,3 +32,11 @@ export function matchTerms(
 
   return false;
 }
+
+export function chunk<T>(a: Array<T>, max: number): Array<Array<T>> {
+  const result = [];
+  for (let i = 0; i < a.length; i += max) {
+    result.push(a.slice(i, i + max));
+  }
+  return result;
+}
