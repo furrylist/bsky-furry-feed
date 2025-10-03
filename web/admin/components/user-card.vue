@@ -10,26 +10,21 @@ import { BlueskyLabel } from "~/composables/useBlueskyLabels";
 
 const props = defineProps<{
   did: string;
+  actor?: Actor;
   pending?: number;
   variant: "queue" | "profile";
 }>();
 const $emit = defineEmits(["next"]);
 
 const currentActor = await useActor();
-const api = await useAPI();
 const showAvatarModal = ref(false);
 const loading = ref(false);
 const showRolesModal = ref(false);
-const actor = ref<Actor>();
 const data = ref<ProfileViewDetailed>();
 const labels = ref<Array<BlueskyLabel>>([]);
 const loadProfile = async () => {
   const labelsQuery = useBlueskyLabels(props.did);
   data.value = await getProfile(props.did);
-  const response = await api
-    .getActor({ did: data.value?.did || props.did })
-    .catch(() => ({ actor: undefined }));
-  actor.value = response?.actor;
 
   posts.value = await newAgent()
     .getAuthorFeed({ actor: props.did })
