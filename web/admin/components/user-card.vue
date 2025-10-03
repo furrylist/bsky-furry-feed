@@ -7,6 +7,7 @@ import { addSISuffix } from "~/lib/util";
 import { ViewImage } from "@atproto/api/dist/client/types/app/bsky/embed/images";
 import { PostView } from "@atproto/api/dist/client/types/app/bsky/feed/defs";
 import { BlueskyLabel } from "~/composables/useBlueskyLabels";
+import { hasFurryHashtag } from "~/lib/furry-detector";
 
 const props = defineProps<{
   did: string;
@@ -57,6 +58,9 @@ watch(
 );
 
 const posts = ref<PostView[]>([]);
+const hasFurryTags = computed(() =>
+  posts.value.map((p) => String((p.record as any)?.text)).some(hasFurryHashtag)
+);
 
 await loadProfile();
 </script>
@@ -210,8 +214,17 @@ await loadProfile();
       </div>
       <div class="mb-3 md:w-[50%]">
         <shared-card :class="{ 'loading-flash': loading }" no-padding>
-          <div class="px-4 py-3 border-b border-gray-300 dark:border-gray-700">
+          <div
+            class="px-4 py-3 border-b border-gray-300 dark:border-gray-700 flex items-center"
+          >
             <h2>Recent posts</h2>
+            <span
+              v-if="hasFurryTags"
+              class="ml-auto text-sm bg-teal-700 flex items-center gap-0.5 px-1 rounded-lg h-min"
+            >
+              <icon-check />
+              furry tags
+            </span>
           </div>
           <div class="overflow-y-auto max-h-[500px]">
             <div
