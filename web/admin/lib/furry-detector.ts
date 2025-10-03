@@ -84,3 +84,8 @@ export function isProbablyFurry(profile?: ProfileViewMinimal): boolean {
 
   return matchTerms(terms, description);
 }
+
+export function hasFurryHashtag(text: string): boolean {
+  const regex = /#(furry|furries|furryart|fursona|fursuit|therian|pup\b)/i;
+  return regex.test(text);
+}
