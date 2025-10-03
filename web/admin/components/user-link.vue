@@ -1,9 +1,19 @@
 <script setup lang="ts">
+import { ProfileViewDetailed } from "@atproto/api/dist/client/types/app/bsky/actor/defs";
 import { getProfile } from "~/lib/cached-bsky";
 
 const props = defineProps<{ did: string; hideAvatar?: boolean }>();
 
-const profile = await getProfile(props.did);
+const profile = ref<ProfileViewDetailed>();
+
+profile.value = await getProfile(props.did);
+
+watch(
+  () => props.did,
+  async () => {
+    profile.value = await getProfile(props.did);
+  }
+);
 </script>
 
 <template>
