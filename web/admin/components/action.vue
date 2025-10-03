@@ -1,7 +1,7 @@
 <script setup lang="ts">
+import { AuditEventOrFollowedAt } from "~/types";
 import {
   ApprovalQueueAction,
-  AuditEvent,
   BanActorAuditPayload,
   CommentAuditPayload,
   CreateActorAuditPayload,
@@ -13,11 +13,12 @@ import {
 } from "../../proto/bff/v1/moderation_service_pb";
 
 const props = defineProps<{
-  action: AuditEvent;
+  action: AuditEventOrFollowedAt;
   lookupUser?: boolean;
 }>();
 
 const payload = computed(() => {
+  if ("isFollowedAt" in props.action) return props.action;
   if (!props.action.payload) return;
 
   const { typeUrl, value } = props.action.payload;
@@ -65,6 +66,8 @@ const type = computed(() => {
     return "hold_back";
   } else if (data instanceof AssignRolesAuditPayload) {
     return "assign_roles";
+  } else if (data?.isFollowedAt) {
+    return "followed_at";
   }
 });
 
@@ -92,6 +95,8 @@ const actionText = computed(() => {
       return props.lookupUser
         ? "assigned roles"
         : "assigned roles to this user.";
+    case "followed_at":
+      return "requested to join the list.";
   }
 });
 
@@ -150,12 +155,19 @@ const comment = computed(() => {
         v-else-if="type === 'assign_roles'"
         class="text-gray-600 dark:text-gray-200"
       />
+      <icon-help
+        v-else-if="type === 'followed_at'"
+        class="text-gray-600 dark:text-gray-200"
+      />
     </div>
     <div class="flex-1">
       <div class="flex max-md:flex-wrap items-center gap-1">
         <user-link :did="action.actorDid" />
         {{ actionText }}
-        <user-link v-if="lookupUser" :did="action.subjectDid" />
+        <user-link
+          v-if="lookupUser && !('isFollowedAt' in action)"
+          :did="action.subjectDid"
+        />
         <shared-date
           v-if="action.createdAt"
           class="text-muted text-xs"

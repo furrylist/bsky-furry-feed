@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { newAgent } from "~/lib/auth";
 import { ProfileViewDetailed } from "@atproto/api/dist/client/types/app/bsky/actor/defs";
+import { getProfile } from "~/lib/cached-bsky";
+import { Actor } from "../../../proto/bff/v1/types_pb";
 
 const props = defineProps<{
   did: string;
@@ -15,16 +16,15 @@ const error = ref<string>();
 const auditLog = ref() as Ref<{ refresh(): Promise<void> }>;
 
 const subject = ref<ProfileViewDetailed>();
-const agent = newAgent();
+const actor = ref<Actor>();
 async function loadProfile() {
-  const { data } = await agent
-    .getProfile({
-      actor: props.did,
-    })
-    .catch(() => {
-      return { data: undefined };
-    });
-  subject.value = data;
+  const api = await useAPI();
+  const [profile, actr] = await Promise.all([
+    getProfile(props.did),
+    api.getActor({ did: props.did }),
+  ]);
+  subject.value = profile;
+  actor.value = actr.actor;
 }
 
 async function refresh() {
@@ -52,6 +52,7 @@ await refresh();
     <user-card
       class="mb-5"
       :did="subject?.did || props.did"
+      :actor="actor"
       :pending="pending"
       :variant="variant"
       @next="handleNext"
@@ -61,6 +62,7 @@ await refresh();
       v-else
       ref="auditLog"
       :subject="subject"
+      :actor="actor"
       :did="subject?.did || props.did"
       @error="error = $event"
     />

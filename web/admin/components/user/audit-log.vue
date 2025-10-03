@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { ProfileViewDetailed } from "@atproto/api/dist/client/types/app/bsky/actor/defs";
 import { AuditEvent } from "../../../proto/bff/v1/moderation_service_pb";
+import { Actor } from "../../../proto/bff/v1/types_pb";
+import { AuditEventOrFollowedAt } from "~/types";
 
 const $emit = defineEmits<{
   (event: "error", message: string): void;
@@ -8,9 +10,29 @@ const $emit = defineEmits<{
 const props = defineProps<{
   did: string;
   subject?: ProfileViewDetailed;
+  actor?: Actor;
 }>();
 
 const auditEvents: Ref<AuditEvent[]> = ref([]);
+const allAuditEvents: Ref<AuditEventOrFollowedAt[]> = computed(() => {
+  const arr: AuditEventOrFollowedAt[] = [...auditEvents.value];
+  if (
+    props.actor &&
+    !auditEvents.value.some((a) =>
+      a.payload?.typeUrl.includes("bff.v1.CreateActorAuditPayload")
+    )
+  ) {
+    if (props.actor.createdAt?.toDate()) {
+      arr.unshift({
+        actorDid: props.did,
+        isFollowedAt: true,
+        createdAt: props.actor.createdAt,
+        id: "follow",
+      });
+    }
+  }
+  return arr;
+});
 
 async function loadEvents() {
   $emit("error", "");
@@ -58,7 +80,7 @@ await loadEvents();
 <template>
   <h2 class="font-bold mb-3">Comments</h2>
   <action
-    v-for="action in auditEvents.sort(
+    v-for="action in allAuditEvents.sort(
       (a, b) =>
         (a.createdAt?.toDate().getTime() || 0) -
         (b.createdAt?.toDate().getTime() || 0)
@@ -66,7 +88,7 @@ await loadEvents();
     :key="action.id"
     :action="action"
   />
-  <p v-if="auditEvents.length === 0" class="text-muted">
+  <p v-if="allAuditEvents.length === 0" class="text-muted">
     No comments or audit events.
   </p>
   <shared-comment-box v-if="subject" @comment="comment" />
