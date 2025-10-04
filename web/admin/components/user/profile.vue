@@ -21,7 +21,7 @@ async function loadProfile() {
   const api = await useAPI();
   const [profile, actr] = await Promise.all([
     getProfile(props.did),
-    api.getActor({ did: props.did }),
+    api.getActor({ did: props.did }).catch(() => ({ actor: undefined })),
   ]);
   subject.value = profile;
   actor.value = actr.actor;
