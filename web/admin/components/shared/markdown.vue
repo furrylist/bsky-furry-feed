@@ -20,27 +20,27 @@ const renderedMarkdown = computed(() => {
 </template>
 
 <style scoped>
-.markdown >>> a {
+.markdown :deep(a) {
   @apply underline;
   @apply text-blue-600;
   @apply dark:text-blue-400;
 }
 
-.markdown >>> a:hover {
+.markdown :deep(a:hover) {
   @apply no-underline;
 }
 
-.markdown >>> img,
-.markdown >>> table {
+.markdown :deep(img),
+.markdown :deep(table) {
   @apply hidden;
 }
 
-.markdown >>> blockquote {
+.markdown :deep(blockquote) {
   @apply pl-2 border-l-4 border-gray-400 dark:border-gray-700;
 }
 
-.markdown >>> p:not(:last-child),
-.markdown >>> blockquote:not(:last-child) {
+.markdown :deep(p:not(:last-child)),
+.markdown :deep(blockquote:not(:last-child)) {
   @apply mb-2;
 }
 </style>
