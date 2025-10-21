@@ -26,6 +26,7 @@ export function isProbablySpam(profile?: ProfileViewMinimal): boolean {
     /(dm|message|e?mail)( me)? (for|to) (removal|remove)/i,
     /follow\b.+follow back/,
     /flipped\.chat/, // AI chatbot site
+    /\.gov\b/,
   ];
 
   return matchTerms(terms, profile.description);
