@@ -73,6 +73,7 @@ export function isProbablyFurry(profile?: ProfileViewMinimal): boolean {
     "floofer",
     "dingo",
     "sergal",
+    /bat ?(girl|boy)/,
   ];
 
   const description = [
