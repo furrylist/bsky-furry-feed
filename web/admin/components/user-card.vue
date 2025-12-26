@@ -132,7 +132,10 @@ await loadProfile();
           </div>
         </shared-card>
         <shared-card
-          v-if="actor?.roles.length || (actor && currentActor.isAdmin)"
+          v-if="
+            actor?.roles.length ||
+            (actor && currentActor.isAdmin && variant !== 'queue')
+          "
           class="flex items-center gap-1"
         >
           <icon-key class="text-muted" />
