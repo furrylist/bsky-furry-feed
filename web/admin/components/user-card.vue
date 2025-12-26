@@ -4,8 +4,8 @@ import { Actor, ActorStatus } from "../../proto/bff/v1/types_pb";
 import { getProfile } from "~/lib/cached-bsky";
 import { newAgent } from "~/lib/auth";
 import { addSISuffix } from "~/lib/util";
-import { PostView } from "@atproto/api/dist/client/types/app/bsky/feed/defs";
 import { BlueskyLabel } from "~/composables/useBlueskyLabels";
+import { AppBskyFeedDefs } from "@atproto/api";
 
 const props = defineProps<{
   did: string;
@@ -27,11 +27,7 @@ const loadProfile = async () => {
 
   posts.value = await newAgent()
     .getAuthorFeed({ actor: props.did })
-    .then((r) =>
-      r.data.feed
-        .filter((p) => !p.reply && p.post.author.did === props.did)
-        .map((p) => p.post)
-    );
+    .then((r) => r.data.feed);
   labels.value = await labelsQuery;
 };
 
@@ -55,7 +51,7 @@ watch(
   () => loadProfile()
 );
 
-const posts = ref<PostView[]>([]);
+const posts = ref<AppBskyFeedDefs.FeedViewPost[]>([]);
 
 await loadProfile();
 </script>
@@ -211,8 +207,12 @@ await loadProfile();
         </shared-card>
       </div>
       <div class="mb-3 md:w-[50%]">
-        <shared-card :class="{ 'loading-flash': loading }" no-padding>
-          <user-recent-posts :posts="posts" />
+        <shared-card
+          v-if="actor"
+          :class="{ 'loading-flash': loading }"
+          no-padding
+        >
+          <user-recent-posts :actor-did="actor.did" :posts="posts" />
         </shared-card>
       </div>
     </div>
