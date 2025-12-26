@@ -83,10 +83,7 @@ await loadProfile();
         </shared-card>
         <shared-card>
           <div class="flex gap-3 items-center">
-            <button
-              class="relative flex overflow-hidden rounded-lg"
-              @click="showAvatarModal = true"
-            >
+            <core-zoomable>
               <shared-avatar
                 :did="data.did"
                 :has-avatar="Boolean(data.avatar)"
@@ -94,23 +91,16 @@ await loadProfile();
                 resize="72x72"
                 :size="72"
               />
-              <span
-                class="opacity-0 hover:opacity-100 transition duration-300 w-full h-full absolute flex items-center bg-black bg-opacity-50 text-xs uppercase tracking-tight"
-              >
-                Click to zoom
-              </span>
-            </button>
-            <core-modal v-if="showAvatarModal" @close="showAvatarModal = false">
-              <div class="z-10">
+              <template #fullsize="{ classes }">
                 <shared-avatar
-                  class="w-auto h-auto max-h-[80vh] max-w-[80vw]"
+                  :class="classes"
                   :did="data.did"
                   :has-avatar="Boolean(data.avatar)"
                   resize="webp"
                   :size="512"
                 />
-              </div>
-            </core-modal>
+              </template>
+            </core-zoomable>
             <div class="flex flex-col">
               <div v-if="data.displayName" class="text-lg">
                 {{ data.displayName }}

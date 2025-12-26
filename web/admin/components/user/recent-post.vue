@@ -35,6 +35,29 @@ onMounted(async () => {
     authorStatus.value = resp.actor?.status;
   }
 });
+
+const images = computed(() => {
+  if (props.post.post.embed && "images" in props.post.post.embed) {
+    const images = props.post.post.embed.images as (ViewImage & {
+      type: "image";
+    })[];
+    images.forEach((img) => (img.type = "image"));
+    return images;
+  }
+  if (
+    props.post.post.embed?.$type === "app.bsky.embed.video#view" &&
+    props.post.post.embed.thumbnail
+  ) {
+    return [
+      {
+        alt: "",
+        fullsize: props.post.post.embed.thumbnail,
+        thumb: props.post.post.embed.thumbnail,
+      },
+    ] as (ViewImage & { type: "video" })[];
+  }
+  return [];
+});
 </script>
 
 <template>
@@ -82,17 +105,51 @@ onMounted(async () => {
         :description="(post.post.record as any)?.text"
         class="flex-1"
       />
+
       <span
-        v-if="post.post.embed && 'images' in post.post.embed"
+        v-if="images.length"
         class="w-[25%] h-100 flex-shrink-0 flex flex-col gap-1"
       >
-        <img
-          v-for="img in (post.post.embed.images as ViewImage[])"
-          :key="img.thumb"
-          class="object-cover h-100 rounded-lg"
-          :src="img.thumb"
-          :alt="img.alt"
-        />
+        <template v-for="img in images" :key="img.thumb">
+          <core-zoomable v-if="img.type === 'image'">
+            <img
+              class="object-cover h-100 rounded-lg"
+              :src="img.thumb"
+              :alt="img.alt"
+            />
+            <template #fullsize="{ classes }">
+              <img
+                class="object-cover h-100"
+                :class="classes"
+                :src="img.fullsize"
+                :alt="img.alt"
+              />
+            </template>
+          </core-zoomable>
+          <nuxt-link
+            v-else
+            :href="`https://bsky.app/profile/${
+              post.post.author.did
+            }/post/${post.post.uri.split('/').pop()}`"
+            class="hover:opacity-90 relative"
+            title="View on Bluesky"
+          >
+            <div
+              class="absolute w-full h-full flex items-center justify-center"
+            >
+              <div
+                class="p-0.5 bg-gray-900/50 flex items-center justify-center rounded-lg"
+              >
+                <icon-play class="h-7 w-7" />
+              </div>
+            </div>
+            <img
+              class="object-cover h-100 rounded-lg"
+              :src="img.thumb"
+              :alt="img.alt"
+            />
+          </nuxt-link>
+        </template>
       </span>
     </div>
   </div>
