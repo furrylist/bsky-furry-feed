@@ -28,6 +28,7 @@
     "@bufbuild/protobuf": "1.2.0",
     "dompurify": "^3.0.5",
     "marked": "^7.0.1",
+    "theta-delta": "^1.1.0",
     "vue-multiselect": "^3.1.0"
   }
 }

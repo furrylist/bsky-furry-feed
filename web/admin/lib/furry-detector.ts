@@ -1,5 +1,6 @@
 import { ProfileViewDetailed } from "@atproto/api/dist/client/types/app/bsky/actor/defs";
 import { matchTerms } from "./util";
+import { getThetaDeltaRegex, hasThetaDelta } from "theta-delta";
 
 type ProfileViewMinimal = Pick<ProfileViewDetailed, "displayName"> &
   Pick<ProfileViewDetailed, "description"> &
@@ -10,11 +11,7 @@ export function isProbablyFurry(profile?: ProfileViewMinimal): boolean {
     return false;
   }
 
-  // ∆ (increment operator) and Δ (delta)
-  // Θ (uppercase theta) and θ (lowercase theta)
-  const therian = /(Θ|θ)\s*(∆|Δ)/i;
-
-  if (profile?.displayName?.match(therian)) {
+  if (hasThetaDelta(profile.displayName || "", "extended")) {
     return true;
   }
 
@@ -25,7 +22,7 @@ export function isProbablyFurry(profile?: ProfileViewMinimal): boolean {
   const terms = [
     "furry",
     "furries",
-    therian,
+    getThetaDeltaRegex("extended"),
     "therian",
     /\b[bp]up(py)?\b/,
     /\bfurs?\b/,
