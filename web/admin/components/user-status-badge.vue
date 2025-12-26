@@ -2,7 +2,7 @@
 import { ActorStatus } from "../../proto/bff/v1/types_pb";
 import { ACTOR_STATUS_LABELS } from "~/lib/constants";
 
-const props = defineProps<{ status?: ActorStatus }>();
+const props = defineProps<{ status?: ActorStatus; tiny?: boolean }>();
 
 const statusLabel = computed(() =>
   props.status === undefined ? "Untracked" : ACTOR_STATUS_LABELS[props.status]
@@ -18,10 +18,16 @@ const background = computed(() =>
         [ActorStatus.NONE]: "bg-zinc-700 text-white",
       }[props.status]
 );
+
+const style = computed(() => {
+  return `${background.value} ${
+    props.tiny ? "py-[2px] px-1.5 text-[11px]" : "py-0.5 px-2"
+  }`;
+});
 </script>
 
 <template>
-  <span class="rounded-full py-0.5 px-2" :class="background">
+  <span class="rounded-full" :class="style">
     {{ statusLabel }}
   </span>
 </template>
