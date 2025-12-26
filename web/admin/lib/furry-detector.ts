@@ -12,7 +12,7 @@ export function isProbablyFurry(profile?: ProfileViewMinimal): boolean {
 
   // ∆ (increment operator) and Δ (delta)
   // Θ (uppercase theta) and θ (lowercase theta)
-  const therian = /(Θ|θ)(∆|Δ)/i;
+  const therian = /(Θ|θ)\s*(∆|Δ)/i;
 
   if (profile?.displayName?.match(therian)) {
     return true;
