@@ -84,7 +84,7 @@ onMounted(async () => {
       />
       <span
         v-if="post.post.embed && 'images' in post.post.embed"
-        class="w-[25%] h-100 flex-shrink-0"
+        class="w-[25%] h-100 flex-shrink-0 flex flex-col gap-1"
       >
         <img
           v-for="img in (post.post.embed.images as ViewImage[])"
