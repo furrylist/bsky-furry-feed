@@ -39,7 +39,7 @@ const showPost = computed(() => postType.value === "post");
     </div>
     <div class="flex">
       <shared-bsky-description
-        :description="(post.record as any)?.text"
+        :description="(post.post.record as any)?.text"
         class="flex-1"
       />
       <span
