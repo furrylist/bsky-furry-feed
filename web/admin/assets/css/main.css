@@ -41,3 +41,10 @@
     background-position-x: -150%;
   }
 }
+
+.meta {
+  @apply flex items-center gap-3;
+}
+.meta-item {
+  @apply inline-flex items-center gap-1;
+}

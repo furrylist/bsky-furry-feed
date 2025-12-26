@@ -4,10 +4,8 @@ import { Actor, ActorStatus } from "../../proto/bff/v1/types_pb";
 import { getProfile } from "~/lib/cached-bsky";
 import { newAgent } from "~/lib/auth";
 import { addSISuffix } from "~/lib/util";
-import { ViewImage } from "@atproto/api/dist/client/types/app/bsky/embed/images";
 import { PostView } from "@atproto/api/dist/client/types/app/bsky/feed/defs";
 import { BlueskyLabel } from "~/composables/useBlueskyLabels";
-import { hasFurryHashtag } from "~/lib/furry-detector";
 
 const props = defineProps<{
   did: string;
@@ -58,9 +56,6 @@ watch(
 );
 
 const posts = ref<PostView[]>([]);
-const hasFurryTags = computed(() =>
-  posts.value.map((p) => String((p.record as any)?.text)).some(hasFurryHashtag)
-);
 
 await loadProfile();
 </script>
@@ -214,67 +209,7 @@ await loadProfile();
       </div>
       <div class="mb-3 md:w-[50%]">
         <shared-card :class="{ 'loading-flash': loading }" no-padding>
-          <div
-            class="px-4 py-3 border-b border-gray-300 dark:border-gray-700 flex items-center"
-          >
-            <h2>Recent posts</h2>
-            <span
-              v-if="hasFurryTags"
-              class="ml-auto text-sm bg-teal-700 flex items-center gap-0.5 px-1 rounded-lg h-min"
-            >
-              <icon-check />
-              furry tags
-            </span>
-          </div>
-          <div class="overflow-y-auto max-h-[500px]">
-            <div
-              v-for="post in posts"
-              :key="post.uri"
-              class="px-4 py-2 border-b border-gray-300 dark:border-gray-700"
-            >
-              <template v-if="post">
-                <div class="meta text-sm text-muted">
-                  <span class="meta-item">
-                    <shared-date :date="new Date(post.indexedAt)" />
-                  </span>
-                  <span class="meta-item flex items-center gap-0.5">
-                    <icon-heart class="text-muted" />
-                    {{ addSISuffix(post.likeCount || 0) }}
-                  </span>
-                  <span class="meta-item flex items-center gap-0.5">
-                    <icon-square-bubble class="text-muted" :size="14" />
-                    {{ addSISuffix(post.replyCount || 0) }}
-                  </span>
-                </div>
-                <div class="flex">
-                  <shared-bsky-description
-                    :description="(post.record as any)?.text"
-                  />
-                  <span
-                    v-if="post.embed && 'images' in post.embed"
-                    class="w-[25%] h-100"
-                  >
-                    <img
-                      v-for="img in (post.embed.images as ViewImage[]).slice(0,1)"
-                      :key="img.thumb"
-                      class="object-cover h-100 rounded-lg"
-                      :src="img.thumb"
-                      :alt="img.alt"
-                    />
-                  </span>
-                </div>
-              </template>
-              <div v-else class="text-sm text-muted">
-                Error: post not found.
-              </div>
-            </div>
-            <div
-              v-if="posts.length === 0"
-              class="text-muted px-4 py-2 border-gray-300 dark:border-gray-700"
-            >
-              No recent posts.
-            </div>
-          </div>
+          <user-recent-posts :posts="posts" />
         </shared-card>
       </div>
     </div>
@@ -297,13 +232,6 @@ await loadProfile();
 </template>
 
 <style scoped>
-.meta {
-  @apply flex items-center gap-3;
-}
-.meta-item {
-  @apply inline-flex items-center gap-1;
-}
-
 .card-list > :not(:last-of-type) {
   @apply border-b-0;
   @apply rounded-b-none;
