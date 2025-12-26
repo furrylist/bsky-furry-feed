@@ -36,7 +36,7 @@ async function doSearch() {
       <nuxt-link href="/settings">
         <shared-avatar
           :did="profile.did"
-          :has-avatar="profile.avatar"
+          :has-avatar="Boolean(profile.avatar)"
           resize="72x72"
           :size="32"
         />
