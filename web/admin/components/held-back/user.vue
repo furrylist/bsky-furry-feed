@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ProfileViewDetailed } from "@atproto/api/dist/client/types/app/bsky/actor/defs";
 import { Actor } from "../../../proto/bff/v1/types_pb";
-import { HoldBackPendingActorAuditPayload } from "../../../proto/bff/v1/moderation_service_pb";
 
 const props = defineProps<{
   user: Actor & ProfileViewDetailed;

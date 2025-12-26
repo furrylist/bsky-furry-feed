@@ -16,7 +16,6 @@ const props = defineProps<{
 const $emit = defineEmits(["next"]);
 
 const currentActor = await useActor();
-const showAvatarModal = ref(false);
 const loading = ref(false);
 const showRolesModal = ref(false);
 const data = ref<ProfileViewDetailed>();
