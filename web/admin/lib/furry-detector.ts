@@ -76,6 +76,7 @@ export function isProbablyFurry(profile?: ProfileViewMinimal): boolean {
     /bat ?(girl|boy)/,
     /\bcorgi\b/,
     /\balpaca\b(?! farmer)/,
+    "animal person",
   ];
 
   const description = [
