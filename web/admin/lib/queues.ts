@@ -27,7 +27,11 @@ function categorizeProfile(
   if (isProbablySpam(profile)) return "Likely spam";
   if (isProbablyFurry(profile)) return "Likely furry";
   if (!profile) return "Empty";
-  if (!profile.displayName && !profile.description && !profile.postsCount)
+  if (
+    (!profile.displayName || profile.displayName === profile.handle) &&
+    !profile.description &&
+    !profile.postsCount
+  )
     return "Empty";
 
   return "All";
