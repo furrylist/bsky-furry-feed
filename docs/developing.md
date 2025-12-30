@@ -31,8 +31,8 @@ $ go install github.com/kyleconroy/sqlc/cmd/sqlc@VERSION
 ```
 
 In order to run the ingest and feed server, you need to start a local
-development database. Start it by executing `docker-compose up -d`. If
-you want to turn it off again, execute `docker-compose down`. You can
+development database. Start it by executing `docker compose up -d`. If
+you want to turn it off again, execute `docker compose down`. You can
 learn more about docker-compose [in the official docs][docker-compose].
 
 Now that your database is running, you need to initially run all database
