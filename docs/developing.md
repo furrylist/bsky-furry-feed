@@ -12,17 +12,22 @@ uses—approving new users to the feed.
 After [cloning this repository][clone], install the following required
 system dependencies if you don’t have them yet:
 
-1. The latest [Go 1.20][go] version,
-2. [Docker][docker], and
-3. [docker-compose][docker-compose] if your Docker version doesn’t
+1. [Docker][docker] and
+2. [docker-compose][docker-compose] if your Docker version doesn’t
    support running `docker compose` as subcommand of Docker.
 
-In addition to this, we’re using `sqlc` and `migrate` to manage our
-database schema. Install them by executing the following commands:
+We're using Go, Node, pnpm, and a few tools for managing the database
+and protobuf schemas. The language toolchains and other tools are
+managed with [mise][mise]. If you have installed mise, you can just run
+`mise trust` to trust the directory and `mise install` to install
+everything.
+
+You _can_ choose to not use mise and install the tools manually like
+shown below. But we don't recommend this.
 
 ```bash
-$ go install github.com/kyleconroy/sqlc/cmd/sqlc@v1.19.0
-$ go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@latest
+# Look up VERSION in mise.toml
+$ go install github.com/kyleconroy/sqlc/cmd/sqlc@VERSION
 ```
 
 In order to run the ingest and feed server, you need to start a local
@@ -46,6 +51,7 @@ $ migrate -path store/migrations -database "postgres://bff:bff@localhost:5432/bf
 [clone]: https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository
 [docker]: https://docs.docker.com/engine/install/#server
 [docker-compose]: https://docs.docker.com/compose/
+[mise]: https://mise.jdx.dev/
 
 ## Configuring your environment
 
@@ -127,4 +133,3 @@ You need HTTPS, so use Cloudflare Tunnel or similar when developing.
 ## Archictural Overview
 
 ![image](https://github.com/strideynet/bsky-furry-feed/assets/16336790/14e85bd6-de4f-4bbb-96aa-c6bb4cfc5394)
-
