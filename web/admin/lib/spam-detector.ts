@@ -27,6 +27,8 @@ export function isProbablySpam(profile?: ProfileViewMinimal): boolean {
     /follow\b.+follow back/,
     /flipped\.chat/, // AI chatbot site
     /\.gov\b/,
+    // 2026-01-01: this is temporary due to an influx of spam users
+    /onlyfans\.com/,
   ];
 
   return matchTerms(terms, profile.description);
