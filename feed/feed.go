@@ -446,26 +446,26 @@ func ServiceWithDefaultFeeds(pgxStore *store.PGXStore) *Service {
 	}))
 	r.Register(Meta{
 		ID:          "con-fc",
-		DisplayName: "🐾 FC 2025",
-		Description: "Furry\nA feed for all things FC! Use #fc, #fc25, or #fc2025 to include a post in the feed.\n\nJoin the furry feeds by following @furryli.st",
+		DisplayName: "🐾 FC 2026",
+		Description: "Furry\nA feed for all things FC! Use #fc, #fc26, or #fc2026 to include a post in the feed.\n\nJoin the furry feeds by following @furryli.st",
 	}, chronologicalGenerator(chronologicalGeneratorOpts{
 		generatorOpts: generatorOpts{
 			Hashtags: []string{
-				"fc", "fc25", "fc2025", "furcon25", "furcon2025",
-				"furtherconfusion", "furtherconfusion25", "furtherconfusion2025",
+				"fc", "fc26", "fc2026", "furcon26", "furcon2026",
+				"furtherconfusion", "furtherconfusion26", "furtherconfusion2026",
 			},
 			DisallowedHashtags: defaultDisallowedHashtags,
 		},
 	}))
 	r.Register(Meta{
 		ID:          "con-nfc",
-		DisplayName: "🐾 NFC 2025",
-		Description: "Furry\nA feed for all things NFC! Use #nfc, #nfc25, or #nfc2025 to include a post in the feed.\n\nJoin the furry feeds by following @furryli.st",
+		DisplayName: "🐾 NFC 2026",
+		Description: "Furry\nA feed for all things NFC! Use #nfc, #nfc26, or #nfc2026 to include a post in the feed.\n\nJoin the furry feeds by following @furryli.st",
 	}, chronologicalGenerator(chronologicalGeneratorOpts{
 		generatorOpts: generatorOpts{
 			Hashtags: []string{
-				"nfc", "nfc25", "nfc2025",
-				"nordicfuzzcon", "nordicfuzzcon25", "nordicfuzzcon2025",
+				"nfc", "nfc26", "nfc2026",
+				"nordicfuzzcon", "nordicfuzzcon26", "nordicfuzzcon2026",
 			},
 			DisallowedHashtags: defaultDisallowedHashtags,
 		},
