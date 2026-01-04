@@ -74,6 +74,7 @@ export function isProbablyFurry(profile?: ProfileViewMinimal): boolean {
     /\bcorgi\b/,
     /\balpaca\b(?! farmer)/,
     "animal person",
+    "yiff",
   ];
 
   const description = [
@@ -88,6 +89,7 @@ export function isProbablyFurry(profile?: ProfileViewMinimal): boolean {
 }
 
 export function hasFurryHashtag(text: string): boolean {
-  const regex = /#(furry|furries|furryart|fursona|fursuit|therian|pup\b)/i;
+  const regex =
+    /#(furry|furries|furryart|fursona|fursuit|therian|pup\b|(baby|diaper)fur|yiff)/i;
   return regex.test(text);
 }
