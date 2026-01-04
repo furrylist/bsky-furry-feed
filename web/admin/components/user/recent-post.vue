@@ -61,6 +61,11 @@ const images = computed(() => {
 });
 
 const labels = computed(() => props.post.post.labels || []);
+
+const isNSFW = computed(() => {
+  const values = labels.value.map((l) => l.val);
+  return ["porn", "nudity", "sexual"].some((val) => values.includes(val));
+});
 </script>
 
 <template>
@@ -118,12 +123,14 @@ const labels = computed(() => props.post.post.labels || []);
             <core-zoomable
               v-if="img.type === 'image'"
               :label="
-                blurNsfwPostMedia ? 'Click to zoom and unblur' : undefined
+                isNSFW && blurNsfwPostMedia
+                  ? 'Click to zoom and unblur'
+                  : undefined
               "
             >
               <img
                 class="object-cover h-100 rounded-lg"
-                :class="{ 'blur-md': blurNsfwPostMedia }"
+                :class="{ 'blur-md': isNSFW && blurNsfwPostMedia }"
                 :src="img.thumb"
                 :alt="img.alt"
               />
@@ -156,7 +163,7 @@ const labels = computed(() => props.post.post.labels || []);
               <div class="overflow-hidden rounded-lg">
                 <img
                   class="object-cover h-100"
-                  :class="{ 'blur-md': blurNsfwPostMedia }"
+                  :class="{ 'blur-md': isNSFW && blurNsfwPostMedia }"
                   :src="img.thumb"
                   :alt="img.alt"
                 />
