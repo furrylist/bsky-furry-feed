@@ -1,6 +1,7 @@
 import { newAgent } from "./auth";
 
 export async function search(term: string) {
+  term = term.trim();
   if (!term.includes(".") && !term.startsWith("did:")) {
     term = `${term}.bsky.social`;
   }
