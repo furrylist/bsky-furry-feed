@@ -1,4 +1,5 @@
 <script setup lang="ts">
+defineProps<{ label?: string }>();
 const showModal = ref(false);
 
 function close() {
@@ -17,7 +18,7 @@ onMounted(() => {});
     <span
       class="opacity-0 hover:opacity-100 transition duration-300 w-full h-full absolute flex items-center bg-black bg-opacity-50 text-xs uppercase tracking-tight p-2"
     >
-      Click to zoom
+      {{ label || "Click to zoom" }}
     </span>
   </button>
   <core-modal v-if="showModal" @close="close">
