@@ -1,4 +1,5 @@
 <script setup lang="ts">
+defineProps<{ disabled?: boolean }>();
 const $emit = defineEmits<{ (event: "comment", comment: string): void }>();
 
 const text = ref("");
@@ -17,9 +18,10 @@ function comment() {
       rows="4"
       placeholder="Type your comment..."
       type="text"
+      :disabled="disabled"
     />
     <button
-      :disabled="text.trim().length === 0"
+      :disabled="text.trim().length === 0 || disabled"
       class="ml-auto px-3 py-1 bg-blue-400 dark:bg-blue-600 rounded-lg hover:bg-blue-500 dark:hover:bg-blue-700 disabled:bg-blue-300 disabled:dark:bg-blue-500 disabled:cursor-not-allowed h-min"
       @click="comment"
     >
