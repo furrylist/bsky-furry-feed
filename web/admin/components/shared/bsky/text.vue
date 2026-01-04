@@ -31,7 +31,7 @@ function leave() {
   <span v-else-if="segment.isMention()" class="relative">
     <nuxt-link
       class="underline hover:no-underline text-blue-500"
-      :href="`https://bsky.app/profile/${segment.mention?.did}`"
+      :href="`/users/${segment.mention?.did}`"
       target="_blank"
       @mouseenter="enter"
       @mouseleave="leave"
