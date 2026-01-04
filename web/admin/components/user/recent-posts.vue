@@ -9,6 +9,7 @@ const props = defineProps<{
 
 const hasFurryTags = computed(() =>
   props.posts
+    .filter((p) => p.post.author.did === props.actorDid)
     .map((p) => String((p.post.record as any)?.text))
     .some(hasFurryHashtag)
 );
