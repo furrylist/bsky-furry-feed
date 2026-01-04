@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { showQueueActionConfirmation } from "~/lib/settings";
+import { showQueueActionConfirmation, blurNsfwPostMedia } from "~/lib/settings";
 import { logout } from "~/lib/auth";
 </script>
 
@@ -17,6 +17,16 @@ import { logout } from "~/lib/auth";
       <label for="show-queue-action-confirmation"
         >Show confirmation popup when approving and rejecting in the
         queue.</label
+      >
+    </div>
+    <div class="flex gap-2 mb-4">
+      <input
+        id="blur-nsfw-post-media"
+        v-model="blurNsfwPostMedia"
+        type="checkbox"
+      />
+      <label for="blur-nsfw-post-media"
+        >Blur NSFW post media (images/video).</label
       >
     </div>
 

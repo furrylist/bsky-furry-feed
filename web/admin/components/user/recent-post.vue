@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { blurNsfwPostMedia } from "~/lib/settings";
 import { addSISuffix } from "~/lib/util";
 import { ViewImage } from "@atproto/api/dist/client/types/app/bsky/embed/images";
 
@@ -114,9 +115,15 @@ const labels = computed(() => props.post.post.labels || []);
           class="w-[25%] h-100 flex-shrink-0 flex flex-col gap-1"
         >
           <template v-for="img in images" :key="img.thumb">
-            <core-zoomable v-if="img.type === 'image'">
+            <core-zoomable
+              v-if="img.type === 'image'"
+              :label="
+                blurNsfwPostMedia ? 'Click to zoom and unblur' : undefined
+              "
+            >
               <img
                 class="object-cover h-100 rounded-lg"
+                :class="{ 'blur-md': blurNsfwPostMedia }"
                 :src="img.thumb"
                 :alt="img.alt"
               />
@@ -146,11 +153,14 @@ const labels = computed(() => props.post.post.labels || []);
                   <icon-play class="h-7 w-7" />
                 </div>
               </div>
-              <img
-                class="object-cover h-100 rounded-lg"
-                :src="img.thumb"
-                :alt="img.alt"
-              />
+              <div class="overflow-hidden rounded-lg">
+                <img
+                  class="object-cover h-100"
+                  :class="{ 'blur-md': blurNsfwPostMedia }"
+                  :src="img.thumb"
+                  :alt="img.alt"
+                />
+              </div>
             </nuxt-link>
           </template>
         </span>
