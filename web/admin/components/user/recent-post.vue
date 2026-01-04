@@ -45,6 +45,14 @@ const images = computed(() => {
     images.forEach((img) => (img.type = "image"));
     return images;
   }
+  if ((props.post.post.embed?.media as any)?.images) {
+    const images = (props.post.post.embed?.media as any)
+      .images as (ViewImage & {
+      type: "image";
+    })[];
+    images.forEach((img) => (img.type = "image"));
+    return images;
+  }
   if (
     props.post.post.embed?.$type === "app.bsky.embed.video#view" &&
     props.post.post.embed.thumbnail
