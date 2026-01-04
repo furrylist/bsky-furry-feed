@@ -22,7 +22,14 @@ onMounted(() => {});
     </span>
   </button>
   <core-modal v-if="showModal" @close="close">
-    <div class="z-20">
+    <div class="z-20 flex flex-col gap-1">
+      <button
+        class="ml-auto p-1.5 hover:bg-gray-800/50 rounded-lg"
+        aria-label="Close"
+        @click="close"
+      >
+        <icon-close />
+      </button>
       <slot name="fullsize" classes="w-auto h-auto max-h-[80vh] max-w-[80vw]" />
     </div>
   </core-modal>
