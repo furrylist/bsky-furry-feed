@@ -32,7 +32,6 @@ function leave() {
     <nuxt-link
       class="underline hover:no-underline text-blue-500"
       :href="`/users/${segment.mention?.did}`"
-      target="_blank"
       @mouseenter="enter"
       @mouseleave="leave"
     >
