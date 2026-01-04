@@ -63,10 +63,11 @@ async function holdBack() {
   $emit("loading");
   try {
     const days = 60 * 60 * 24;
+    const duration = days * 5 + Math.random() * days * 2;
     await api.holdBackPendingActor({
       did: props.did,
       duration: {
-        seconds: BigInt(days * 7),
+        seconds: BigInt(duration),
       },
     });
   } catch (err) {
