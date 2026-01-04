@@ -67,7 +67,7 @@ async function holdBack() {
     await api.holdBackPendingActor({
       did: props.did,
       duration: {
-        seconds: BigInt(duration),
+        seconds: BigInt(Math.round(duration)),
       },
     });
   } catch (err) {
