@@ -8,7 +8,9 @@ const props = defineProps<{
 }>();
 
 const hasFurryTags = computed(() =>
-  props.posts.map((p) => String((p.record as any)?.text)).some(hasFurryHashtag)
+  props.posts
+    .map((p) => String((p.post.record as any)?.text))
+    .some(hasFurryHashtag)
 );
 </script>
 
