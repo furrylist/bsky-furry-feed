@@ -90,6 +90,6 @@ export function isProbablyFurry(profile?: ProfileViewMinimal): boolean {
 
 export function hasFurryHashtag(text: string): boolean {
   const regex =
-    /#(furry|furries|furryart|fursona|fursuit|therian|pup\b|(baby|diaper)fur|yiff|anthro|otherkin|protogen)/i;
+    /#(furry|furries|furryart|fursona|fursuit|therian|pup(play)?\b|(baby|diaper)fur|yiff|anthro|otherkin|protogen)/i;
   return regex.test(text);
 }
