@@ -3,7 +3,7 @@ go = "1.23.0"
 "go:connectrpc.com/connect/cmd/protoc-gen-connect-go" = "v1.11.0"
 "go:github.com/bufbuild/buf/cmd/buf" = "v1.62.1"
 "go:github.com/golang-migrate/migrate/v4/cmd/migrate" = { version = "4.19.0", tags = "postgres" }
-"go:github.com/sqlc-dev/sqlc/cmd/sqlc" = "v1.27.0"
+"go:github.com/sqlc-dev/sqlc/cmd/sqlc" = "v1.30.0"
 "go:google.golang.org/protobuf/cmd/protoc-gen-go" = "v1.31.0"
 node = "23.1.0"
 "npm:@bufbuild/protoc-gen-es" = "1.2.0"
