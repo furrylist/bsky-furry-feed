@@ -1,0 +1,1 @@
+DROP INDEX candidate_follows_subject_did_idx;
