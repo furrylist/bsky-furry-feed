@@ -666,6 +666,31 @@ func (s *PGXStore) ListScoredPosts(ctx context.Context, opts ListPostsForHotFeed
 	return posts, nil
 }
 
+func (s *PGXStore) ListTestPosts(ctx context.Context, actorDid string, opts ListPostsForHotFeedOpts) (out []gen.ListTestFeedPostsRow, err error) {
+	ctx, span := tracer.Start(ctx, "pgx_store.list_test_posts")
+	defer func() {
+		endSpan(span, err)
+	}()
+
+	queryParams := gen.ListTestFeedPostsParams{
+		Alg:           opts.Alg,
+		GenerationSeq: opts.Cursor.GenerationSeq,
+		// AfterScore:    opts.Cursor.AfterScore,
+		// AfterURI:      opts.Cursor.AfterURI,
+		DisallowedHashtags: opts.DisallowedHashtags,
+	}
+	if opts.Limit != 0 {
+		queryParams.Limit = int32(opts.Limit)
+	}
+
+	posts, err := s.queries.ListTestFeedPosts(ctx, queryParams)
+	if err != nil {
+		return nil, fmt.Errorf("executing ListScoredPosts query: %w", convertPGXError(err))
+	}
+
+	return posts, nil
+}
+
 type ListPostsWithLikesOpts struct {
 	CursorTime time.Time
 	Limit      int

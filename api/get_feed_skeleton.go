@@ -8,6 +8,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/golang-jwt/jwt/v5"
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 )
 
@@ -15,6 +16,23 @@ type getFeedSkeletonParams struct {
 	cursor string
 	limit  int
 	feed   string
+}
+
+func parseActorDid(h http.Header) (string, error) {
+	auth := h.Get("authorization")
+	if auth == "" {
+		return "", nil
+	}
+	auth = strings.TrimPrefix(auth, "Bearer ")
+	token, err := jwt.Parse(auth, func(token *jwt.Token) (any, error) {
+		return nil, nil
+	})
+	// we don't care if the token is invalid, the network is public
+	// we're not serving people posts based on non-public info
+	if token != nil && token.Claims != nil {
+		return token.Claims.GetIssuer()
+	}
+	return "", err
 }
 
 func parseGetFeedSkeletonParams(u *url.URL) (*getFeedSkeletonParams, error) {
@@ -73,14 +91,19 @@ func getFeedSkeletonHandler(
 		if err != nil {
 			return nil, err
 		}
+		actorDid, err := parseActorDid(r.Header)
+		if err != nil {
+			log.Error("failed decoding user did", slog.String("error", err.Error()))
+		}
 		log.Debug(
 			"get feed skeleton request",
 			slog.String("feed", params.feed),
 			slog.String("cursor", params.cursor),
+			slog.String("actor_did", actorDid),
 			slog.Int("limit", params.limit),
 		)
 
-		posts, err := feedService.GetFeedPosts(ctx, params.feed, params.cursor, params.limit)
+		posts, err := feedService.GetFeedPosts(ctx, params.feed, params.cursor, actorDid, params.limit)
 		if err != nil {
 			return nil, fmt.Errorf("fetching feed %q: %w", params.feed, err)
 		}

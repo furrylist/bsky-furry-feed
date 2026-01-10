@@ -38,7 +38,7 @@ func jsonHandler(log *slog.Logger, h func(r *http.Request) (any, error)) http.Ha
 
 type feedService interface {
 	Metas() []feed.Meta
-	GetFeedPosts(ctx context.Context, feedKey string, cursor string, limit int) (posts []feed.Post, err error)
+	GetFeedPosts(ctx context.Context, feedKey string, cursor string, actorDid string, limit int) (posts []feed.Post, err error)
 }
 
 func New(

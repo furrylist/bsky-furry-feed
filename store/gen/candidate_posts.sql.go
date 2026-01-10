@@ -338,6 +338,195 @@ func (q *Queries) ListScoredPosts(ctx context.Context, arg ListScoredPostsParams
 	return items, nil
 }
 
+const listTestFeedPosts = `-- name: ListTestFeedPosts :many
+WITH my_network AS (
+    SELECT subject_did AS did
+    FROM candidate_follows
+    WHERE
+        actor_did = $1
+        AND subject_did != 'did:plc:jdkvwye2lf4mingzk7qdebzc'
+    UNION
+    SELECT actor_did AS did
+    FROM candidate_follows
+    WHERE
+        subject_did = $1
+        AND actor_did != 'did:plc:jdkvwye2lf4mingzk7qdebzc'
+),
+
+my_network_quiet AS (
+    SELECT
+        did,
+        recent_posts
+    FROM (
+        SELECT
+            did,
+            COUNT(*) AS recent_posts
+        FROM my_network
+        INNER JOIN candidate_posts ON actor_did = did
+        WHERE created_at > NOW() - INTERVAL '7 days'
+        GROUP BY did
+    ) WHERE recent_posts <= 2
+),
+
+my_network_yappers AS (
+    SELECT
+        did,
+        recent_posts
+    FROM (
+        SELECT
+            did,
+            COUNT(*) AS recent_posts
+        FROM my_network
+        INNER JOIN candidate_posts ON actor_did = did
+        WHERE created_at > NOW() - INTERVAL '7 days'
+        GROUP BY did
+    ) WHERE recent_posts >= 5
+),
+
+my_top_liked_dids AS (
+    SELECT
+        cp.actor_did AS did,
+        COUNT(*) AS liked_count
+    FROM candidate_likes AS cl
+    INNER JOIN candidate_posts AS cp ON cl.subject_uri = cp.uri
+    WHERE
+        cl.actor_did = $1
+        AND cp.created_at > NOW() - INTERVAL '30 days'
+    GROUP BY did
+    ORDER BY liked_count DESC
+    LIMIT 20
+),
+
+most_recent_likes_from_my_network AS (
+    SELECT cp.actor_did AS did
+    FROM candidate_likes AS cl
+    INNER JOIN candidate_posts AS cp ON cl.subject_uri = cp.uri
+    WHERE cl.actor_did = ANY(SELECT did FROM my_network)
+    ORDER BY cp.created_at DESC
+    LIMIT 100
+),
+
+horniness_rate AS (
+    SELECT SUM(is_nsfw::INT) / COUNT(*)::FLOAT AS hornyness_rate
+    FROM (
+        SELECT
+            (ARRAY['nsfw', 'mursuit', 'murrsuit', 'nsfwfurry', 'furrynsfw'] && cp.hashtags)
+            OR (ARRAY['porn', 'nudity', 'sexual'] && cp.self_labels) AS is_nsfw
+        FROM candidate_likes AS cl
+        INNER JOIN candidate_posts AS cp
+            ON
+                cl.subject_uri = cp.uri
+                AND cl.actor_did = $1
+                AND cp.has_media
+                AND cp.created_at > NOW() - INTERVAL '30 days'
+    )
+)
+
+SELECT
+    cp.uri,
+    ph.score,
+    (
+        (ARRAY['nsfw', 'mursuit', 'murrsuit', 'nsfwfurry', 'furrynsfw'] && cp.hashtags)
+        OR (ARRAY['porn', 'nudity', 'sexual'] && cp.self_labels)
+    ) AS is_nsfw,
+    (
+        SELECT COUNT(*) + 1
+        FROM candidate_likes AS cl2
+        WHERE
+            subject_uri = cp.uri
+            AND (
+                cl2.actor_did = ANY(SELECT did FROM my_network)
+                AND cl2.actor_did != $1
+            )
+    )
+    * (CASE cp.actor_did = ANY(SELECT did FROM most_recent_likes_from_my_network) WHEN TRUE THEN 1.25 ELSE 1 END)
+    * (CASE cp.actor_did = ANY(SELECT did FROM my_top_liked_dids) WHEN TRUE THEN 1.75 ELSE 0.5 END)
+    * (CASE cp.actor_did = ANY(SELECT did FROM my_network_quiet) WHEN TRUE THEN 2.33 ELSE 1 END)
+    * (CASE cp.actor_did = ANY(SELECT did FROM my_network_yappers) WHEN TRUE THEN 0.75 ELSE 1 END)
+    * (CASE (
+        (ARRAY['nsfw', 'mursuit', 'murrsuit', 'nsfwfurry', 'furrynsfw'] && cp.hashtags)
+        OR (ARRAY['porn', 'nudity', 'sexual'] && cp.self_labels)
+    ) WHEN TRUE THEN 1 + (SELECT hornyness_rate FROM horniness_rate) * 1.5 ELSE 1
+    END)
+    * (CASE cp.actor_did = ANY(SELECT did FROM my_network) WHEN TRUE THEN 100 ELSE 0.5 END) AS fluff_relevance_score
+FROM candidate_posts AS cp
+INNER JOIN candidate_actors AS ca ON cp.actor_did = ca.did
+INNER JOIN post_scores AS ph
+    ON
+        cp.uri = ph.uri AND ph.alg = $2
+        AND ph.generation_seq = $3
+WHERE
+    cp.created_at > NOW() - INTERVAL '7 day'
+    AND actor_did != $1
+    AND (
+        actor_did = ANY(SELECT did FROM most_recent_likes_from_my_network)
+        OR actor_did = ANY(SELECT did FROM my_network)
+        OR actor_did = ANY(SELECT did FROM my_top_liked_dids)
+    )
+    AND NOT EXISTS (
+        SELECT 1
+        FROM candidate_likes AS cl
+        WHERE
+            cl.subject_uri = cp.uri
+            AND cl.actor_did = $1
+            AND cl.created_at > NOW() - INTERVAL '1 day'
+    )
+
+    AND (
+        COALESCE($4::TEXT [], '{}') = '{}'
+        OR NOT $4::TEXT [] && cp.hashtags
+    )
+ORDER BY
+    fluff_relevance_score DESC, ph.score DESC, ph.uri DESC
+LIMIT $5
+`
+
+type ListTestFeedPostsParams struct {
+	ActorDID           string
+	Alg                string
+	GenerationSeq      int64
+	DisallowedHashtags []string
+	Limit              int32
+}
+
+type ListTestFeedPostsRow struct {
+	URI                 string
+	Score               float32
+	IsNSFW              pgtype.Bool
+	FluffRelevanceScore int32
+}
+
+func (q *Queries) ListTestFeedPosts(ctx context.Context, arg ListTestFeedPostsParams) ([]ListTestFeedPostsRow, error) {
+	rows, err := q.db.Query(ctx, listTestFeedPosts,
+		arg.ActorDID,
+		arg.Alg,
+		arg.GenerationSeq,
+		arg.DisallowedHashtags,
+		arg.Limit,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListTestFeedPostsRow
+	for rows.Next() {
+		var i ListTestFeedPostsRow
+		if err := rows.Scan(
+			&i.URI,
+			&i.Score,
+			&i.IsNSFW,
+			&i.FluffRelevanceScore,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const softDeleteCandidatePost = `-- name: SoftDeleteCandidatePost :exec
 UPDATE
 candidate_posts
