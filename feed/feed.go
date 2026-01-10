@@ -229,6 +229,14 @@ func preScoredGenerator(opts preScoredGeneratorOpts) GenerateFunc {
 
 func testGenerator(opts preScoredGeneratorOpts) GenerateFunc {
 	return func(ctx context.Context, pgxStore *store.PGXStore, cursor string, actorDid string, limit int) ([]Post, error) {
+		if actorDid == "" {
+			return preScoredGenerator(preScoredGeneratorOpts{
+				Alg: "classic",
+				generatorOpts: generatorOpts{
+					DisallowedHashtags: defaultDisallowedHashtags,
+				},
+			})(ctx, pgxStore, cursor, actorDid, limit)
+		}
 		type cursorValues struct {
 			GenerationSeq int64   `json:"generation_seq"`
 			AfterScore    float32 `json:"after_score"`
