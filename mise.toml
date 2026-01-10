@@ -9,6 +9,9 @@ node = "23.1.0"
 "npm:@bufbuild/protoc-gen-es" = "1.2.0"
 "npm:@bufbuild/protoc-gen-connect-web" = "0.9.0"
 pnpm = "9.12.3"
+python = "3.8.16"
+"pipx" = "1.7.1"
+"pipx:sqlfluff" = "2.3.2"
 
 [env]
 CGO_CFLAGS = "-DHAVE_STRCHRNUL"
