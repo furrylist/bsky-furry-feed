@@ -678,6 +678,7 @@ func (s *PGXStore) ListTestPosts(ctx context.Context, actorDid string, opts List
 		// AfterScore:    opts.Cursor.AfterScore,
 		// AfterURI:      opts.Cursor.AfterURI,
 		DisallowedHashtags: opts.DisallowedHashtags,
+		ActorDID:           actorDid,
 	}
 	if opts.Limit != 0 {
 		queryParams.Limit = int32(opts.Limit)
