@@ -252,7 +252,7 @@ func TestGenerator(t *testing.T) {
 
 			t.Run(test.name, func(t *testing.T) {
 				t.Parallel()
-				posts, err := chronologicalGenerator(test.opts)(ctx, harness.Store, "", 1000)
+				posts, err := chronologicalGenerator(test.opts)(ctx, harness.Store, "", "", 1000)
 				require.NoError(t, err)
 				postURIs := make([]string, len(posts))
 				for i, post := range posts {
@@ -375,7 +375,7 @@ func TestGenerator(t *testing.T) {
 
 			t.Run(test.name, func(t *testing.T) {
 				t.Parallel()
-				posts, err := preScoredGenerator(test.opts)(ctx, harness.Store, "", 1000)
+				posts, err := preScoredGenerator(test.opts)(ctx, harness.Store, "", "", 1000)
 				require.NoError(t, err)
 				postURIs := make([]string, len(posts))
 				for i, post := range posts {
