@@ -249,11 +249,7 @@ horniness_rate AS (
 SELECT
     cp.uri,
     ph.score,
-    (
-        (ARRAY['nsfw', 'mursuit', 'murrsuit', 'nsfwfurry', 'furrynsfw'] && cp.hashtags)
-        OR (ARRAY['porn', 'nudity', 'sexual'] && cp.self_labels)
-    ) AS is_nsfw,
-    (
+    ((
         SELECT COUNT(*) + 1
         FROM candidate_likes AS cl2
         WHERE
@@ -272,7 +268,12 @@ SELECT
         OR (ARRAY['porn', 'nudity', 'sexual'] && cp.self_labels)
     ) WHEN TRUE THEN 1 + (SELECT * FROM horniness_rate) * 1.5 ELSE 1
     END)
-    * (CASE cp.actor_did = ANY(SELECT did FROM my_network) WHEN TRUE THEN 100 ELSE 0.5 END) AS fluff_relevance_score
+    * (CASE cp.actor_did = ANY(SELECT did FROM my_network) WHEN TRUE THEN 100 ELSE 0.5 END)
+    )::FLOAT AS fluff_relevance_score,
+    (
+        (ARRAY['nsfw', 'mursuit', 'murrsuit', 'nsfwfurry', 'furrynsfw'] && cp.hashtags)
+        OR (ARRAY['porn', 'nudity', 'sexual'] && cp.self_labels)
+    ) AS is_nsfw
 FROM candidate_posts AS cp
 INNER JOIN candidate_actors AS ca ON cp.actor_did = ca.did
 INNER JOIN post_scores AS ph
