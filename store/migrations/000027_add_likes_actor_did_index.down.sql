@@ -1,0 +1,1 @@
+DROP INDEX candidate_likes_actor_did_idx;
