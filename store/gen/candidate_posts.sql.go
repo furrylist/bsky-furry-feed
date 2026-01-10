@@ -439,6 +439,7 @@ SELECT
     * (CASE cp.actor_did = ANY(SELECT did FROM my_top_liked_dids) WHEN TRUE THEN 1.75 ELSE 0.5 END)
     * (CASE cp.actor_did = ANY(SELECT did FROM my_network_quiet) WHEN TRUE THEN 2.33 ELSE 1 END)
     * (CASE cp.actor_did = ANY(SELECT did FROM my_network_yappers) WHEN TRUE THEN 0.75 ELSE 1 END)
+    * (1 + 0.5 * RANDOM())
     * (CASE (
         (ARRAY['nsfw', 'mursuit', 'murrsuit', 'nsfwfurry', 'furrynsfw'] && cp.hashtags)
         OR (ARRAY['porn', 'nudity', 'sexual'] && cp.self_labels)
