@@ -1,1 +1,2 @@
 DROP INDEX candidate_follows_subject_did_idx;
+DROP INDEX candidate_follows_actor_did_idx;
