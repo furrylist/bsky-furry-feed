@@ -19,7 +19,7 @@ import (
 func handleErr(w http.ResponseWriter, log *slog.Logger, err error) {
 	log.Error("failed to handle request", bfflog.Err(err))
 	w.WriteHeader(500)
-	_, _ = w.Write([]byte(fmt.Sprintf("failed to handle request: %s", err)))
+	_, _ = fmt.Fprintf(w, "failed to handle request: %s", err)
 }
 
 func jsonHandler(log *slog.Logger, h func(r *http.Request) (any, error)) http.HandlerFunc {

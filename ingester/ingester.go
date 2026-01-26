@@ -320,7 +320,7 @@ func (fi *FirehoseIngester) handleRecordCreate(
 
 	// Only collect events from actors we care about e.g those that are
 	// approved.
-	if !(actor.Status == v1.ActorStatus_ACTOR_STATUS_APPROVED) {
+	if actor.Status != v1.ActorStatus_ACTOR_STATUS_APPROVED {
 		return nil
 	}
 
@@ -427,7 +427,7 @@ func (fi *FirehoseIngester) handleRecordUpdate(
 
 	// Only collect events from actors we care about e.g those that are
 	// approved.
-	if !(actor.Status == v1.ActorStatus_ACTOR_STATUS_APPROVED) {
+	if actor.Status != v1.ActorStatus_ACTOR_STATUS_APPROVED {
 		return nil
 	}
 

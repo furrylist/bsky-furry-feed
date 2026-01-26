@@ -1,5 +1,5 @@
 [tools]
-go = "1.23.0"
+go = "1.25.6"
 "go:connectrpc.com/connect/cmd/protoc-gen-connect-go" = "v1.11.0"
 "go:github.com/bufbuild/buf/cmd/buf" = "v1.62.1"
 "go:github.com/golang-migrate/migrate/v4/cmd/migrate" = { version = "4.19.0", tags = "postgres" }
@@ -12,6 +12,7 @@ pnpm = "9.12.3"
 python = "3.8.16"
 "pipx" = "1.7.1"
 "pipx:sqlfluff" = "2.3.2"
+golangci-lint = "2.8.0"
 
 [env]
 CGO_CFLAGS = "-DHAVE_STRCHRNUL"

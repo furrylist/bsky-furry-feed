@@ -139,7 +139,7 @@ func (s *PGXTX) Rollback() {
 
 	err := s.tx.Rollback(ctx)
 	if err != nil && !errors.Is(err, pgx.ErrTxClosed) {
-		s.PGXStore.log.Error(
+		s.log.Error(
 			"failed to rollback transaction", bfflog.Err(err),
 		)
 	}

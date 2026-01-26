@@ -12,7 +12,6 @@ import (
 	"github.com/bluesky-social/indigo/api/bsky"
 	"github.com/bluesky-social/indigo/events"
 	"github.com/bluesky-social/indigo/events/schedulers/parallel"
-	"github.com/bluesky-social/indigo/lex/util"
 	lexutil "github.com/bluesky-social/indigo/lex/util"
 	indigoTest "github.com/bluesky-social/indigo/testing"
 	"github.com/bluesky-social/jetstream/pkg/consumer"
@@ -87,7 +86,7 @@ func TestFirehoseIngester(t *testing.T) {
 
 	wsConn, _, err := websocket.DefaultDialer.Dial(streamConsumer.SocketURL, nil)
 	require.NoError(t, err)
-	t.Cleanup(func() { wsConn.Close() })
+	t.Cleanup(func() { _ = wsConn.Close() })
 
 	go func() {
 		err := events.HandleRepoStream(ctx, wsConn, scheduler, slog.Default())
@@ -175,7 +174,7 @@ func TestFirehoseIngester(t *testing.T) {
 					EmbedVideo: &bsky.EmbedVideo{
 						Video: &lexutil.LexBlob{
 							Size:     6_000_000,
-							Ref:      util.LexLink(indigoTest.RandFakeCid()),
+							Ref:      lexutil.LexLink(indigoTest.RandFakeCid()),
 							MimeType: "video/mp4",
 						},
 					},
