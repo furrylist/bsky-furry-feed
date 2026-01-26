@@ -1,5 +1,5 @@
 ## Build layer
-FROM golang:1.25.6-bullseye AS build
+FROM golang:1.25.6-bookworm AS build
 
 WORKDIR /app
 
@@ -11,7 +11,7 @@ COPY . ./
 RUN go build -o /app/bffsrv ./cmd/bffsrv
 
 ## Deploy layer
-FROM gcr.io/distroless/base-debian11
+FROM gcr.io/distroless/base-debian12
 
 COPY --from=build /app/bffsrv /app/bffsrv
 
