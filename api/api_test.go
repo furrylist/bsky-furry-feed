@@ -34,7 +34,7 @@ func (m *fakeFeedService) Metas() []feed.Meta {
 	return m.metas
 }
 
-func (m *fakeFeedService) GetFeedPosts(ctx context.Context, feedKey string, cursor string, limit int) (posts []feed.Post, err error) {
+func (m *fakeFeedService) GetFeedPosts(ctx context.Context, feedKey string, cursor string, actorDid string, limit int) (posts []feed.Post, err error) {
 	return nil, fmt.Errorf("unimplemented")
 }
 

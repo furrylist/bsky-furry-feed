@@ -47,7 +47,7 @@ type Post struct {
 	Cursor string
 }
 
-type GenerateFunc func(ctx context.Context, queries *store.PGXStore, cursor string, limit int) ([]Post, error)
+type GenerateFunc func(ctx context.Context, queries *store.PGXStore, cursor string, actorDid string, limit int) ([]Post, error)
 
 type Service struct {
 	// TODO: Locking on feeds to avoid data races
@@ -73,7 +73,7 @@ func (s *Service) Metas() []Meta {
 	return metas
 }
 
-func (s *Service) GetFeedPosts(ctx context.Context, feedKey string, cursor string, limit int) (posts []Post, err error) {
+func (s *Service) GetFeedPosts(ctx context.Context, feedKey string, cursor string, actorDid string, limit int) (posts []Post, err error) {
 	start := time.Now()
 	defer func() {
 		status := "OK"
@@ -90,7 +90,7 @@ func (s *Service) GetFeedPosts(ctx context.Context, feedKey string, cursor strin
 		return nil, fmt.Errorf("unrecognized feed")
 	}
 
-	return f.generate(ctx, s.store, cursor, limit)
+	return f.generate(ctx, s.store, cursor, actorDid, limit)
 }
 
 type generatorOpts struct {
@@ -117,7 +117,7 @@ var allowImageAndVideo = []EmbedType{EmbedImage, EmbedVideo}
 var allowVideoOnly = []EmbedType{EmbedVideo}
 
 func chronologicalGenerator(opts chronologicalGeneratorOpts) GenerateFunc {
-	return func(ctx context.Context, pgxStore *store.PGXStore, cursor string, limit int) ([]Post, error) {
+	return func(ctx context.Context, pgxStore *store.PGXStore, cursor string, _ string, limit int) ([]Post, error) {
 		cursorTime := time.Now().UTC()
 		if cursor != "" {
 			parsedTime, err := bluesky.ParseTime(cursor)
@@ -163,7 +163,7 @@ type preScoredGeneratorOpts struct {
 }
 
 func preScoredGenerator(opts preScoredGeneratorOpts) GenerateFunc {
-	return func(ctx context.Context, pgxStore *store.PGXStore, cursor string, limit int) ([]Post, error) {
+	return func(ctx context.Context, pgxStore *store.PGXStore, cursor string, _ string, limit int) ([]Post, error) {
 		type cursorValues struct {
 			GenerationSeq int64   `json:"generation_seq"`
 			AfterScore    float32 `json:"after_score"`
@@ -203,6 +203,79 @@ func preScoredGenerator(opts preScoredGeneratorOpts) GenerateFunc {
 			}
 		}
 		storePosts, err := pgxStore.ListScoredPosts(ctx, params)
+		if err != nil {
+			return nil, fmt.Errorf("executing ListPostsForHotFeed: %w", err)
+		}
+
+		posts := make([]Post, 0, len(storePosts))
+		for _, p := range storePosts {
+			postCursor, err := json.Marshal(cursorValues{
+				GenerationSeq: params.Cursor.GenerationSeq,
+				AfterScore:    p.Score,
+				AfterURI:      p.URI,
+			})
+			if err != nil {
+				return nil, fmt.Errorf("marshaling cursor: %w", err)
+			}
+			posts = append(posts, Post{
+				URI:    p.URI,
+				Cursor: string(postCursor),
+			})
+		}
+
+		return posts, nil
+	}
+}
+
+func testGenerator(opts preScoredGeneratorOpts) GenerateFunc {
+	return func(ctx context.Context, pgxStore *store.PGXStore, cursor string, actorDid string, limit int) ([]Post, error) {
+		if actorDid == "" {
+			return preScoredGenerator(preScoredGeneratorOpts{
+				Alg: "classic",
+				generatorOpts: generatorOpts{
+					DisallowedHashtags: defaultDisallowedHashtags,
+				},
+			})(ctx, pgxStore, cursor, actorDid, limit)
+		}
+		type cursorValues struct {
+			GenerationSeq int64   `json:"generation_seq"`
+			AfterScore    float32 `json:"after_score"`
+			AfterURI      string  `json:"after_uri"`
+		}
+		allowedEmbeds := []string{}
+		for _, embed := range opts.AllowedEmbeds {
+			allowedEmbeds = append(allowedEmbeds, string(embed))
+		}
+		params := store.ListPostsForHotFeedOpts{
+			Limit:              limit,
+			Hashtags:           opts.Hashtags,
+			DisallowedHashtags: opts.DisallowedHashtags,
+			IsNSFW:             opts.IsNSFW,
+			AllowedEmbeds:      allowedEmbeds,
+			Alg:                opts.Alg,
+		}
+		if cursor == "" {
+			seq, err := pgxStore.GetLatestScoreGeneration(ctx, opts.Alg)
+			if err != nil {
+				return nil, fmt.Errorf("executing GetLatestScoreGeneration: %w", err)
+			}
+			params.Cursor = store.ListPostsForHotFeedCursor{
+				GenerationSeq: seq,
+				AfterScore:    float32(math.Inf(1)),
+				AfterURI:      "",
+			}
+		} else {
+			var p cursorValues
+			if err := json.Unmarshal([]byte(cursor), &p); err != nil {
+				return nil, fmt.Errorf("unmarshaling cursor: %w", err)
+			}
+			params.Cursor = store.ListPostsForHotFeedCursor{
+				GenerationSeq: p.GenerationSeq,
+				AfterScore:    p.AfterScore,
+				AfterURI:      p.AfterURI,
+			}
+		}
+		storePosts, err := pgxStore.ListTestPosts(ctx, actorDid, params)
 		if err != nil {
 			return nil, fmt.Errorf("executing ListPostsForHotFeed: %w", err)
 		}
@@ -548,7 +621,7 @@ func ServiceWithDefaultFeeds(pgxStore *store.PGXStore) *Service {
 		DisplayName: "🐾 Test 🚨🛠️",
 		Description: "Experimental version of the '🐾 Hot' feed.\ntest\ntest\n\ndouble break",
 		Priority:    -1,
-	}, preScoredGenerator(preScoredGeneratorOpts{
+	}, testGenerator(preScoredGeneratorOpts{
 		Alg: "classic",
 		generatorOpts: generatorOpts{
 			DisallowedHashtags: defaultDisallowedHashtags,
