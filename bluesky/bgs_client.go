@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+
 	"github.com/bluesky-social/indigo/api/atproto"
 	"github.com/bluesky-social/indigo/repo"
 	"github.com/bluesky-social/indigo/xrpc"
@@ -35,7 +36,7 @@ func (c *BGSClient) SyncGetRecord(
 ) (record typegen.CBORMarshaler, repoRev string, err error) {
 	xc := c.xrpcClient()
 
-	blocks, err := atproto.SyncGetRecord(ctx, xc, collection, "", actorDID, rkey)
+	blocks, err := atproto.SyncGetRecord(ctx, xc, collection, actorDID, rkey)
 	if err != nil {
 		return nil, "", fmt.Errorf("calling SyncGetRecord: %w", err)
 	}
