@@ -22,7 +22,7 @@ import (
 	"github.com/strideynet/bsky-furry-feed/store"
 	"go.opentelemetry.io/contrib/detectors/gcp"
 	"go.opentelemetry.io/otel"
-	"go.opentelemetry.io/otel/exporters/jaeger"
+
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracehttp"
 	"go.opentelemetry.io/otel/sdk/resource"
 	tracesdk "go.opentelemetry.io/otel/sdk/trace"
@@ -86,7 +86,7 @@ func setupTracing(ctx context.Context, url string, mode mode) (func(), error) {
 			return nil, fmt.Errorf("creating http trace exporter: %w", err)
 		}
 	} else {
-		exp, err = jaeger.New(jaeger.WithCollectorEndpoint(jaeger.WithEndpoint(url)))
+		exp, err = otlptracehttp.New(ctx, otlptracehttp.WithEndpointURL(url))
 		if err != nil {
 			return nil, fmt.Errorf("creating jaeger exporter: %w", err)
 		}
