@@ -12,7 +12,6 @@ import (
 	"github.com/bluesky-social/indigo/api/bsky"
 	"github.com/bluesky-social/indigo/events"
 	"github.com/bluesky-social/indigo/events/schedulers/parallel"
-	"github.com/bluesky-social/indigo/lex/util"
 	lexutil "github.com/bluesky-social/indigo/lex/util"
 	indigoTest "github.com/bluesky-social/indigo/testing"
 	"github.com/bluesky-social/jetstream/pkg/consumer"
@@ -175,7 +174,7 @@ func TestFirehoseIngester(t *testing.T) {
 					EmbedVideo: &bsky.EmbedVideo{
 						Video: &lexutil.LexBlob{
 							Size:     6_000_000,
-							Ref:      util.LexLink(indigoTest.RandFakeCid()),
+							Ref:      lexutil.LexLink(indigoTest.RandFakeCid()),
 							MimeType: "video/mp4",
 						},
 					},
