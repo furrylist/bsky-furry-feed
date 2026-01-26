@@ -1,5 +1,5 @@
 ## Build layer
-FROM golang:1.23.0-bullseye AS build
+FROM golang:1.25.6-bullseye AS build
 
 WORKDIR /app
 
