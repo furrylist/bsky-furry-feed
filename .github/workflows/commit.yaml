@@ -37,7 +37,7 @@ jobs:
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v9
         with:
-          version: v2.6
+          version: v2.8
           args: --timeout=5m
   check-sqlc:
     name: Check sqlc generation

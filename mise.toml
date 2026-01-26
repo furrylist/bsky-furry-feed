@@ -12,6 +12,7 @@ pnpm = "9.12.3"
 python = "3.8.16"
 "pipx" = "1.7.1"
 "pipx:sqlfluff" = "2.3.2"
+golangci-lint = "2.8.0"
 
 [env]
 CGO_CFLAGS = "-DHAVE_STRCHRNUL"
