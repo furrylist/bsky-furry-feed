@@ -87,7 +87,7 @@ func TestFirehoseIngester(t *testing.T) {
 
 	wsConn, _, err := websocket.DefaultDialer.Dial(streamConsumer.SocketURL, nil)
 	require.NoError(t, err)
-	t.Cleanup(func() { wsConn.Close() })
+	t.Cleanup(func() { _ = wsConn.Close() })
 
 	go func() {
 		err := events.HandleRepoStream(ctx, wsConn, scheduler, slog.Default())
