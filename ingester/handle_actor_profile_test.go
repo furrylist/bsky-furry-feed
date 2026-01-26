@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/bluesky-social/indigo/repo"
+	"github.com/bluesky-social/indigo/atproto/syntax"
 
 	"github.com/bluesky-social/indigo/api/bsky"
 	"github.com/stretchr/testify/assert"
@@ -21,6 +21,8 @@ func TestFirehoseIngester_ActorProfiles(t *testing.T) {
 		t.Skip("skipping integration test")
 	}
 	t.Parallel()
+
+	clk := syntax.NewTIDClock(0)
 
 	ctx, cancel := context.WithCancel(context.Background())
 	t.Cleanup(cancel)
@@ -42,7 +44,7 @@ func TestFirehoseIngester_ActorProfiles(t *testing.T) {
 	{
 		displayName := "some furry"
 		description := "hewwo :3"
-		err = fi.handleActorProfileUpdate(ctx, approvedFurry.DID(), repo.NextTID(), "at://"+approvedFurry.DID()+"/app.bsky.actor.profile/self", time.UnixMilli(0), &bsky.ActorProfile{
+		err = fi.handleActorProfileUpdate(ctx, approvedFurry.DID(), clk.Next().String(), "at://"+approvedFurry.DID()+"/app.bsky.actor.profile/self", time.UnixMilli(0), &bsky.ActorProfile{
 			LexiconTypeID: "app.bsky.actor.profile",
 			DisplayName:   &displayName,
 			Description:   &description,
@@ -60,7 +62,7 @@ func TestFirehoseIngester_ActorProfiles(t *testing.T) {
 		displayName := "some other furry"
 		description := "hewwo >:3"
 
-		err = fi.handleActorProfileUpdate(ctx, approvedFurry.DID(), repo.NextTID(), "at://"+approvedFurry.DID()+"/app.bsky.actor.profile/self", time.UnixMilli(1), &bsky.ActorProfile{
+		err = fi.handleActorProfileUpdate(ctx, approvedFurry.DID(), clk.Next().String(), "at://"+approvedFurry.DID()+"/app.bsky.actor.profile/self", time.UnixMilli(1), &bsky.ActorProfile{
 			LexiconTypeID: "app.bsky.actor.profile",
 			DisplayName:   &displayName,
 			Description:   &description,

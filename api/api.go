@@ -82,9 +82,13 @@ func New(
 		log:        log,
 		authEngine: authEngine,
 	}
+	interceptor, err := otelconnect.NewInterceptor()
+	if err != nil {
+		return nil, err
+	}
 	interceptors := connect.WithInterceptors(
 		unaryLoggingInterceptor(log),
-		otelconnect.NewInterceptor(),
+		interceptor,
 	)
 	mux.Handle(
 		bffv1pbconnect.NewModerationServiceHandler(
