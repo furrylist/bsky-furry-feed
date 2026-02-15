@@ -40,3 +40,26 @@ export function chunk<T>(a: Array<T>, max: number): Array<Array<T>> {
   }
   return result;
 }
+
+export function onDocumentEvent<K extends keyof DocumentEventMap>(
+  type: K,
+  listener: (this: Document, ev: DocumentEventMap[K]) => any,
+  options?: boolean | AddEventListenerOptions
+): void {
+  onMounted(() => {
+    document.addEventListener(type, listener, options);
+  });
+  onBeforeUnmount(() => {
+    document.removeEventListener(type, listener);
+  });
+}
+
+export function shouldHandleKeypress(e: KeyboardEvent): boolean {
+  return (
+    !e.metaKey &&
+    !e.altKey &&
+    !e.ctrlKey &&
+    !e.shiftKey &&
+    !document.querySelector(":focus")
+  );
+}

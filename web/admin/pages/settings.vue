@@ -1,5 +1,9 @@
 <script setup lang="ts">
-import { showQueueActionConfirmation, blurNsfwPostMedia } from "~/lib/settings";
+import {
+  showQueueActionConfirmation,
+  blurNsfwPostMedia,
+  useKeyboardShurtcuts,
+} from "~/lib/settings";
 import { logout } from "~/lib/auth";
 </script>
 
@@ -27,6 +31,17 @@ import { logout } from "~/lib/auth";
       />
       <label for="blur-nsfw-post-media"
         >Blur NSFW post media (images/video).</label
+      >
+    </div>
+    <div class="flex gap-2 mb-4">
+      <input
+        id="use-keyboard-shortcuts"
+        v-model="useKeyboardShurtcuts"
+        type="checkbox"
+      />
+      <label for="buse-keyboard-shortcuts"
+        >Use keyboard shortcuts: <kbd>A</kbd> for approve, <kbd>R</kbd> for
+        reject, and <kbd>H</kbd> for hold back</label
       >
     </div>
 

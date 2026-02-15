@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { showQueueActionConfirmation } from "~/lib/settings";
 import { ApprovalQueueAction } from "../../../proto/bff/v1/moderation_service_pb";
+import { onDocumentEvent, shouldHandleKeypress } from "~/lib/util";
 
 const showRejectModal = ref(false);
 const loading = ref(false);
@@ -87,6 +88,17 @@ function promptReject() {
   }
   showRejectModal.value = true;
 }
+
+onDocumentEvent("keydown", (e: KeyboardEvent) => {
+  if (!shouldHandleKeypress(e)) return;
+  if (e.key === "a") {
+    accept();
+  } else if (e.key === "r") {
+    showRejectModal.value = true;
+  } else if (e.key === "h") {
+    holdBack();
+  }
+});
 </script>
 
 <template>

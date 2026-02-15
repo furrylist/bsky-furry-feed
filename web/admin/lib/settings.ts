@@ -1,5 +1,6 @@
 const SHOW_QUEUE_ACTION_CONFIRMATION = "bff-show-queue-action-confirmation";
 const BLUR_NSFW_POST_MEDIA = "bff-blur-nsfw-post-media";
+const USE_KEYBOARD_SHORTCUTS = "bff-use-keyboard-shortcuts";
 
 function defineLocalStorageRef(key: string): Ref<boolean> {
   const r = useState(key, () => localStorage.getItem(key) === "true");
@@ -18,3 +19,6 @@ export const showQueueActionConfirmation = defineLocalStorageRef(
   SHOW_QUEUE_ACTION_CONFIRMATION
 );
 export const blurNsfwPostMedia = defineLocalStorageRef(BLUR_NSFW_POST_MEDIA);
+export const useKeyboardShurtcuts = defineLocalStorageRef(
+  USE_KEYBOARD_SHORTCUTS
+);

@@ -1,8 +1,11 @@
 <script setup lang="ts">
+import { useKeyboardShurtcuts } from "~/lib/settings";
+import { onDocumentEvent, shouldHandleKeypress } from "~/lib/util";
+
 defineProps<{
   name: string;
 }>();
-defineEmits<{
+const $emit = defineEmits<{
   (event: "reject", reason: string): void;
   (event: "cancel"): void;
 }>();
@@ -33,6 +36,28 @@ function handleCheck(reason: string, value: boolean) {
     selectedReasons.value.delete(reason);
   }
 }
+
+onDocumentEvent("keydown", (e: KeyboardEvent) => {
+  if (!shouldHandleKeypress(e)) return;
+  if (e.key === "Enter") {
+    (document.querySelector("#reject") as HTMLButtonElement)?.click();
+    return;
+  }
+  if (e.key === "Escape") {
+    $emit("cancel");
+    return;
+  }
+  if (!e.key.match(/^[0-9]$/)) return;
+  const index = parseInt(e.key) - 1;
+  const reason = reasons[index];
+  console.log(reason);
+  if (index === reasons.length) {
+    showOther.value = true;
+    (document.querySelector("#other") as HTMLInputElement)?.focus();
+  } else if (reason) {
+    handleCheck(reason, !selectedReasons.value.has(reason));
+  }
+});
 </script>
 
 <template>
@@ -52,14 +77,16 @@ function handleCheck(reason: string, value: boolean) {
           <input
             :id="`reason-${idx}`"
             type="checkbox"
+            :checked="selectedReasons.has(reason)"
             @input="
               handleCheck(reason, ($event.target as HTMLInputElement).checked)
             "
           />
           <label
-            class="w-full h-full cursor-pointer py-1.5"
+            class="w-full h-full cursor-pointer py-1.5 flex items-center gap-1"
             :for="`reason-${idx}`"
           >
+            <kbd v-if="useKeyboardShurtcuts" class="text-xs">{{ idx + 1 }}</kbd>
             {{ reason }}
           </label>
         </li>
@@ -69,15 +96,19 @@ function handleCheck(reason: string, value: boolean) {
           <input id="reason-other" v-model="showOther" type="checkbox" />
           <label
             id="other-label"
-            class="w-full h-full cursor-pointer py-1.5"
+            class="w-full h-full cursor-pointer py-1.5 flex items-center gap-1"
             for="reason-other"
           >
+            <kbd v-if="useKeyboardShurtcuts" class="text-xs">{{
+              reasons.length + 1
+            }}</kbd>
             Other
           </label>
         </li>
         <li v-if="showOther">
           <input
             v-model="other"
+            id="other"
             type="text"
             aria-labelledby="other-label"
             placeholder="Type a reason..."
@@ -95,6 +126,7 @@ function handleCheck(reason: string, value: boolean) {
         </button>
 
         <button
+          id="reject"
           class="py-1 px-2 mr-1 bg-red-500 dark:bg-red-600 hover:bg-red-600 dark:hover:bg-red-700 disabled:bg-red-400 disabled:dark:bg-red-500 rounded-lg disabled:cursor-not-allowed"
           :disabled="!selectedReasonsText"
           @click="$emit('reject', selectedReasonsText)"
