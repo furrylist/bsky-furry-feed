@@ -63,11 +63,8 @@ function didToProfile(did: string): ProfileViewDetailed | undefined {
 function selectRandomActor() {
   if (!queues.value) return;
   const queue = queues.value[currentQueue.value];
-  randomActor.value = queue.toSorted((a, b) => {
-    const ageA = a.createdAt?.toDate().getTime() || 0;
-    const ageB = b.createdAt?.toDate().getTime() || 0
-    return ageA - ageB;
-  })[0] as Actor
+
+  randomActor.value = queue[Math.floor(Math.random() * queue.length)] as Actor;
 }
 
 async function rejectAllDeleted() {
