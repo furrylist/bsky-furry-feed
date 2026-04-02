@@ -6,8 +6,5 @@
   "singleQuote": true,
   "trailingComma": "none",
   "printWidth": 90,
-  "plugins": [
-    "./node_modules/prettier-plugin-svelte",
-    "./node_modules/prettier-plugin-tailwindcss"
-  ]
+  "plugins": ["prettier-plugin-svelte", "prettier-plugin-tailwindcss"]
 }
