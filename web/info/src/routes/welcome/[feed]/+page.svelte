@@ -90,7 +90,7 @@
         Now it's time to tag your posts with {firstTag} and join the conversation about {title}.
       </div>
       <a
-        href="https://bsky.app/"
+        href={`https://bsky.app/intent/compose?text=${encodeURIComponent(firstTag || '')}`}
         target="_blank"
         class="bg-blue ml-auto rounded-md bg-blue-700 px-2.5 py-1 text-white hover:bg-blue-600"
         >Let's go posting</a
