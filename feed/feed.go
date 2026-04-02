@@ -466,11 +466,11 @@ func ServiceWithDefaultFeeds(pgxStore *store.PGXStore) *Service {
 	}))
 	r.Register(Meta{
 		ID:          "con-denfur",
-		DisplayName: "🐾 DenFur 2024",
-		Description: "Furry\nA feed for all things DenFur! Use #denfur or #denfur2024 to include a post in the feed.\n\nJoin the furry feeds by following @furryli.st",
+		DisplayName: "🐾 DenFur 2026",
+		Description: "Furry\nA feed for all things DenFur! Use #denfur or #denfur2026 to include a post in the feed.\n\nJoin the furry feeds by following @furryli.st",
 	}, chronologicalGenerator(chronologicalGeneratorOpts{
 		generatorOpts: generatorOpts{
-			Hashtags:           []string{"denfur", "denfur2024"},
+			Hashtags:           []string{"denfur", "denfur2026"},
 			DisallowedHashtags: defaultDisallowedHashtags,
 		},
 	}))
@@ -493,26 +493,28 @@ func ServiceWithDefaultFeeds(pgxStore *store.PGXStore) *Service {
 	}))
 	r.Register(Meta{
 		ID:          "con-blfc",
-		DisplayName: "🐾 BLFC 2024",
-		Description: "Furry\nA feed for all things BLFC! Use #blfc, #blfc24, or #blfc2024 to include a post in the feed.\n\nJoin the furry feeds by following @furryli.st",
+		DisplayName: "🐾 BLFC 2026",
+		Description: "Furry\nA feed for all things BLFC! Use #blfc, #blfc26, or #blfc2026 to include a post in the feed.\n\nJoin the furry feeds by following @furryli.st",
 	}, chronologicalGenerator(chronologicalGeneratorOpts{
 		generatorOpts: generatorOpts{
 			Hashtags: []string{
-				"blfc", "blfc24", "blfc2024",
+				"blfc", "blfc25", "blfc2025",
+				"blfc26", "blfc2026",
 			},
 			DisallowedHashtags: defaultDisallowedHashtags,
 		},
 	}))
 	r.Register(Meta{
 		ID:          "con-mff",
-		DisplayName: "🐾 MFF 2025",
-		Description: "Furry\nA feed for all things MFF! Use #furfest, #mff, #mff25, or #mff2025 to include a post in the feed.\n\nJoin the furry feeds by following @furryli.st",
+		DisplayName: "🐾 MFF 2026",
+		Description: "Furry\nA feed for all things MFF! Use #furfest, #mff, #mff26, or #mff2026 to include a post in the feed.\n\nJoin the furry feeds by following @furryli.st",
 	}, chronologicalGenerator(chronologicalGeneratorOpts{
 		generatorOpts: generatorOpts{
 			Hashtags: []string{
 				"furfest", "mff",
 				"furfest24", "furfest2024", "mff24", "mff2024",
 				"furfest25", "furfest2025", "mff25", "mff2025",
+				"furfest26", "furfest2026", "mff26", "mff2026",
 			},
 			DisallowedHashtags: defaultDisallowedHashtags,
 		},
@@ -545,25 +547,26 @@ func ServiceWithDefaultFeeds(pgxStore *store.PGXStore) *Service {
 	}))
 	r.Register(Meta{
 		ID:          "con-fwa",
-		DisplayName: "🐾 FWA 2025",
-		Description: "Furry\nA feed for all things FWA! Use #fwa, #fwa25, #fwa2025, or #furryweekend to include a post in the feed.\n\nJoin the furry feeds by following @furryli.st",
+		DisplayName: "🐾 FWA 2026",
+		Description: "Furry\nA feed for all things FWA! Use #fwa, #fwa26, #fwa2026, or #furryweekend to include a post in the feed.\n\nJoin the furry feeds by following @furryli.st",
 	}, chronologicalGenerator(chronologicalGeneratorOpts{
 		generatorOpts: generatorOpts{
 			Hashtags: []string{
 				"fwa", "fwa25", "fwa2025", "furryweekend",
+				"fwa", "fwa26", "fwa2026", "furryweekend",
 			},
 			DisallowedHashtags: defaultDisallowedHashtags,
 		},
 	}))
 	r.Register(Meta{
 		ID:          "con-ac",
-		DisplayName: "🐾 Anthrocon 2024",
-		Description: "Furry\nA feed for all things Anthrocon! Use #anthrocon, #anthrocon2024, or #ac to include a post in the feed.\n\nJoin the furry feeds by following @furryli.st",
+		DisplayName: "🐾 Anthrocon 2026",
+		Description: "Furry\nA feed for all things Anthrocon! Use #anthrocon, #anthrocon2026, or #ac to include a post in the feed.\n\nJoin the furry feeds by following @furryli.st",
 	}, chronologicalGenerator(chronologicalGeneratorOpts{
 		generatorOpts: generatorOpts{
 			Hashtags: []string{
-				"anthrocon", "anthrocon2024", "anthrocon24",
-				"ac", "ac2024", "ac24",
+				"anthrocon", "anthrocon2026", "anthrocon26",
+				"ac", "ac2026", "ac26",
 			},
 			DisallowedHashtags: defaultDisallowedHashtags,
 		},
