@@ -31,7 +31,7 @@
     await get(agent)
       ?.login({
         identifier: username,
-        password
+        password,
       })
       .then((res) => {
         if (!res.success) {

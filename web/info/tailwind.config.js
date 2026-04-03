@@ -5,8 +5,8 @@ export default {
   mode: 'jit',
   content: ['./src/**/*.{html,svelte,js,ts}'],
   theme: {
-    extend: {}
+    extend: {},
   },
   plugins: [],
-  darkMode: 'class'
+  darkMode: 'class',
 };

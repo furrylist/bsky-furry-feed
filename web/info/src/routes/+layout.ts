@@ -8,7 +8,7 @@ import {
   profile,
   session,
   setupAgent,
-  setupSession
+  setupSession,
 } from '$lib/atp';
 
 import type { LayoutLoad } from './$types';
@@ -20,7 +20,7 @@ let feeds: FeedInfo[] | null = null,
 export const load = (async ({ url, fetch }) => {
   const apiClient = getClient(fetch);
 
-  (feeds ||=
+  ((feeds ||=
     (await apiClient
       .listFeeds({})
       .then((res) => {
@@ -34,7 +34,7 @@ export const load = (async ({ url, fetch }) => {
           });
       })
       .catch(console.error)) ?? null),
-    (featuredFeeds ||= feeds?.filter((feed) => feed.priority >= 100) ?? null);
+    (featuredFeeds ||= feeds?.filter((feed) => feed.priority >= 100) ?? null));
 
   if (!browser) {
     return { apiClient, url, feeds, featuredFeeds };

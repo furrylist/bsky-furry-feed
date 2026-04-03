@@ -7,7 +7,7 @@ import * as atproto from '@atproto/api';
 import type {
   AppBskyActorGetProfile,
   AtpSessionData,
-  AtpSessionEvent
+  AtpSessionEvent,
 } from '@atproto/api';
 
 const session = writable<AtpSessionData | null>(null),

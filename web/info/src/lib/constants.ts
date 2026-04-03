@@ -15,21 +15,21 @@ export const ATP_SESSION_COOKIE = 'bff-atp-session';
 export const NAV_OPTIONS = [
   {
     href: '/welcome',
-    text: 'Welcome'
+    text: 'Welcome',
   },
   {
     href: '/feeds',
-    text: 'Feeds'
+    text: 'Feeds',
   },
   {
     href: '/community-guidelines',
-    text: 'Community Guidelines'
+    text: 'Community Guidelines',
   },
   {
     href: '/discord',
     target: '_blank',
-    text: 'Discord'
-  }
+    text: 'Discord',
+  },
 ];
 
 export const VALID_DOC_ROUTES = ['welcome', 'community-guidelines', 'feeds'];
@@ -37,7 +37,7 @@ export const VALID_DOC_ROUTES = ['welcome', 'community-guidelines', 'feeds'];
 export const DOC_ROUTES_NAMES = {
   welcome: 'welcome',
   'community-guidelines': 'communityGuidelines',
-  feeds: 'feeds'
+  feeds: 'feeds',
 } as const;
 
 export const SANITY_PROJECT_ID = '0ildj6pc' as const;

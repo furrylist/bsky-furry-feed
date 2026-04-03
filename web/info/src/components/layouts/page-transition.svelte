@@ -12,7 +12,7 @@
     in:fade={{
       duration: BASE_TRANSITION_DURATION * 0.8,
       delay: BASE_TRANSITION_DURATION * 0.8,
-      easing: cubicIn
+      easing: cubicIn,
     }}
     out:fade={{ duration: BASE_TRANSITION_DURATION * 0.8, easing: cubicOut }}
   >

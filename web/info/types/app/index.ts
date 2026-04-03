@@ -27,7 +27,7 @@ export type BaseDocument<T extends string> = {
   body: BodyBlock[];
 };
 
-type ValidDocs = typeof DOC_ROUTES_NAMES[keyof typeof DOC_ROUTES_NAMES];
+type ValidDocs = (typeof DOC_ROUTES_NAMES)[keyof typeof DOC_ROUTES_NAMES];
 
 export type DocumentRegistry = {
   [key in ValidDocs]: BaseDocument<key>;

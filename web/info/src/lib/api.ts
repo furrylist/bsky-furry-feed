@@ -9,7 +9,7 @@ type RouteFetch = typeof fetch;
 const createTransport = (routeFetch: RouteFetch) =>
   createConnectTransport({
     baseUrl: API_URL,
-    fetch: (input, data: RequestInit = {}) => routeFetch(input, { ...data })
+    fetch: (input, data: RequestInit = {}) => routeFetch(input, { ...data }),
   });
 
 const createClient = (routeFetch: RouteFetch) =>

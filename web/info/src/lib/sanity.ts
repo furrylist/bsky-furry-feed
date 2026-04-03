@@ -5,7 +5,7 @@ import imageUrlBuilder from '@sanity/image-url';
 
 import type {
   SanityImageObject,
-  SanityImageSource
+  SanityImageSource,
 } from '@sanity/image-url/lib/types/types';
 import type { DocumentRegistry } from '$types';
 
@@ -13,7 +13,7 @@ const client = createClient({
   projectId: SANITY_PROJECT_ID,
   dataset: SANITY_DATASET,
   useCdn: true,
-  apiVersion: SANITY_API_VERSION
+  apiVersion: SANITY_API_VERSION,
 });
 
 const queryCache = {} as {
@@ -70,7 +70,7 @@ export const getCrop = (image: SanityImageObject | undefined) => {
       bottom: 0,
       right: 0,
       width: 0,
-      height: 0
+      height: 0,
     };
   }
   const ref = image.asset._ref,
@@ -79,7 +79,7 @@ export const getCrop = (image: SanityImageObject | undefined) => {
       top: Math.floor(dimensions[1] * (image?.crop?.top ?? 0)),
       left: Math.floor(dimensions[0] * (image?.crop?.left ?? 0)),
       bottom: Math.floor(dimensions[1] * (image?.crop?.bottom ?? 0)),
-      right: Math.floor(dimensions[0] * (image?.crop?.right ?? 0))
+      right: Math.floor(dimensions[0] * (image?.crop?.right ?? 0)),
     } as ImageCrop;
 
   crop.width = Math.floor(dimensions[0] - (crop.left + crop.right));

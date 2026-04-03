@@ -27,7 +27,7 @@
     "block-scoped-var": ["error"],
     "block-spacing": ["error"],
     "brace-style": ["error", "1tbs"],
-    "comma-dangle": ["error", "never"],
+    "comma-dangle": ["off"],
     "comma-spacing": ["error"],
     "comma-style": ["error"],
     "curly": ["error"],

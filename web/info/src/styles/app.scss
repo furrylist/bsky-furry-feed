@@ -11,7 +11,8 @@ body {
   overflow-y: scroll;
 }
 
-.pt-ul, .pt-ol {
+.pt-ul,
+.pt-ol {
   li {
     @apply mb-2 leading-6;
 

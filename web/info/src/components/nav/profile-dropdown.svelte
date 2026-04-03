@@ -6,7 +6,7 @@
     MenuButton,
     MenuItem,
     MenuItems,
-    Transition
+    Transition,
   } from '@rgossiaux/svelte-headlessui';
 
   export let hasSession: boolean;

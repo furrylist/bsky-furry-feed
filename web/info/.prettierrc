@@ -4,7 +4,7 @@
   "semi": true,
   "bracketSameLine": false,
   "singleQuote": true,
-  "trailingComma": "none",
+  "trailingComma": "es5",
   "printWidth": 90,
   "plugins": ["prettier-plugin-svelte", "prettier-plugin-tailwindcss"]
 }

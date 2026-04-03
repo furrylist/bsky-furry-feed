@@ -12,14 +12,14 @@ const config = {
       sass: {
         silenceDeprecations: ['legacy-js-api'],
       },
-    })
+    }),
   ],
   kit: {
     alias: {
       $api: '../proto/bff/v1',
       $components: 'src/components',
       $stores: 'src/stores',
-      $routes: 'src/routes'
+      $routes: 'src/routes',
     },
     adapter:
       process.env.SK_ADAPTER === 'cloudflare'
@@ -28,8 +28,8 @@ const config = {
     files: {
       lib: 'src/lib',
       params: 'src/params',
-      routes: 'src/routes'
-    }
+      routes: 'src/routes',
+    },
   },
   compilerOptions: {
     preserveWhitespace: true,

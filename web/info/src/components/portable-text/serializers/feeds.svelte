@@ -12,7 +12,7 @@
     feeds: FeedInfo[];
   }) || {
     featured: null,
-    feeds: null
+    feeds: null,
   });
 </script>
 

@@ -25,7 +25,7 @@
 
   $: hasSession = !!($session !== null && $agent?.hasSession);
   $: ({ pathname } = data.url ?? { pathname: '' });
-  $: browser && setTimeout(() => checkScroll(), 100), [pathname];
+  $: (browser && setTimeout(() => checkScroll(), 100), [pathname]);
 </script>
 
 <svelte:window on:scroll={checkScroll} on:wheel={checkScroll} />

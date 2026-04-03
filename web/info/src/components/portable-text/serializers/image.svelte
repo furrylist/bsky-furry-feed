@@ -17,7 +17,7 @@
   $: ({ value } = portableText);
   $: ({ _key } = value);
   $: ({ _ref } = value.asset);
-  $: (imageCrop = getCrop(value as unknown as SanityImageObject)), value;
+  $: ((imageCrop = getCrop(value as unknown as SanityImageObject)), value);
 </script>
 
 <div class="h-fit w-full">

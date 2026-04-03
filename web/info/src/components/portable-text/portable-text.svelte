@@ -24,11 +24,11 @@
   components={{
     types: {
       feeds: FeedsSerializer,
-      image: ImageSerializer
+      image: ImageSerializer,
     },
     marks: {
       link: LinkSerializer,
-      code: CodeSerializer
+      code: CodeSerializer,
     },
     block: {
       normal: ParagraphSerializer,
@@ -36,19 +36,19 @@
       h2: HeadingSerializer,
       h3: HeadingSerializer,
       h4: HeadingSerializer,
-      h5: HeadingSerializer
+      h5: HeadingSerializer,
     },
     list: {
       bullet: UlSerializer,
-      number: OlSerializer
+      number: OlSerializer,
     },
     listItem: {
       bullet: UlItemSerializer,
       number: OlItemSerializer,
-      normal: UlItemSerializer
-    }
+      normal: UlItemSerializer,
+    },
   }}
   context={{
-    feeds
+    feeds,
   }}
 />
