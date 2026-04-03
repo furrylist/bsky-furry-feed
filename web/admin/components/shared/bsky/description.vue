@@ -24,7 +24,7 @@ onMounted(updateDescription);
 watch(() => props.description, updateDescription);
 </script>
 <template>
-  <div>
+  <div class="break-words">
     <shared-bsky-text
       v-for="(segment, index) in segments"
       :key="index"
