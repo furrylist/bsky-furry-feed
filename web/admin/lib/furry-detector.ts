@@ -76,6 +76,7 @@ export function isProbablyFurry(profile?: ProfileViewMinimal): boolean {
     "animal person",
     "yiff",
     "fursona",
+    /\b(blfc|fwa|furciety|furcon|ane|confuzzled|furality|megaplex|eurofurence|denfur|furfare|pawsome|furfest)\b/,
   ];
 
   const description = [
