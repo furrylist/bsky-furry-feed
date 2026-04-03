@@ -75,6 +75,7 @@ export function isProbablyFurry(profile?: ProfileViewMinimal): boolean {
     /\balpaca\b(?! farmer)/,
     "animal person",
     "yiff",
+    "fursona",
   ];
 
   const description = [
