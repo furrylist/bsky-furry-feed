@@ -9,6 +9,7 @@ type UnwrappedActor = UnwrapRef<Actor>;
 export const queueTypes = [
   "All",
   "Likely furry",
+  "LVFC",
   "Likely spam",
   "Empty",
   "Held back",
@@ -26,6 +27,12 @@ function categorizeProfile(
     return "Held back";
   if (isProbablySpam(profile)) return "Likely spam";
   if (isProbablyFurry(profile)) return "Likely furry";
+  if (
+    (actor.createdAt?.toDate().getTime() || 0) >
+    new Date("2026-04-02").getTime()
+  ) {
+    return "LVFC";
+  }
   if (!profile) return "Empty";
   if (
     (!profile.displayName || profile.displayName === profile.handle) &&
