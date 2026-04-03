@@ -79,7 +79,7 @@ const isNSFW = computed(() => {
 <template>
   <div
     v-if="showPost"
-    class="border-b border-gray-300 dark:border-gray-700"
+    class="border-b last-of-type:border-0 border-gray-300 dark:border-gray-700"
     :class="postType === 'repost' ? 'bg-gray-200/40 dark:bg-gray-950/40' : ''"
   >
     <div class="px-4 py-2">

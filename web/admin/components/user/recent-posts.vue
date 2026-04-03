@@ -17,11 +17,12 @@ const hasFurryTags = computed(() =>
 );
 
 const filteredPosts = computed(() => {
+  const basePosts = props.posts.filter((p) => !p.reply);
   if (showReposts.value) {
-    return props.posts;
+    return basePosts;
   }
 
-  return props.posts.filter(
+  return basePosts.filter(
     (post) =>
       post.reason?.$type !== "app.bsky.feed.defs#reasonRepost" ||
       post.post.author.did === props.actorDid
@@ -54,7 +55,7 @@ const filteredPosts = computed(() => {
   </div>
   <div class="overflow-y-auto max-h-[500px]">
     <template v-for="post in filteredPosts" :key="post.post.uri">
-      <user-recent-post v-if="post" :actor-did="actorDid" :post="post" />
+      <user-recent-post :actor-did="actorDid" :post="post" />
     </template>
     <div
       v-if="filteredPosts.length === 0"
