@@ -17,3 +17,5 @@ prek = "0.3.6"
 
 [env]
 CGO_CFLAGS = "-DHAVE_STRCHRNUL"
+# This fixes testcontainers with colima on macOS. idk why, lol
+TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE = "/var/run/docker.sock"
