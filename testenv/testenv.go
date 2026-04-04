@@ -56,7 +56,7 @@ func StartDatabase(ctx context.Context, t *testing.T) (url string) {
 		return fmt.Sprintf("postgres://bff:bff@%s:%d/bff?sslmode=disable", host, port.Int())
 	})
 	container, err := postgres.Run(ctx,
-		"postgres:14.1-alpine",
+		"postgres:16.13-alpine",
 		postgres.WithDatabase("bff"),
 		postgres.WithUsername("bff"),
 		postgres.WithPassword("bff"),
