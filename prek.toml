@@ -1,0 +1,34 @@
+default_install_hook_types = ["pre-commit", "commit-msg"]
+
+[[repos]]
+repo = "builtin"
+hooks = [
+  { id = "trailing-whitespace" },
+  { id = "check-yaml" },
+  { id = "check-json" },
+  { id = "check-toml" },
+]
+
+
+[[repos]]
+repo = "local"
+
+[[repos.hooks]]
+id = "lint-sql"
+name = "lint sql"
+language = "system"
+entry = "sqlfluff fix -f"
+files = "\\.sql$"
+
+[[repos.hooks]]
+id = "check-sqlc"
+name = "check sqlc"
+language = "system"
+entry = "sqlc generate"
+pass_filenames = false
+files = "\\.(sql|sqlc.yaml|go)$"
+
+[[repos]]
+repo = "https://github.com/compilerla/conventional-pre-commit"
+rev = "v4.4.0"
+hooks = [{ id = "conventional-pre-commit", stages = ["commit-msg"] }]
