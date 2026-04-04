@@ -56,3 +56,18 @@ jobs:
           BLUESKY_USERNAME: furryli.st
           BLUESKY_PASSWORD: ${{ secrets.BLUESKY_PASSWORD }}
         run: go run ./cmd/bffctl/ -e production bsky publish-feeds
+  deploy-production:
+    needs: [build-and-push-docker]
+    name: Deploy Production
+    environment: production
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          repository: furrylist/infra
+          ref: 'main'
+          ssh-key:  ${{ secrets.FURRYLIST_INFRA_DEPLOY_KEY }}
+      - uses: jdx/mise-action@v3
+      - name: Update release to latest
+        run: scripts/release.sh
+      - run: git push origin main
