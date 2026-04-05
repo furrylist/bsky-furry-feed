@@ -63,7 +63,7 @@ func TestFirehoseIngester(t *testing.T) {
 	cac := ingester.NewActorCache(slog.Default(), harness.Store)
 	require.NoError(t, cac.Sync(ctx))
 
-	jetstream, err := jetstreamsrv.NewServer(1, 1)
+	jetstream, err := jetstreamsrv.NewServer(1, 100)
 	require.NoError(t, err)
 	dataDir := t.TempDir()
 
@@ -78,9 +78,6 @@ func TestFirehoseIngester(t *testing.T) {
 		err := streamEcho.Start(":")
 		require.NoError(t, err)
 	}()
-
-	err = streamConsumer.RunSequencer(ctx)
-	require.NoError(t, err)
 
 	scheduler := parallel.NewScheduler(1, 100, "prod-firehose", streamConsumer.HandleStreamEvent)
 
@@ -108,6 +105,10 @@ func TestFirehoseIngester(t *testing.T) {
 		}
 		close(fiWait)
 	}()
+
+	require.Eventually(t, func() bool {
+		return len(jetstream.Subscribers) > 0
+	}, time.Second*10, time.Millisecond*50, "ingester never subscribed to jetstream")
 
 	now := time.Now().UTC().Truncate(time.Millisecond)
 	testPosts := []struct {
