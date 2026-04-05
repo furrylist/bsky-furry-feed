@@ -4,6 +4,7 @@ FROM golang:1.25.6-bookworm AS build
 WORKDIR /app
 
 COPY go.* ./
+COPY ./vendored ./vendored
 RUN go mod download
 
 COPY . ./

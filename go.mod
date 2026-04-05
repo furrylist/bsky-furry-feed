@@ -7,7 +7,7 @@ require (
 	connectrpc.com/connect v1.19.1
 	connectrpc.com/otelconnect v0.9.0
 	github.com/bluesky-social/indigo v0.0.0-20260126011129-1e0f4993d59c
-	github.com/bluesky-social/jetstream v0.0.0-20260121001058-f4e39a4b5bbc
+	github.com/bluesky-social/jetstream v0.0.0-20260226214936-e0274250f654
 	github.com/docker/go-connections v0.6.0
 	github.com/golang-migrate/migrate/v4 v4.19.1
 	github.com/google/go-cmp v0.7.0
@@ -212,3 +212,5 @@ require (
 	gorm.io/gorm v1.31.1 // indirect
 	lukechampine.com/blake3 v1.4.1 // indirect
 )
+
+replace github.com/bluesky-social/jetstream => ./vendored/jetstream

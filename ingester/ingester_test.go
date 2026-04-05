@@ -63,7 +63,7 @@ func TestFirehoseIngester(t *testing.T) {
 	cac := ingester.NewActorCache(slog.Default(), harness.Store)
 	require.NoError(t, cac.Sync(ctx))
 
-	jetstream, err := jetstreamsrv.NewServer(1)
+	jetstream, err := jetstreamsrv.NewServer(1, 100)
 	require.NoError(t, err)
 	dataDir := t.TempDir()
 
@@ -78,9 +78,6 @@ func TestFirehoseIngester(t *testing.T) {
 		err := streamEcho.Start(":")
 		require.NoError(t, err)
 	}()
-
-	err = streamConsumer.RunSequencer(ctx)
-	require.NoError(t, err)
 
 	scheduler := parallel.NewScheduler(1, 100, "prod-firehose", streamConsumer.HandleStreamEvent)
 
@@ -109,6 +106,10 @@ func TestFirehoseIngester(t *testing.T) {
 		close(fiWait)
 	}()
 
+	require.Eventually(t, func() bool {
+		return len(jetstream.Subscribers) > 0
+	}, time.Second*10, time.Millisecond*50, "ingester never subscribed to jetstream")
+
 	now := time.Now().UTC().Truncate(time.Millisecond)
 	testPosts := []struct {
 		name string
@@ -119,6 +120,7 @@ func TestFirehoseIngester(t *testing.T) {
 
 		uri string
 	}{
+
 		{
 			name: "non furry ignored",
 			user: nonFurry,
@@ -143,7 +145,7 @@ func TestFirehoseIngester(t *testing.T) {
 			post: &bsky.FeedPost{
 				LexiconTypeID: "app.bsky.feed.post",
 				CreatedAt:     now.Format(time.RFC3339Nano),
-				Text:          "paws paws paws",
+				Text:          "paws paws paws simple",
 			},
 			wantPost: &gen.CandidatePost{
 				ActorDID: approvedFurry.DID(),
@@ -329,6 +331,7 @@ func TestFirehoseIngester(t *testing.T) {
 				Text:          "paws paws paws",
 				Labels: &bsky.FeedPost_Labels{
 					LabelDefs_SelfLabels: &atproto.LabelDefs_SelfLabels{
+						LexiconTypeID: "com.atproto.label.defs#selfLabels",
 						Values: []*atproto.LabelDefs_SelfLabel{
 							{
 								Val: "adult",
@@ -352,7 +355,9 @@ func TestFirehoseIngester(t *testing.T) {
 					Bool:  false,
 					Valid: true,
 				},
-				SelfLabels: []string{},
+				SelfLabels: []string{
+					"adult",
+				},
 			},
 		},
 	}
@@ -377,10 +382,6 @@ func TestFirehoseIngester(t *testing.T) {
 				// Skip posts we don't expect to show up.
 				continue
 			}
-			if tp.name == "self labels" {
-				t.Skip("see https://github.com/strideynet/bsky-furry-feed/issues/149")
-			}
-			tp := tp
 			t.Run(tp.name, func(t *testing.T) {
 				// todo: figure out why we can’t use parallel here!
 				// t.Parallel()
