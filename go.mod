@@ -212,3 +212,5 @@ require (
 	gorm.io/gorm v1.31.1 // indirect
 	lukechampine.com/blake3 v1.4.1 // indirect
 )
+
+replace github.com/bluesky-social/jetstream => ./vendored/jetstream
