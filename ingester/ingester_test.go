@@ -63,7 +63,7 @@ func TestFirehoseIngester(t *testing.T) {
 	cac := ingester.NewActorCache(slog.Default(), harness.Store)
 	require.NoError(t, cac.Sync(ctx))
 
-	jetstream, err := jetstreamsrv.NewServer(1)
+	jetstream, err := jetstreamsrv.NewServer(1, 1)
 	require.NoError(t, err)
 	dataDir := t.TempDir()
 
