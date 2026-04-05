@@ -29,5 +29,5 @@ jobs:
           node-version: "23.1.0"
       - name: Release
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_RELEASE_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.OUR_RELEASE_TOKEN }}
         run: npx semantic-release
