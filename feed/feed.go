@@ -14,6 +14,8 @@ import (
 	"github.com/strideynet/bsky-furry-feed/tristate"
 )
 
+const PawEmoji = "🐾"
+
 var feedRequestMetric = promauto.NewSummaryVec(prometheus.SummaryOpts{
 	Name: "bff_feed_request_duration_seconds",
 	Help: "A very rudimentary way of tracking how many feed skeletons have been requested and how long it takes to serve.",
@@ -464,125 +466,7 @@ func ServiceWithDefaultFeeds(pgxStore *store.PGXStore) *Service {
 			DisallowedHashtags: defaultDisallowedHashtags,
 		},
 	}))
-	r.Register(Meta{
-		ID:          "con-denfur",
-		DisplayName: "🐾 DenFur 2026",
-		Description: "A feed for all things DenFur! Use #denfur or #denfur2026 to include a post in the feed.\n\nJoin the furry feeds by following @furryli.st",
-	}, chronologicalGenerator(chronologicalGeneratorOpts{
-		generatorOpts: generatorOpts{
-			Hashtags:           []string{"denfur", "denfur2026"},
-			DisallowedHashtags: defaultDisallowedHashtags,
-		},
-	}))
-	r.Register(Meta{
-		ID:          "con-eurofurence",
-		DisplayName: "🐾 Eurofurence",
-		Description: "A feed for all things Eurofurence! Use #eurofurence, #eurofurence2025, #eurofurence29, #ef, #ef2025, or #ef29 to include a post in the feed.\n\nJoin the furry feeds by following @furryli.st",
-	}, chronologicalGenerator(chronologicalGeneratorOpts{
-		generatorOpts: generatorOpts{
-			Hashtags: []string{
-				"eurofurence", "ef",
-				"eurofurence2023", "eurofurence27", "ef2023", "ef27",
-				"eurofurence2024", "eurofurence28", "ef2024", "ef28",
-				"eurofurence2025", "eurofurence29", "ef2025", "ef29",
-				// I typoed this like 5 times while making this feed so I'm adding these corrections
-				"euroference",
-			},
-			DisallowedHashtags: defaultDisallowedHashtags,
-		},
-	}))
-	r.Register(Meta{
-		ID:          "con-blfc",
-		DisplayName: "🐾 BLFC 2026",
-		Description: "A feed for all things BLFC! Use #blfc, #blfc26, or #blfc2026 to include a post in the feed.\n\nJoin the furry feeds by following @furryli.st",
-	}, chronologicalGenerator(chronologicalGeneratorOpts{
-		generatorOpts: generatorOpts{
-			Hashtags: []string{
-				"blfc", "blfc25", "blfc2025",
-				"blfc26", "blfc2026",
-			},
-			DisallowedHashtags: defaultDisallowedHashtags,
-		},
-	}))
-	r.Register(Meta{
-		ID:          "con-mff",
-		DisplayName: "🐾 MFF 2026",
-		Description: "A feed for all things MFF! Use #furfest, #mff, #mff26, or #mff2026 to include a post in the feed.\n\nJoin the furry feeds by following @furryli.st",
-	}, chronologicalGenerator(chronologicalGeneratorOpts{
-		generatorOpts: generatorOpts{
-			Hashtags: []string{
-				"furfest", "mff",
-				"furfest24", "furfest2024", "mff24", "mff2024",
-				"furfest25", "furfest2025", "mff25", "mff2025",
-				"furfest26", "furfest2026", "mff26", "mff2026",
-			},
-			DisallowedHashtags: defaultDisallowedHashtags,
-		},
-	}))
-	r.Register(Meta{
-		ID:          "con-fc",
-		DisplayName: "🐾 FC 2026",
-		Description: "A feed for all things FC! Use #fc, #fc26, or #fc2026 to include a post in the feed.\n\nJoin the furry feeds by following @furryli.st",
-	}, chronologicalGenerator(chronologicalGeneratorOpts{
-		generatorOpts: generatorOpts{
-			Hashtags: []string{
-				"fc", "fc26", "fc2026", "furcon26", "furcon2026",
-				"furtherconfusion", "furtherconfusion26", "furtherconfusion2026",
-			},
-			DisallowedHashtags: defaultDisallowedHashtags,
-		},
-	}))
-	r.Register(Meta{
-		ID:          "con-nfc",
-		DisplayName: "🐾 NFC 2026",
-		Description: "A feed for all things NFC! Use #nfc, #nfc26, or #nfc2026 to include a post in the feed.\n\nJoin the furry feeds by following @furryli.st",
-	}, chronologicalGenerator(chronologicalGeneratorOpts{
-		generatorOpts: generatorOpts{
-			Hashtags: []string{
-				"nfc", "nfc26", "nfc2026",
-				"nordicfuzzcon", "nordicfuzzcon26", "nordicfuzzcon2026",
-			},
-			DisallowedHashtags: defaultDisallowedHashtags,
-		},
-	}))
-	r.Register(Meta{
-		ID:          "con-fwa",
-		DisplayName: "🐾 FWA 2026",
-		Description: "A feed for all things FWA! Use #fwa, #fwa26, #fwa2026, or #furryweekend to include a post in the feed.\n\nJoin the furry feeds by following @furryli.st",
-	}, chronologicalGenerator(chronologicalGeneratorOpts{
-		generatorOpts: generatorOpts{
-			Hashtags: []string{
-				"fwa", "fwa25", "fwa2025", "furryweekend",
-				"fwa", "fwa26", "fwa2026", "furryweekend",
-			},
-			DisallowedHashtags: defaultDisallowedHashtags,
-		},
-	}))
-	r.Register(Meta{
-		ID:          "con-ac",
-		DisplayName: "🐾 Anthrocon 2026",
-		Description: "A feed for all things Anthrocon! Use #anthrocon, #anthrocon2026, or #ac to include a post in the feed.\n\nJoin the furry feeds by following @furryli.st",
-	}, chronologicalGenerator(chronologicalGeneratorOpts{
-		generatorOpts: generatorOpts{
-			Hashtags: []string{
-				"anthrocon", "anthrocon2026", "anthrocon26",
-				"ac", "ac2026", "ac26",
-			},
-			DisallowedHashtags: defaultDisallowedHashtags,
-		},
-	}))
-	r.Register(Meta{
-		ID:          "con-lvfc",
-		DisplayName: "🐾 Las Vegas Fur Con 2026",
-		Description: "A feed for all things LVFC! Use #lvfc or #lvfc26 to include a post in the feed.\n\nJoin the furry feeds by following @furryli.st",
-	}, chronologicalGenerator(chronologicalGeneratorOpts{
-		generatorOpts: generatorOpts{
-			Hashtags: []string{
-				"lvfc", "lasvegasfurcon", "lvfc2026", "lvfc26",
-			},
-			DisallowedHashtags: defaultDisallowedHashtags,
-		},
-	}))
+	registerConFeeds(r)
 	r.Register(Meta{
 		ID:          "merch",
 		DisplayName: "🐾 #FurSale",

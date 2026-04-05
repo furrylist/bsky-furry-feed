@@ -4,18 +4,39 @@ import (
 	"fmt"
 	"log/slog"
 	"os"
+	"strings"
 	"time"
+
+	"slices"
 
 	"github.com/bluesky-social/indigo/api/bsky"
 	"github.com/strideynet/bsky-furry-feed/bluesky"
 	"github.com/strideynet/bsky-furry-feed/feed"
 	"github.com/urfave/cli/v2"
+	"go.yaml.in/yaml/v2"
 )
 
 func bskyCmd(log *slog.Logger, env *environment) *cli.Command {
 	return &cli.Command{
 		Name: "bsky",
 		Subcommands: []*cli.Command{
+			{
+				Name:  "list-feeds",
+				Usage: "Lists all feeds",
+				Action: func(ctx *cli.Context) error {
+					feeds := feed.ServiceWithDefaultFeeds(nil)
+					metas := feeds.Metas()
+					slices.SortFunc(metas, func(a, b feed.Meta) int { return strings.Compare(a.ID, b.ID) })
+					for _, meta := range metas {
+						o, err := yaml.Marshal(meta)
+						if err != nil {
+							return err
+						}
+						fmt.Println(string(o))
+					}
+					return nil
+				},
+			},
 			{
 				Name:  "purge-feeds",
 				Usage: "Deletes all feeds associated with the current account",
