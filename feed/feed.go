@@ -343,7 +343,7 @@ func ServiceWithDefaultFeeds(pgxStore *store.PGXStore) *Service {
 		ID:          "furry-new",
 		DisplayName: "🐾 New",
 		Description: "Posts by furries across Bluesky. Contains a mix of SFW and NSFW content.\n\nJoin the furry feeds by following @furryli.st",
-		Priority:    101,
+		Priority:    99,
 	}, chronologicalGenerator(chronologicalGeneratorOpts{}))
 	r.Register(Meta{
 		ID:          "furry-fursuit",
