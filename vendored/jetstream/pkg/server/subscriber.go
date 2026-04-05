@@ -108,9 +108,10 @@ func emitToSubscriber(ctx context.Context, log *slog.Logger, sub *Subscriber, ti
 			// Drop slow subscribers if they're live tailing and fall too far behind
 			log.Error("failed to send event to subscriber, dropping", "error", "buffer full", "subscriber", sub.id)
 
-			// Tearing down a subscriber can block, so do it in a goroutine
+			// We must set tearingDown while we have the lock
+			sub.tearingDown = true
+			// Closing a subscriber can block, so do it in a goroutine
 			go func() {
-				sub.tearingDown = true
 				// Don't send a close message cause they won't get it (the socket is backed up)
 				err := sub.ws.Close()
 				if err != nil {

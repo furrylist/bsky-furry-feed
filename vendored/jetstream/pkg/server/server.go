@@ -221,6 +221,8 @@ func (s *Server) HandleSubscribe(c echo.Context) error {
 		go func() {
 			for {
 				lastSeq, err := s.Consumer.ReplayEvents(ctx, sub.compress, *sub.cursor, playbackRateLimit, func(ctx context.Context, timeUS int64, did, collection string, getEventBytes func() []byte) error {
+					sub.lk.Lock()
+					defer sub.lk.Unlock()
 					return emitToSubscriber(ctx, log, sub, timeUS, did, collection, true, getEventBytes)
 				})
 				if err != nil {
