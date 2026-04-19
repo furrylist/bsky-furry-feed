@@ -15,6 +15,11 @@ python = "3.8.16"
 golangci-lint = "2.8.0"
 prek = "0.3.6"
 
+[tasks]
+"generate:sqlc" = "sqlc generate"
+"generate:buf" = "cd proto && buf generate"
+generate = { depends = ["generate:sqlc", "generate:buf"] }
+
 [env]
 CGO_CFLAGS = "-DHAVE_STRCHRNUL"
 # This fixes testcontainers with colima on macOS. idk why, lol
