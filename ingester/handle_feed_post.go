@@ -3,6 +3,8 @@ package ingester
 import (
 	"context"
 	"fmt"
+	"maps"
+	"slices"
 	"strings"
 	"time"
 
@@ -10,7 +12,6 @@ import (
 	"github.com/srinathh/hashtag"
 	"github.com/strideynet/bsky-furry-feed/bluesky"
 	"github.com/strideynet/bsky-furry-feed/store"
-	"golang.org/x/exp/maps"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
 )
@@ -97,7 +98,7 @@ func normalizeHashtags(hashtags []string, langs []string) []string {
 		}
 	}
 
-	return maps.Keys(hashtagsSet)
+	return slices.Collect(maps.Keys(hashtagsSet))
 }
 
 func (fi *FirehoseIngester) handleFeedPostCreate(
