@@ -67,8 +67,10 @@ func main() {
 				Aliases: []string{
 					"e",
 				},
-				Required: true,
 				Action: func(c *cli.Context, s string) error {
+					if s == "" {
+						s = "local"
+					}
 					v, ok := environments[s]
 					if !ok {
 						return fmt.Errorf("unrecognized environment: %s", s)
