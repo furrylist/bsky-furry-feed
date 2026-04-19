@@ -62,21 +62,21 @@ export declare class Feed extends Message<Feed> {
   id: string;
 
   /**
-   * link is a link to the feed in the official BlueSky client.
+   * link is a link to the feed in the official Bluesky client.
    *
    * @generated from field: string link = 2;
    */
   link: string;
 
   /**
-   * display_name is the short name of the feed shown in the BlueSky client.
+   * display_name is the short name of the feed shown in the Bluesky client.
    *
    * @generated from field: string display_name = 3;
    */
   displayName: string;
 
   /**
-   * description is a long description of the feed shown in the BlueSky client.
+   * description is a long description of the feed shown in the Bluesky client.
    *
    * @generated from field: string description = 4;
    */

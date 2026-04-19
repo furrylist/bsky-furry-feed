@@ -20,11 +20,11 @@ message Feed {
   // id is the unique identifier of the feed. This is also the rkey it is
   // published under on bluesky.
   string id = 1;
-  // link is a link to the feed in the official BlueSky client.
+  // link is a link to the feed in the official Bluesky client.
   string link = 2;
-  // display_name is the short name of the feed shown in the BlueSky client.
+  // display_name is the short name of the feed shown in the Bluesky client.
   string display_name = 3;
-  // description is a long description of the feed shown in the BlueSky client.
+  // description is a long description of the feed shown in the Bluesky client.
   string description = 4;
   // priority indicates where to show this feed in BFF UIs, allowing more
   // common feeds to be shown first. Higher priority wins. Negative values

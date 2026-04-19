@@ -24,9 +24,9 @@ var feedRequestMetric = promauto.NewSummaryVec(prometheus.SummaryOpts{
 type Meta struct {
 	// ID is the rkey that is used to identify the Feed in generation requests.
 	ID string
-	// DisplayName is the short name of the feed used in the BlueSky client.
+	// DisplayName is the short name of the feed used in the Bluesky client.
 	DisplayName string
-	// Description is a long description of the feed used in the BlueSky client.
+	// Description is a long description of the feed used in the Bluesky client.
 	Description string
 
 	// Priority controls where the feed shows up on FurryList UIs.

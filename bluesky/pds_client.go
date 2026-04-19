@@ -30,7 +30,7 @@ type tokenInfo struct {
 func tokenInfoFromAuthInfo(authInfo *xrpc.AuthInfo) (tokenInfo, error) {
 	var claims jwt.RegisteredClaims
 	if _, _, err := jwt.NewParser().ParseUnverified(authInfo.AccessJwt, &claims); err != nil {
-		// Temp hack: ignore ErrTokenUnverifiable which has been triggered by BlueSky potentially changing the
+		// Temp hack: ignore ErrTokenUnverifiable which has been triggered by Bluesky potentially changing the
 		// signing algo.
 		if !errors.Is(err, jwt.ErrTokenUnverifiable) {
 			return tokenInfo{}, fmt.Errorf("failed to parse jwt: %w", err)

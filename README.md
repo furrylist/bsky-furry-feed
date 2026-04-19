@@ -11,7 +11,7 @@ Check out [https://furryli.st](https://furryli.st) for information about the fee
 
 ## For developers
 
-This is also a somewhat complex example of the a BlueSky feed generator and firehose consumer written in Go. Learn from it - and feel free to ask questions.
+This is also a somewhat complex example of the a Bluesky feed generator and firehose consumer written in Go. Learn from it - and feel free to ask questions.
 
 Interested in contributing? Read our [getting started guide][developing]
 or [check out the open issues][issues].

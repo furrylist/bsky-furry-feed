@@ -113,11 +113,11 @@ type Feed struct {
 	// id is the unique identifier of the feed. This is also the rkey it is
 	// published under on bluesky.
 	Id string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	// link is a link to the feed in the official BlueSky client.
+	// link is a link to the feed in the official Bluesky client.
 	Link string `protobuf:"bytes,2,opt,name=link,proto3" json:"link,omitempty"`
-	// display_name is the short name of the feed shown in the BlueSky client.
+	// display_name is the short name of the feed shown in the Bluesky client.
 	DisplayName string `protobuf:"bytes,3,opt,name=display_name,json=displayName,proto3" json:"display_name,omitempty"`
-	// description is a long description of the feed shown in the BlueSky client.
+	// description is a long description of the feed shown in the Bluesky client.
 	Description string `protobuf:"bytes,4,opt,name=description,proto3" json:"description,omitempty"`
 	// priority indicates where to show this feed in BFF UIs, allowing more
 	// common feeds to be shown first. Higher priority wins. Negative values
