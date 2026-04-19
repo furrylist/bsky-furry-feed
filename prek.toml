@@ -26,7 +26,7 @@ name = "check sqlc"
 language = "system"
 entry = "sqlc generate"
 pass_filenames = false
-files = "\\.(sql|sqlc.yaml|go)$"
+files = "\\.(sql|sqlc.yaml|go|mod|sum|toml)$"
 
 [[repos]]
 repo = "https://github.com/compilerla/conventional-pre-commit"
