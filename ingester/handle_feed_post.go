@@ -98,6 +98,11 @@ func normalizeHashtags(hashtags []string, langs []string) []string {
 		}
 	}
 
+	// we should never return nil due to pg non-null constraint
+	if len(hashtagsSet) == 0 {
+		return []string{}
+	}
+
 	return slices.Collect(maps.Keys(hashtagsSet))
 }
 
