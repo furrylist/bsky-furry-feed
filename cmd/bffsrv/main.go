@@ -11,6 +11,7 @@ import (
 
 	"github.com/grafana/pyroscope-go"
 	"github.com/strideynet/bsky-furry-feed/bfflog"
+	"github.com/strideynet/bsky-furry-feed/internal/env"
 	"github.com/strideynet/bsky-furry-feed/scoring"
 	"github.com/strideynet/bsky-furry-feed/worker"
 
@@ -33,26 +34,6 @@ import (
 
 // TODO: Better, more granular, env configuration.
 // A `inGCP` would make more sense rather than `isProduction`
-type mode string
-
-var (
-	productionMode mode = "production"
-	feedDevMode    mode = "feedDev"
-	devMode        mode = "dev"
-)
-
-func getMode() (mode, error) {
-	switch os.Getenv("ENV") {
-	case "production":
-		return productionMode, nil
-	case "feedDev":
-		return feedDevMode, nil
-	case "dev":
-		return devMode, nil
-	default:
-		return "", fmt.Errorf("unrecognized mode: %s", os.Getenv("ENV"))
-	}
-}
 
 func main() {
 	log := slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
@@ -77,10 +58,10 @@ func main() {
 	}
 }
 
-func setupTracing(ctx context.Context, url string, mode mode) (func(), error) {
+func setupTracing(ctx context.Context, url string, mode env.Mode) (func(), error) {
 	var exp tracesdk.SpanExporter
 	var err error
-	if mode == productionMode {
+	if mode == env.ModeProd {
 		exp, err = otlptracehttp.New(ctx)
 		if err != nil {
 			return nil, fmt.Errorf("creating http trace exporter: %w", err)
@@ -118,7 +99,7 @@ func setupTracing(ctx context.Context, url string, mode mode) (func(), error) {
 }
 
 func runE(log *slog.Logger) error {
-	mode, err := getMode()
+	mode, err := env.GetMode()
 	if err != nil {
 		return err
 	}
@@ -148,7 +129,7 @@ func runE(log *slog.Logger) error {
 	}
 	defer shutdownTrace()
 
-	if mode == productionMode {
+	if mode == env.ModeProd {
 		prof, err := pyroscope.Start(pyroscope.Config{
 			ApplicationName: "bffsrv",
 
@@ -187,18 +168,18 @@ func runE(log *slog.Logger) error {
 
 	var poolConnector store.PoolConnector
 	switch mode {
-	case productionMode:
+	case env.ModeProd:
 		poolConnector = &store.DirectConnector{
-			URI: os.Getenv("DB_URI"),
+			URI: os.Getenv(env.EnvDB_URI),
 		}
-	case feedDevMode:
+	case env.ModeFeedDev:
 		poolConnector = &store.CloudSQLConnector{
 			Instance: "bsky-furry-feed:us-east1:main-us-east",
 			Database: "bff",
 			// TODO: Fetch this from an env var or from adc
 			Username: "noah@noahstride.co.uk",
 		}
-	case devMode:
+	case env.ModeDev:
 		poolConnector = &store.DirectConnector{
 			URI: "postgres://bff:bff@localhost:5432/bff?sslmode=disable",
 		}

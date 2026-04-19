@@ -12,6 +12,7 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/strideynet/bsky-furry-feed/bfflog"
 	"github.com/strideynet/bsky-furry-feed/bluesky"
+	"github.com/strideynet/bsky-furry-feed/internal/env"
 	"github.com/urfave/cli/v2"
 )
 
@@ -20,8 +21,8 @@ type environment struct {
 	blacklistBlueskyHandles []string
 }
 
-var environments = map[string]environment{
-	"local": {
+var environments = map[env.Mode]environment{
+	env.ModeDev: {
 		dbURL: "postgres://bff:bff@localhost:5432/bff?sslmode=disable",
 		blacklistBlueskyHandles: []string{
 			"furryli.st",
@@ -51,7 +52,11 @@ func main() {
 		log.Info("could not load .env file", bfflog.Err(err))
 	}
 
-	var env = &environment{}
+	environments[env.ModeProd] = environment{
+		dbURL: os.Getenv(env.EnvDB_URI),
+	}
+
+	var environ = &environment{}
 	app := &cli.App{
 		Name:  "bffctl",
 		Usage: "The swiss army knife of any BFF operator",
@@ -63,21 +68,21 @@ func main() {
 				},
 				Action: func(c *cli.Context, s string) error {
 					if s == "" {
-						s = "local"
+						s = string(env.ModeDev)
 					}
-					v, ok := environments[s]
+					v, ok := environments[env.Mode(s)]
 					if !ok {
 						return fmt.Errorf("unrecognized environment: %s", s)
 					}
 					log.Info("configured environment", slog.String("env", s))
-					*env = v
+					*environ = v
 					return nil
 				},
 			},
 		},
 		Commands: []*cli.Command{
-			dbCmd(log, env),
-			bskyCmd(log, env),
+			dbCmd(log, environ),
+			bskyCmd(log, environ),
 		},
 	}
 	if err := app.Run(os.Args); err != nil {
