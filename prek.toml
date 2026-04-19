@@ -28,6 +28,14 @@ entry = "sqlc generate"
 pass_filenames = false
 files = "\\.(sql|sqlc.yaml|go|mod|sum|toml)$"
 
+[[repos.hooks]]
+id = "check-proto"
+name = "check proto gen"
+language = "system"
+entry = "mise run generate:buf"
+pass_filenames = false
+files = "\\.(go|mod|sum|toml)$|^proto"
+
 [[repos]]
 repo = "https://github.com/compilerla/conventional-pre-commit"
 rev = "v4.4.0"
