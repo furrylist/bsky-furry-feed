@@ -66,6 +66,14 @@ type ActorProfile struct {
 	SelfLabels  []string
 }
 
+type AuditAttachment struct {
+	ID        int64
+	ActorDID  string
+	MimeType  string
+	Data      []byte
+	CreatedAt pgtype.Timestamptz
+}
+
 type AuditEvent struct {
 	ID               string
 	ActorDID         string

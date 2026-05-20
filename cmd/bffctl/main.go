@@ -55,7 +55,8 @@ func main() {
 		dbURL: os.Getenv(env.EnvDB_URI),
 	}
 
-	var environ = &environment{}
+	devEnviron := environments[env.ModeDev]
+	var environ = &devEnviron
 	app := &cli.App{
 		Name:  "bffctl",
 		Usage: "The swiss army knife of any BFF operator",

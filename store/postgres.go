@@ -892,3 +892,11 @@ func (s *PGXStore) MarkFollowTaskAsErrored(ctx context.Context, id int64, err er
 func (s *PGXStore) MarkFollowTaskAsDone(ctx context.Context, id int64) error {
 	return s.queries.MarkFollowTaskAsDone(ctx, id)
 }
+
+func (s *PGXStore) SaveAttachment(ctx context.Context, params gen.SaveAttachmentParams) (int64, error) {
+	return s.queries.SaveAttachment(ctx, params)
+}
+
+func (s *PGXStore) GetAttachment(ctx context.Context, id int64) (gen.GetAttachmentRow, error) {
+	return s.queries.GetAttachment(ctx, id)
+}

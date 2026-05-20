@@ -3,7 +3,7 @@
 /* eslint-disable */
 // @ts-nocheck
 
-import { AssignRolesRequest, AssignRolesResponse, BanActorRequest, BanActorResponse, CreateActorRequest, CreateActorResponse, CreateCommentAuditEventRequest, CreateCommentAuditEventResponse, ForceApproveActorRequest, ForceApproveActorResponse, GetActorRequest, GetActorResponse, HoldBackPendingActorRequest, HoldBackPendingActorResponse, ListActorsRequest, ListActorsResponse, ListAuditEventsRequest, ListAuditEventsResponse, ListRolesRequest, ListRolesResponse, PingRequest, PingResponse, ProcessApprovalQueueRequest, ProcessApprovalQueueResponse, UnapproveActorRequest, UnapproveActorResponse } from "./moderation_service_pb.js";
+import { AssignRolesRequest, AssignRolesResponse, BanActorRequest, BanActorResponse, CreateActorRequest, CreateActorResponse, CreateAttachmentAuditEventRequest, CreateAttachmentAuditEventResponse, CreateCommentAuditEventRequest, CreateCommentAuditEventResponse, ForceApproveActorRequest, ForceApproveActorResponse, GetActorRequest, GetActorResponse, GetAttachmentRequest, GetAttachmentResponse, HoldBackPendingActorRequest, HoldBackPendingActorResponse, ListActorsRequest, ListActorsResponse, ListAuditEventsRequest, ListAuditEventsResponse, ListRolesRequest, ListRolesResponse, PingRequest, PingResponse, ProcessApprovalQueueRequest, ProcessApprovalQueueResponse, UnapproveActorRequest, UnapproveActorResponse } from "./moderation_service_pb.js";
 import { MethodKind } from "@bufbuild/protobuf";
 
 /**
@@ -150,6 +150,24 @@ export declare const ModerationService: {
       readonly name: "AssignRoles",
       readonly I: typeof AssignRolesRequest,
       readonly O: typeof AssignRolesResponse,
+      readonly kind: MethodKind.Unary,
+    },
+    /**
+     * @generated from rpc bff.v1.ModerationService.CreateAttachmentAuditEvent
+     */
+    readonly createAttachmentAuditEvent: {
+      readonly name: "CreateAttachmentAuditEvent",
+      readonly I: typeof CreateAttachmentAuditEventRequest,
+      readonly O: typeof CreateAttachmentAuditEventResponse,
+      readonly kind: MethodKind.Unary,
+    },
+    /**
+     * @generated from rpc bff.v1.ModerationService.GetAttachment
+     */
+    readonly getAttachment: {
+      readonly name: "GetAttachment",
+      readonly I: typeof GetAttachmentRequest,
+      readonly O: typeof GetAttachmentResponse,
       readonly kind: MethodKind.Unary,
     },
   }

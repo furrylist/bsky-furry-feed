@@ -5,6 +5,7 @@ import { UserService } from "../../proto/bff/v1/user_service_connectweb";
 import { createRegistry } from "@bufbuild/protobuf";
 import {
   AssignRolesAuditPayload,
+  AttachmentAuditEventPayload,
   BanActorAuditPayload,
   CommentAuditPayload,
   CreateActorAuditPayload,
@@ -38,7 +39,8 @@ export async function useAPITransport(): Promise<Transport> {
         UnapproveActorAuditPayload,
         ForceApproveActorAuditPayload,
         HoldBackPendingActorAuditPayload,
-        AssignRolesAuditPayload
+        AssignRolesAuditPayload,
+        AttachmentAuditEventPayload
       ),
     },
   });
