@@ -40,6 +40,9 @@ service ModerationService {
   rpc CreateCommentAuditEvent(CreateCommentAuditEventRequest) returns (CreateCommentAuditEventResponse) {}
   rpc ListRoles(ListRolesRequest) returns (ListRolesResponse) {}
   rpc AssignRoles(AssignRolesRequest) returns (AssignRolesResponse) {}
+
+  rpc CreateAttachmentAuditEvent(CreateAttachmentAuditEventRequest) returns (CreateAttachmentAuditEventResponse) {}
+  rpc GetAttachment(GetAttachmentRequest) returns (GetAttachmentResponse) {}
 }
 
 message Post {
@@ -219,4 +222,24 @@ message AssignRolesResponse {
 message AssignRolesAuditPayload {
   repeated string roles_before = 1;
   repeated string roles_after = 2;
+}
+
+message AttachmentAuditEventPayload {
+  repeated int64 attachment_ids = 1;
+}
+
+message CreateAttachmentAuditEventRequest {
+  string subject_did = 1;
+  bytes data = 2;
+}
+message CreateAttachmentAuditEventResponse {
+}
+
+message GetAttachmentRequest {
+  int64 attachment_id = 1;
+}
+
+message GetAttachmentResponse {
+  string mime_type = 1;
+  bytes data = 2;
 }

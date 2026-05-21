@@ -76,6 +76,21 @@ async function comment(comment: string) {
 
   if (ok) await loadEvents();
 }
+
+async function uploadAttachment(data: Uint8Array) {
+  let ok = true;
+  await api
+    .createAttachmentAuditEvent({
+      data,
+      subjectDid: props.did,
+    })
+    .catch((err) => {
+      ok = false;
+      $emit("error", err.rawMessage);
+    });
+  if (ok) await loadEvents();
+}
+
 const api = await useAPI();
 onMounted(async () => {
   await loadEvents();
@@ -119,6 +134,10 @@ onMounted(async () => {
     <p v-if="allAuditEvents.length === 0" class="text-muted">
       No comments or audit events.
     </p>
-    <shared-comment-box v-if="subject" @comment="comment" />
+    <shared-comment-box
+      v-if="subject"
+      @comment="comment"
+      @attach="uploadAttachment"
+    />
   </template>
 </template>

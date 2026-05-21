@@ -1102,3 +1102,128 @@ export declare class AssignRolesAuditPayload extends Message<AssignRolesAuditPay
   static equals(a: AssignRolesAuditPayload | PlainMessage<AssignRolesAuditPayload> | undefined, b: AssignRolesAuditPayload | PlainMessage<AssignRolesAuditPayload> | undefined): boolean;
 }
 
+/**
+ * @generated from message bff.v1.AttachmentAuditEventPayload
+ */
+export declare class AttachmentAuditEventPayload extends Message<AttachmentAuditEventPayload> {
+  /**
+   * @generated from field: repeated int64 attachment_ids = 1;
+   */
+  attachmentIds: bigint[];
+
+  constructor(data?: PartialMessage<AttachmentAuditEventPayload>);
+
+  static readonly runtime: typeof proto3;
+  static readonly typeName = "bff.v1.AttachmentAuditEventPayload";
+  static readonly fields: FieldList;
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): AttachmentAuditEventPayload;
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): AttachmentAuditEventPayload;
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): AttachmentAuditEventPayload;
+
+  static equals(a: AttachmentAuditEventPayload | PlainMessage<AttachmentAuditEventPayload> | undefined, b: AttachmentAuditEventPayload | PlainMessage<AttachmentAuditEventPayload> | undefined): boolean;
+}
+
+/**
+ * @generated from message bff.v1.CreateAttachmentAuditEventRequest
+ */
+export declare class CreateAttachmentAuditEventRequest extends Message<CreateAttachmentAuditEventRequest> {
+  /**
+   * @generated from field: string subject_did = 1;
+   */
+  subjectDid: string;
+
+  /**
+   * @generated from field: bytes data = 2;
+   */
+  data: Uint8Array;
+
+  constructor(data?: PartialMessage<CreateAttachmentAuditEventRequest>);
+
+  static readonly runtime: typeof proto3;
+  static readonly typeName = "bff.v1.CreateAttachmentAuditEventRequest";
+  static readonly fields: FieldList;
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): CreateAttachmentAuditEventRequest;
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): CreateAttachmentAuditEventRequest;
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): CreateAttachmentAuditEventRequest;
+
+  static equals(a: CreateAttachmentAuditEventRequest | PlainMessage<CreateAttachmentAuditEventRequest> | undefined, b: CreateAttachmentAuditEventRequest | PlainMessage<CreateAttachmentAuditEventRequest> | undefined): boolean;
+}
+
+/**
+ * @generated from message bff.v1.CreateAttachmentAuditEventResponse
+ */
+export declare class CreateAttachmentAuditEventResponse extends Message<CreateAttachmentAuditEventResponse> {
+  constructor(data?: PartialMessage<CreateAttachmentAuditEventResponse>);
+
+  static readonly runtime: typeof proto3;
+  static readonly typeName = "bff.v1.CreateAttachmentAuditEventResponse";
+  static readonly fields: FieldList;
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): CreateAttachmentAuditEventResponse;
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): CreateAttachmentAuditEventResponse;
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): CreateAttachmentAuditEventResponse;
+
+  static equals(a: CreateAttachmentAuditEventResponse | PlainMessage<CreateAttachmentAuditEventResponse> | undefined, b: CreateAttachmentAuditEventResponse | PlainMessage<CreateAttachmentAuditEventResponse> | undefined): boolean;
+}
+
+/**
+ * @generated from message bff.v1.GetAttachmentRequest
+ */
+export declare class GetAttachmentRequest extends Message<GetAttachmentRequest> {
+  /**
+   * @generated from field: int64 attachment_id = 1;
+   */
+  attachmentId: bigint;
+
+  constructor(data?: PartialMessage<GetAttachmentRequest>);
+
+  static readonly runtime: typeof proto3;
+  static readonly typeName = "bff.v1.GetAttachmentRequest";
+  static readonly fields: FieldList;
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): GetAttachmentRequest;
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): GetAttachmentRequest;
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): GetAttachmentRequest;
+
+  static equals(a: GetAttachmentRequest | PlainMessage<GetAttachmentRequest> | undefined, b: GetAttachmentRequest | PlainMessage<GetAttachmentRequest> | undefined): boolean;
+}
+
+/**
+ * @generated from message bff.v1.GetAttachmentResponse
+ */
+export declare class GetAttachmentResponse extends Message<GetAttachmentResponse> {
+  /**
+   * @generated from field: string mime_type = 1;
+   */
+  mimeType: string;
+
+  /**
+   * @generated from field: bytes data = 2;
+   */
+  data: Uint8Array;
+
+  constructor(data?: PartialMessage<GetAttachmentResponse>);
+
+  static readonly runtime: typeof proto3;
+  static readonly typeName = "bff.v1.GetAttachmentResponse";
+  static readonly fields: FieldList;
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): GetAttachmentResponse;
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): GetAttachmentResponse;
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): GetAttachmentResponse;
+
+  static equals(a: GetAttachmentResponse | PlainMessage<GetAttachmentResponse> | undefined, b: GetAttachmentResponse | PlainMessage<GetAttachmentResponse> | undefined): boolean;
+}
+

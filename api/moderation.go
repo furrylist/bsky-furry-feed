@@ -4,11 +4,14 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
+	"net/http"
 	"slices"
+	"strings"
 	"time"
 
 	"github.com/strideynet/bsky-furry-feed/bfflog"
 	"github.com/strideynet/bsky-furry-feed/bluesky"
+	"github.com/strideynet/bsky-furry-feed/store/gen"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"connectrpc.com/connect"
@@ -558,4 +561,64 @@ func (m *ModerationServiceHandler) AssignRoles(ctx context.Context, req *connect
 	}
 
 	return connect.NewResponse(&v1.AssignRolesResponse{}), nil
+}
+
+const Megabyte = 1000 * 1000
+const MaxAttachmentMegabytes = 1
+
+func (m *ModerationServiceHandler) CreateAttachmentAuditEvent(ctx context.Context, req *connect.Request[v1.CreateAttachmentAuditEventRequest]) (*connect.Response[v1.CreateAttachmentAuditEventResponse], error) {
+	authCtx, err := m.authEngine.auth(ctx, req)
+	if err != nil {
+		return nil, fmt.Errorf("authenticating: %w", err)
+	}
+
+	mimeType := http.DetectContentType(req.Msg.Data)
+
+	switch {
+	case len(req.Msg.Data) == 0:
+		return nil, fmt.Errorf("comment is required")
+	case len(req.Msg.Data) > MaxAttachmentMegabytes*Megabyte:
+		return nil, fmt.Errorf("attachment is too large, got %0.2f MB, maximum %d MB", float64(len(req.Msg.Data))/1000/1000, MaxAttachmentMegabytes)
+	case !strings.HasPrefix(mimeType, "image/"):
+		return nil, fmt.Errorf("invalid attachment type '%s', we only accept images", mimeType)
+	}
+
+	attachmentId, err := m.store.SaveAttachment(ctx, gen.SaveAttachmentParams{
+		ActorDID: authCtx.Actor.Did,
+		MimeType: mimeType,
+		Data:     req.Msg.Data,
+	})
+	if err != nil {
+		return nil, fmt.Errorf("saving attachment: %w", err)
+	}
+
+	_, err = m.store.CreateAuditEvent(ctx, store.CreateAuditEventOpts{
+		Payload: &v1.AttachmentAuditEventPayload{
+			AttachmentIds: []int64{attachmentId},
+		},
+		ActorDID:   authCtx.DID,
+		SubjectDID: req.Msg.SubjectDid,
+	})
+	if err != nil {
+		return nil, fmt.Errorf("creating audit event: %w", err)
+	}
+
+	return connect.NewResponse(&v1.CreateAttachmentAuditEventResponse{}), nil
+}
+
+func (m *ModerationServiceHandler) GetAttachment(ctx context.Context, req *connect.Request[v1.GetAttachmentRequest]) (*connect.Response[v1.GetAttachmentResponse], error) {
+	_, err := m.authEngine.auth(ctx, req)
+	if err != nil {
+		return nil, fmt.Errorf("authenticating: %w", err)
+	}
+
+	attachment, err := m.store.GetAttachment(ctx, req.Msg.AttachmentId)
+	if err != nil {
+		return nil, fmt.Errorf("getting attachment: %w", err)
+	}
+
+	return connect.NewResponse(&v1.GetAttachmentResponse{
+		MimeType: attachment.MimeType,
+		Data:     attachment.Data,
+	}), nil
 }

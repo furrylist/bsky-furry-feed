@@ -71,6 +71,12 @@ const (
 	// ModerationServiceAssignRolesProcedure is the fully-qualified name of the ModerationService's
 	// AssignRoles RPC.
 	ModerationServiceAssignRolesProcedure = "/bff.v1.ModerationService/AssignRoles"
+	// ModerationServiceCreateAttachmentAuditEventProcedure is the fully-qualified name of the
+	// ModerationService's CreateAttachmentAuditEvent RPC.
+	ModerationServiceCreateAttachmentAuditEventProcedure = "/bff.v1.ModerationService/CreateAttachmentAuditEvent"
+	// ModerationServiceGetAttachmentProcedure is the fully-qualified name of the ModerationService's
+	// GetAttachment RPC.
+	ModerationServiceGetAttachmentProcedure = "/bff.v1.ModerationService/GetAttachment"
 )
 
 // ModerationServiceClient is a client for the bff.v1.ModerationService service.
@@ -102,6 +108,8 @@ type ModerationServiceClient interface {
 	CreateCommentAuditEvent(context.Context, *connect.Request[v1.CreateCommentAuditEventRequest]) (*connect.Response[v1.CreateCommentAuditEventResponse], error)
 	ListRoles(context.Context, *connect.Request[v1.ListRolesRequest]) (*connect.Response[v1.ListRolesResponse], error)
 	AssignRoles(context.Context, *connect.Request[v1.AssignRolesRequest]) (*connect.Response[v1.AssignRolesResponse], error)
+	CreateAttachmentAuditEvent(context.Context, *connect.Request[v1.CreateAttachmentAuditEventRequest]) (*connect.Response[v1.CreateAttachmentAuditEventResponse], error)
+	GetAttachment(context.Context, *connect.Request[v1.GetAttachmentRequest]) (*connect.Response[v1.GetAttachmentResponse], error)
 }
 
 // NewModerationServiceClient constructs a client for the bff.v1.ModerationService service. By
@@ -179,24 +187,36 @@ func NewModerationServiceClient(httpClient connect.HTTPClient, baseURL string, o
 			baseURL+ModerationServiceAssignRolesProcedure,
 			opts...,
 		),
+		createAttachmentAuditEvent: connect.NewClient[v1.CreateAttachmentAuditEventRequest, v1.CreateAttachmentAuditEventResponse](
+			httpClient,
+			baseURL+ModerationServiceCreateAttachmentAuditEventProcedure,
+			opts...,
+		),
+		getAttachment: connect.NewClient[v1.GetAttachmentRequest, v1.GetAttachmentResponse](
+			httpClient,
+			baseURL+ModerationServiceGetAttachmentProcedure,
+			opts...,
+		),
 	}
 }
 
 // moderationServiceClient implements ModerationServiceClient.
 type moderationServiceClient struct {
-	ping                    *connect.Client[v1.PingRequest, v1.PingResponse]
-	processApprovalQueue    *connect.Client[v1.ProcessApprovalQueueRequest, v1.ProcessApprovalQueueResponse]
-	holdBackPendingActor    *connect.Client[v1.HoldBackPendingActorRequest, v1.HoldBackPendingActorResponse]
-	listActors              *connect.Client[v1.ListActorsRequest, v1.ListActorsResponse]
-	getActor                *connect.Client[v1.GetActorRequest, v1.GetActorResponse]
-	banActor                *connect.Client[v1.BanActorRequest, v1.BanActorResponse]
-	unapproveActor          *connect.Client[v1.UnapproveActorRequest, v1.UnapproveActorResponse]
-	forceApproveActor       *connect.Client[v1.ForceApproveActorRequest, v1.ForceApproveActorResponse]
-	createActor             *connect.Client[v1.CreateActorRequest, v1.CreateActorResponse]
-	listAuditEvents         *connect.Client[v1.ListAuditEventsRequest, v1.ListAuditEventsResponse]
-	createCommentAuditEvent *connect.Client[v1.CreateCommentAuditEventRequest, v1.CreateCommentAuditEventResponse]
-	listRoles               *connect.Client[v1.ListRolesRequest, v1.ListRolesResponse]
-	assignRoles             *connect.Client[v1.AssignRolesRequest, v1.AssignRolesResponse]
+	ping                       *connect.Client[v1.PingRequest, v1.PingResponse]
+	processApprovalQueue       *connect.Client[v1.ProcessApprovalQueueRequest, v1.ProcessApprovalQueueResponse]
+	holdBackPendingActor       *connect.Client[v1.HoldBackPendingActorRequest, v1.HoldBackPendingActorResponse]
+	listActors                 *connect.Client[v1.ListActorsRequest, v1.ListActorsResponse]
+	getActor                   *connect.Client[v1.GetActorRequest, v1.GetActorResponse]
+	banActor                   *connect.Client[v1.BanActorRequest, v1.BanActorResponse]
+	unapproveActor             *connect.Client[v1.UnapproveActorRequest, v1.UnapproveActorResponse]
+	forceApproveActor          *connect.Client[v1.ForceApproveActorRequest, v1.ForceApproveActorResponse]
+	createActor                *connect.Client[v1.CreateActorRequest, v1.CreateActorResponse]
+	listAuditEvents            *connect.Client[v1.ListAuditEventsRequest, v1.ListAuditEventsResponse]
+	createCommentAuditEvent    *connect.Client[v1.CreateCommentAuditEventRequest, v1.CreateCommentAuditEventResponse]
+	listRoles                  *connect.Client[v1.ListRolesRequest, v1.ListRolesResponse]
+	assignRoles                *connect.Client[v1.AssignRolesRequest, v1.AssignRolesResponse]
+	createAttachmentAuditEvent *connect.Client[v1.CreateAttachmentAuditEventRequest, v1.CreateAttachmentAuditEventResponse]
+	getAttachment              *connect.Client[v1.GetAttachmentRequest, v1.GetAttachmentResponse]
 }
 
 // Ping calls bff.v1.ModerationService.Ping.
@@ -264,6 +284,16 @@ func (c *moderationServiceClient) AssignRoles(ctx context.Context, req *connect.
 	return c.assignRoles.CallUnary(ctx, req)
 }
 
+// CreateAttachmentAuditEvent calls bff.v1.ModerationService.CreateAttachmentAuditEvent.
+func (c *moderationServiceClient) CreateAttachmentAuditEvent(ctx context.Context, req *connect.Request[v1.CreateAttachmentAuditEventRequest]) (*connect.Response[v1.CreateAttachmentAuditEventResponse], error) {
+	return c.createAttachmentAuditEvent.CallUnary(ctx, req)
+}
+
+// GetAttachment calls bff.v1.ModerationService.GetAttachment.
+func (c *moderationServiceClient) GetAttachment(ctx context.Context, req *connect.Request[v1.GetAttachmentRequest]) (*connect.Response[v1.GetAttachmentResponse], error) {
+	return c.getAttachment.CallUnary(ctx, req)
+}
+
 // ModerationServiceHandler is an implementation of the bff.v1.ModerationService service.
 type ModerationServiceHandler interface {
 	// Ping is a test RPC that checks that the user is authenticated and then
@@ -293,6 +323,8 @@ type ModerationServiceHandler interface {
 	CreateCommentAuditEvent(context.Context, *connect.Request[v1.CreateCommentAuditEventRequest]) (*connect.Response[v1.CreateCommentAuditEventResponse], error)
 	ListRoles(context.Context, *connect.Request[v1.ListRolesRequest]) (*connect.Response[v1.ListRolesResponse], error)
 	AssignRoles(context.Context, *connect.Request[v1.AssignRolesRequest]) (*connect.Response[v1.AssignRolesResponse], error)
+	CreateAttachmentAuditEvent(context.Context, *connect.Request[v1.CreateAttachmentAuditEventRequest]) (*connect.Response[v1.CreateAttachmentAuditEventResponse], error)
+	GetAttachment(context.Context, *connect.Request[v1.GetAttachmentRequest]) (*connect.Response[v1.GetAttachmentResponse], error)
 }
 
 // NewModerationServiceHandler builds an HTTP handler from the service implementation. It returns
@@ -366,6 +398,16 @@ func NewModerationServiceHandler(svc ModerationServiceHandler, opts ...connect.H
 		svc.AssignRoles,
 		opts...,
 	)
+	moderationServiceCreateAttachmentAuditEventHandler := connect.NewUnaryHandler(
+		ModerationServiceCreateAttachmentAuditEventProcedure,
+		svc.CreateAttachmentAuditEvent,
+		opts...,
+	)
+	moderationServiceGetAttachmentHandler := connect.NewUnaryHandler(
+		ModerationServiceGetAttachmentProcedure,
+		svc.GetAttachment,
+		opts...,
+	)
 	return "/bff.v1.ModerationService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case ModerationServicePingProcedure:
@@ -394,6 +436,10 @@ func NewModerationServiceHandler(svc ModerationServiceHandler, opts ...connect.H
 			moderationServiceListRolesHandler.ServeHTTP(w, r)
 		case ModerationServiceAssignRolesProcedure:
 			moderationServiceAssignRolesHandler.ServeHTTP(w, r)
+		case ModerationServiceCreateAttachmentAuditEventProcedure:
+			moderationServiceCreateAttachmentAuditEventHandler.ServeHTTP(w, r)
+		case ModerationServiceGetAttachmentProcedure:
+			moderationServiceGetAttachmentHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -453,4 +499,12 @@ func (UnimplementedModerationServiceHandler) ListRoles(context.Context, *connect
 
 func (UnimplementedModerationServiceHandler) AssignRoles(context.Context, *connect.Request[v1.AssignRolesRequest]) (*connect.Response[v1.AssignRolesResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("bff.v1.ModerationService.AssignRoles is not implemented"))
+}
+
+func (UnimplementedModerationServiceHandler) CreateAttachmentAuditEvent(context.Context, *connect.Request[v1.CreateAttachmentAuditEventRequest]) (*connect.Response[v1.CreateAttachmentAuditEventResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("bff.v1.ModerationService.CreateAttachmentAuditEvent is not implemented"))
+}
+
+func (UnimplementedModerationServiceHandler) GetAttachment(context.Context, *connect.Request[v1.GetAttachmentRequest]) (*connect.Response[v1.GetAttachmentResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("bff.v1.ModerationService.GetAttachment is not implemented"))
 }

@@ -3,7 +3,7 @@
 /* eslint-disable */
 // @ts-nocheck
 
-import { AssignRolesRequest, AssignRolesResponse, BanActorRequest, BanActorResponse, CreateActorRequest, CreateActorResponse, CreateCommentAuditEventRequest, CreateCommentAuditEventResponse, ForceApproveActorRequest, ForceApproveActorResponse, GetActorRequest, GetActorResponse, HoldBackPendingActorRequest, HoldBackPendingActorResponse, ListActorsRequest, ListActorsResponse, ListAuditEventsRequest, ListAuditEventsResponse, ListRolesRequest, ListRolesResponse, PingRequest, PingResponse, ProcessApprovalQueueRequest, ProcessApprovalQueueResponse, UnapproveActorRequest, UnapproveActorResponse } from "./moderation_service_pb.js";
+import { AssignRolesRequest, AssignRolesResponse, BanActorRequest, BanActorResponse, CreateActorRequest, CreateActorResponse, CreateAttachmentAuditEventRequest, CreateAttachmentAuditEventResponse, CreateCommentAuditEventRequest, CreateCommentAuditEventResponse, ForceApproveActorRequest, ForceApproveActorResponse, GetActorRequest, GetActorResponse, GetAttachmentRequest, GetAttachmentResponse, HoldBackPendingActorRequest, HoldBackPendingActorResponse, ListActorsRequest, ListActorsResponse, ListAuditEventsRequest, ListAuditEventsResponse, ListRolesRequest, ListRolesResponse, PingRequest, PingResponse, ProcessApprovalQueueRequest, ProcessApprovalQueueResponse, UnapproveActorRequest, UnapproveActorResponse } from "./moderation_service_pb.js";
 import { MethodKind } from "@bufbuild/protobuf";
 
 /**
@@ -150,6 +150,24 @@ export const ModerationService = {
       name: "AssignRoles",
       I: AssignRolesRequest,
       O: AssignRolesResponse,
+      kind: MethodKind.Unary,
+    },
+    /**
+     * @generated from rpc bff.v1.ModerationService.CreateAttachmentAuditEvent
+     */
+    createAttachmentAuditEvent: {
+      name: "CreateAttachmentAuditEvent",
+      I: CreateAttachmentAuditEventRequest,
+      O: CreateAttachmentAuditEventResponse,
+      kind: MethodKind.Unary,
+    },
+    /**
+     * @generated from rpc bff.v1.ModerationService.GetAttachment
+     */
+    getAttachment: {
+      name: "GetAttachment",
+      I: GetAttachmentRequest,
+      O: GetAttachmentResponse,
       kind: MethodKind.Unary,
     },
   }

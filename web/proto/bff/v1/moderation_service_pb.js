@@ -429,3 +429,53 @@ export const AssignRolesAuditPayload = proto3.makeMessageType(
   ],
 );
 
+/**
+ * @generated from message bff.v1.AttachmentAuditEventPayload
+ */
+export const AttachmentAuditEventPayload = proto3.makeMessageType(
+  "bff.v1.AttachmentAuditEventPayload",
+  () => [
+    { no: 1, name: "attachment_ids", kind: "scalar", T: 3 /* ScalarType.INT64 */, repeated: true },
+  ],
+);
+
+/**
+ * @generated from message bff.v1.CreateAttachmentAuditEventRequest
+ */
+export const CreateAttachmentAuditEventRequest = proto3.makeMessageType(
+  "bff.v1.CreateAttachmentAuditEventRequest",
+  () => [
+    { no: 1, name: "subject_did", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 2, name: "data", kind: "scalar", T: 12 /* ScalarType.BYTES */ },
+  ],
+);
+
+/**
+ * @generated from message bff.v1.CreateAttachmentAuditEventResponse
+ */
+export const CreateAttachmentAuditEventResponse = proto3.makeMessageType(
+  "bff.v1.CreateAttachmentAuditEventResponse",
+  [],
+);
+
+/**
+ * @generated from message bff.v1.GetAttachmentRequest
+ */
+export const GetAttachmentRequest = proto3.makeMessageType(
+  "bff.v1.GetAttachmentRequest",
+  () => [
+    { no: 1, name: "attachment_id", kind: "scalar", T: 3 /* ScalarType.INT64 */ },
+  ],
+);
+
+/**
+ * @generated from message bff.v1.GetAttachmentResponse
+ */
+export const GetAttachmentResponse = proto3.makeMessageType(
+  "bff.v1.GetAttachmentResponse",
+  () => [
+    { no: 1, name: "mime_type", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 2, name: "data", kind: "scalar", T: 12 /* ScalarType.BYTES */ },
+  ],
+);
+

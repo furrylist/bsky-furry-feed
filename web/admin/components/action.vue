@@ -10,6 +10,7 @@ import {
   UnapproveActorAuditPayload,
   HoldBackPendingActorAuditPayload,
   AssignRolesAuditPayload,
+  AttachmentAuditEventPayload,
 } from "../../proto/bff/v1/moderation_service_pb";
 
 const props = defineProps<{
@@ -40,6 +41,8 @@ const payload = computed(() => {
       return HoldBackPendingActorAuditPayload.fromBinary(value);
     case "bff.v1.AssignRolesAuditPayload":
       return AssignRolesAuditPayload.fromBinary(value);
+    case "bff.v1.AttachmentAuditEventPayload":
+      return AttachmentAuditEventPayload.fromBinary(value);
     default:
       console.warn(`Missing payload decoding: ${typeUrl}`);
   }
@@ -66,6 +69,8 @@ const type = computed(() => {
     return "hold_back";
   } else if (data instanceof AssignRolesAuditPayload) {
     return "assign_roles";
+  } else if (data instanceof AttachmentAuditEventPayload) {
+    return "attachment";
   } else if (data?.isFollowedAt) {
     return "followed_at";
   }
@@ -97,6 +102,10 @@ const actionText = computed(() => {
         : "assigned roles to this user.";
     case "followed_at":
       return "requested to join the list.";
+    case "attachment":
+      const count = (payload.value as AttachmentAuditEventPayload).attachmentIds
+        .length;
+      return `attached ${count === 1 ? "a file" : `${count} files`}.`;
   }
 });
 
@@ -159,6 +168,10 @@ const comment = computed(() => {
         v-else-if="type === 'followed_at'"
         class="text-gray-600 dark:text-gray-200"
       />
+      <icon-file
+        v-else-if="type === 'attachment'"
+        class="text-gray-600 dark:text-gray-200"
+      />
     </div>
     <div class="flex-1">
       <div class="flex max-md:flex-wrap items-center gap-1">
@@ -177,6 +190,16 @@ const comment = computed(() => {
       <shared-card v-if="comment" no-padding class="text-sm px-3 py-2 mt-2">
         <shared-markdown :markdown="comment" />
       </shared-card>
+      <div
+        v-if="payload && 'attachmentIds' in payload"
+        class="flex gap-2 max-w-[40%] mt-1"
+      >
+        <action-attachment
+          v-for="attachment in payload.attachmentIds"
+          :key="`attach-${attachment}`"
+          :attachment-id="attachment"
+        />
+      </div>
     </div>
   </div>
 </template>
