@@ -105,7 +105,9 @@ const actionText = computed(() => {
     case "attachment":
       const count = (payload.value as AttachmentAuditEventPayload).attachmentIds
         .length;
-      return `attached ${count === 1 ? "a file" : `${count} files`}.`;
+      return `attached ${count === 1 ? "a file" : `${count} files`}${
+        props.lookupUser ? " on" : "."
+      }`;
   }
 });
 
