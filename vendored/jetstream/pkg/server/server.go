@@ -64,6 +64,17 @@ func (s *Server) SetSeq(seq int64) {
 	s.seq = seq
 }
 
+// SubscriberCount returns the number of currently connected subscribers in a
+// thread-safe manner.
+//
+// This is a workaround (not upstreamed to jetstream) to avoid direct map
+// access on Subscribers from tests, which causes a data race.
+func (s *Server) SubscriberCount() int {
+	s.lk.RLock()
+	defer s.lk.RUnlock()
+	return len(s.Subscribers)
+}
+
 func (s *Server) HandleSubscribe(c echo.Context) error {
 	ctx, cancel := context.WithCancel(c.Request().Context())
 	defer cancel()

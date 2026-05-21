@@ -107,7 +107,7 @@ func TestFirehoseIngester(t *testing.T) {
 	}()
 
 	require.Eventually(t, func() bool {
-		return len(jetstream.Subscribers) > 0
+		return jetstream.SubscriberCount() > 0
 	}, time.Second*10, time.Millisecond*50, "ingester never subscribed to jetstream")
 
 	now := time.Now().UTC().Truncate(time.Millisecond)
