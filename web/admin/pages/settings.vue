@@ -4,7 +4,6 @@ import {
   blurNsfwPostMedia,
   useKeyboardShurtcuts,
 } from "~/lib/settings";
-import { logout } from "~/lib/auth";
 </script>
 
 <template>
@@ -44,9 +43,5 @@ import { logout } from "~/lib/auth";
         reject, and <kbd>H</kbd> for hold back</label
       >
     </div>
-
-    <button class="text-white bg-gray-700 px-2 py-1 rounded-lg" @click="logout">
-      Logout
-    </button>
   </div>
 </template>
