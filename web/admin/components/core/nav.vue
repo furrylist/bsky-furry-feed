@@ -1,8 +1,11 @@
-<script setup>
+<script setup lang="ts">
 import { search } from "~/lib/search";
+import { logout } from "~/lib/auth";
 
 const profile = await useProfile();
 const showSearch = ref(false);
+const showDropdown = ref(false);
+const dropdownRef = ref<HTMLElement>();
 
 const term = ref("");
 async function doSearch() {
@@ -11,6 +14,21 @@ async function doSearch() {
     showSearch.value = false;
   }
 }
+
+function handleClick(e: PointerEvent) {
+  const target = e.target as HTMLElement;
+  if (!dropdownRef.value!.contains(target)) {
+    showDropdown.value = false;
+  }
+}
+
+onMounted(() => {
+  document.addEventListener("click", handleClick);
+});
+
+onBeforeUnmount(() => {
+  document.removeEventListener("click", handleClick);
+});
 </script>
 
 <template>
@@ -33,14 +51,35 @@ async function doSearch() {
 
     <div class="ml-auto flex items-center gap-2">
       <shared-search @toggle-search="showSearch = !showSearch" />
-      <nuxt-link href="/settings">
-        <shared-avatar
-          :did="profile.did"
-          :has-avatar="Boolean(profile.avatar)"
-          resize="72x72"
-          :size="32"
-        />
-      </nuxt-link>
+      <div ref="dropdownRef" class="relative">
+        <button type="button" @click="showDropdown = !showDropdown">
+          <shared-avatar
+            :did="profile.did"
+            :has-avatar="Boolean(profile.avatar)"
+            resize="72x72"
+            :size="32"
+          />
+        </button>
+        <div
+          v-if="showDropdown"
+          class="absolute right-0 w-[150px] bg-white dark:bg-slate-600 rounded-lg overflow-hidden top-full mt-1 border dark:border-gray-700"
+          role="menu"
+        >
+          <nuxt-link
+            href="/settings"
+            class="w-full hover:bg-gray-100 hover:dark:bg-slate-700 px-2 py-1 cursor-pointer flex items-center gap-1 border-b dark:border-gray-700"
+            @click="showDropdown = false"
+          >
+            <icon-settings /> Settings
+          </nuxt-link>
+          <nuxt-link
+            class="w-full hover:bg-gray-100 hover:dark:bg-slate-700 px-2 py-1 cursor-pointer flex items-center gap-1"
+            @click="logout"
+          >
+            <icon-logout /> Log out
+          </nuxt-link>
+        </div>
+      </div>
     </div>
   </nav>
   <div
