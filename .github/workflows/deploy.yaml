@@ -48,7 +48,7 @@ jobs:
         uses: actions/checkout@v3
       - uses: actions/setup-go@v4
         with:
-          go-version: "1.25.6"
+          go-version: "1.26.4"
           cache: false
       - name: Deploy feeds
         env:
@@ -65,8 +65,8 @@ jobs:
       - uses: actions/checkout@v6
         with:
           repository: furrylist/infra
-          ref: 'main'
-          ssh-key:  ${{ secrets.FURRYLIST_INFRA_DEPLOY_KEY }}
+          ref: "main"
+          ssh-key: ${{ secrets.FURRYLIST_INFRA_DEPLOY_KEY }}
       - uses: jdx/mise-action@v3
       - name: Update release to latest
         run: scripts/release.sh
