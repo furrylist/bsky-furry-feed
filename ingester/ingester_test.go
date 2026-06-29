@@ -13,7 +13,6 @@ import (
 	"github.com/bluesky-social/indigo/events"
 	"github.com/bluesky-social/indigo/events/schedulers/parallel"
 	lexutil "github.com/bluesky-social/indigo/lex/util"
-	indigoTest "github.com/bluesky-social/indigo/testing"
 	"github.com/bluesky-social/jetstream/pkg/consumer"
 	jetstreamsrv "github.com/bluesky-social/jetstream/pkg/server"
 	"github.com/google/go-cmp/cmp"
@@ -111,9 +110,13 @@ func TestFirehoseIngester(t *testing.T) {
 	}, time.Second*10, time.Millisecond*50, "ingester never subscribed to jetstream")
 
 	now := time.Now().UTC().Truncate(time.Millisecond)
+
+	dummyImage := approvedFurry.MustUploadBlob(t, "image/jpeg", []byte("fake image data"))
+	dummyVideo := approvedFurry.MustUploadBlob(t, "video/mp4", []byte("fake video data"))
+
 	testPosts := []struct {
 		name string
-		user *indigoTest.TestUser
+		user *testenv.TestUser
 		post *bsky.FeedPost
 
 		wantPost *gen.CandidatePost
@@ -174,11 +177,7 @@ func TestFirehoseIngester(t *testing.T) {
 				Text:          "i love to poast #fursuit #murrsuit #furryart #commsopen #nsfw #bigBurgers",
 				Embed: &bsky.FeedPost_Embed{
 					EmbedVideo: &bsky.EmbedVideo{
-						Video: &lexutil.LexBlob{
-							Size:     6_000_000,
-							Ref:      lexutil.LexLink(indigoTest.RandFakeCid()),
-							MimeType: "video/mp4",
-						},
+						Video: dummyVideo,
 					},
 				},
 			},
@@ -219,7 +218,8 @@ func TestFirehoseIngester(t *testing.T) {
 						LexiconTypeID: "app.bsky.embed.images",
 						Images: []*bsky.EmbedImages_Image{
 							{
-								Alt: "some alt text",
+								Alt:   "some alt text",
+								Image: dummyImage,
 							},
 						},
 					},
@@ -291,7 +291,8 @@ func TestFirehoseIngester(t *testing.T) {
 						LexiconTypeID: "app.bsky.embed.images",
 						Images: []*bsky.EmbedImages_Image{
 							{
-								Alt: "#fursuit #murrsuit #furryart #commsopen #nsfw #bigBurgers",
+								Alt:   "#fursuit #murrsuit #furryart #commsopen #nsfw #bigBurgers",
+								Image: dummyImage,
 							},
 						},
 					},
@@ -407,7 +408,7 @@ func TestFirehoseIngester(t *testing.T) {
 							cmpopts.SortSlices(func(a, b string) bool { return a < b }),
 						),
 					)
-				}, time.Second*5, time.Millisecond*100)
+				}, time.Second*10, time.Millisecond*100)
 			})
 		}
 	})

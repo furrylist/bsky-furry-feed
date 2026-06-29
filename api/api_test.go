@@ -10,13 +10,12 @@ import (
 	"testing"
 
 	"connectrpc.com/connect"
-	indigoTest "github.com/bluesky-social/indigo/testing"
 	"github.com/stretchr/testify/require"
 	"github.com/strideynet/bsky-furry-feed/feed"
 	"github.com/strideynet/bsky-furry-feed/testenv"
 )
 
-func actorAuthInterceptor(actor *indigoTest.TestUser) connect.UnaryInterceptorFunc {
+func actorAuthInterceptor(actor *testenv.TestUser) connect.UnaryInterceptorFunc {
 	token := testenv.ExtractClientFromTestUser(actor).Auth.AccessJwt
 	return func(next connect.UnaryFunc) connect.UnaryFunc {
 		return func(ctx context.Context, req connect.AnyRequest) (connect.AnyResponse, error) {
