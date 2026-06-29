@@ -1,52 +1,75 @@
 package testenv
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"log/slog"
-	"reflect"
 	"testing"
-	"unsafe"
 
 	"github.com/docker/go-connections/nat"
-	"github.com/testcontainers/testcontainers-go/wait"
-
-	"github.com/bluesky-social/indigo/xrpc"
-	"github.com/stretchr/testify/require"
-	"github.com/strideynet/bsky-furry-feed/store"
-
-	indigoTest "github.com/bluesky-social/indigo/testing"
 	"github.com/golang-migrate/migrate/v4"
 	_ "github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
-	ipfsLog "github.com/ipfs/go-log"
+	"github.com/stretchr/testify/require"
+	"github.com/strideynet/bsky-furry-feed/store"
 	"github.com/testcontainers/testcontainers-go"
 	"github.com/testcontainers/testcontainers-go/modules/postgres"
+	"github.com/testcontainers/testcontainers-go/wait"
 )
 
-func init() {
-	ipfsLog.SetAllLoggers(ipfsLog.LevelDebug)
-}
+func startPDS(ctx context.Context, t *testing.T) *TestPDS {
+	t.Helper()
 
-// black magic to set an unexported field on the TestRelay
-func setTrialHostOnRelay(trelay *indigoTest.TestRelay, rawHost string) {
-	hosts := []string{rawHost}
+	const pdsPort = "3000/tcp"
 
-	trialHosts := reflect.ValueOf(trelay).
-		Elem().FieldByName("tr").
-		Elem().FieldByName("TrialHosts")
+	container, err := testcontainers.GenericContainer(ctx, testcontainers.GenericContainerRequest{
+		ContainerRequest: testcontainers.ContainerRequest{
+			Image:        "ghcr.io/bluesky-social/pds:0.4.5009",
+			ExposedPorts: []string{pdsPort},
+			Env: map[string]string{
+				"PDS_HOSTNAME":       "localhost",
+				"PDS_JWT_SECRET":     "test-jwt-secret-not-for-production",
+				"PDS_ADMIN_PASSWORD": "admin",
+				"PDS_PLC_ROTATION_KEY_K256_PRIVATE_KEY_HEX": "3ee68ca7de7f9af37d9e02a21f3c49de87d4e7c2aa6c6e8a1c26e2f1e8bb8a7f",
+				"PDS_DATA_DIRECTORY":                        "/pds",
+				"PDS_BLOBSTORE_DISK_LOCATION":               "/pds/blocks",
+				"PDS_DID_PLC_URL":                           "http://127.0.0.1:2582",
+				"PDS_DEV_MODE":                              "true",
+				"PDS_INVITE_REQUIRED":                       "false",
+				"PDS_SERVICE_HANDLE_DOMAINS":                ".tpds",
+				"NODE_ENV":                                  "production",
 
-	reflect.NewAt(
-		trialHosts.Type(),
-		unsafe.Pointer(trialHosts.UnsafeAddr())).Elem().Set(reflect.ValueOf(hosts))
-}
+				// just in case we want to run against the public app view
+				// "PDS_BSKY_APP_VIEW_URL": "https://api.bsky.app",
+				// "PDS_BSKY_APP_VIEW_DID": "did:web:api.bsky.app",
+			},
+			Entrypoint: []string{"sh", "-c", pdsEntrypoint},
+			Files: []testcontainers.ContainerFile{
+				{
+					Reader:            bytes.NewReader(plcServerScript),
+					ContainerFilePath: "/app/plc.js",
+					FileMode:          0o644,
+				},
+			},
+			WaitingFor: wait.ForHTTP("/xrpc/com.atproto.server.describeServer").WithPort(nat.Port(pdsPort)),
+		},
+		Started: true,
+	})
+	require.NoError(t, err, "starting PDS container")
+	t.Cleanup(func() {
+		require.NoError(t, container.Terminate(context.Background()))
+	})
 
-func ExtractClientFromTestUser(user *indigoTest.TestUser) *xrpc.Client {
-	// This isn't exposed by indigo so we have to use reflection to access the
-	// client.
-	val := reflect.ValueOf(user).Elem().FieldByName("client")
-	iface := reflect.NewAt(val.Type(), unsafe.Pointer(val.UnsafeAddr())).Elem().Interface()
-	return iface.(*xrpc.Client)
+	mappedPort, err := container.MappedPort(ctx, nat.Port(pdsPort))
+	require.NoError(t, err, "getting PDS port")
+
+	host, err := container.Host(ctx)
+	require.NoError(t, err, "getting PDS host")
+
+	return &TestPDS{
+		rawHost: fmt.Sprintf("%s:%d", host, mappedPort.Int()),
+	}
 }
 
 func StartDatabase(ctx context.Context, t *testing.T) (url string) {
@@ -83,23 +106,13 @@ func StartDatabase(ctx context.Context, t *testing.T) (url string) {
 }
 
 type Harness struct {
-	PDS   *indigoTest.TestPDS
-	Relay *indigoTest.TestRelay
+	PDS   *TestPDS
 	Store *store.PGXStore
 }
 
 func StartHarness(ctx context.Context, t *testing.T) *Harness {
 	dbURL := StartDatabase(ctx, t)
-
-	didr := indigoTest.TestPLC(t)
-
-	pds := indigoTest.MustSetupPDS(t, ".tpds", didr)
-	pds.Run(t)
-	t.Cleanup(pds.Cleanup)
-
-	relay := indigoTest.MustSetupRelay(t, didr, true)
-	relay.Run(t)
-	setTrialHostOnRelay(relay, pds.RawHost())
+	pds := startPDS(ctx, t)
 
 	pgxStore, err := store.ConnectPGXStore(
 		ctx,
@@ -110,7 +123,6 @@ func StartHarness(ctx context.Context, t *testing.T) *Harness {
 	t.Cleanup(pgxStore.Close)
 
 	return &Harness{
-		Relay: relay,
 		PDS:   pds,
 		Store: pgxStore,
 	}
