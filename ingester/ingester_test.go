@@ -251,6 +251,53 @@ func TestFirehoseIngester(t *testing.T) {
 			},
 		},
 		{
+			name: "post with gallery",
+			user: approvedFurry,
+			post: &bsky.FeedPost{
+				LexiconTypeID: "app.bsky.feed.post",
+				CreatedAt:     now.Format(time.RFC3339Nano),
+				Text:          "poasting galley in #gallery #art",
+				Embed: &bsky.FeedPost_Embed{
+					EmbedGallery: &bsky.EmbedGallery{
+						Items: []*bsky.EmbedGallery_Items_Elem{
+							{
+								EmbedGallery_Image: &bsky.EmbedGallery_Image{
+									Alt:   "so #woof so #gay",
+									Image: dummyImage,
+									AspectRatio: &bsky.EmbedDefs_AspectRatio{
+										Height: 100,
+										Width:  100,
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			wantPost: &gen.CandidatePost{
+				ActorDID: approvedFurry.DID(),
+				CreatedAt: pgtype.Timestamptz{
+					Time:  now,
+					Valid: true,
+				},
+				Hashtags: []string{
+					"gallery",
+					"art",
+					"woof",
+					"gay",
+				},
+				HasMedia: pgtype.Bool{
+					Bool:  true,
+					Valid: true,
+				},
+				HasVideo: pgtype.Bool{
+					Bool:  false,
+					Valid: true,
+				},
+				SelfLabels: []string{},
+			},
+		},
+		{
 			name: "internationalised hashtags",
 			user: approvedFurry,
 			post: &bsky.FeedPost{
