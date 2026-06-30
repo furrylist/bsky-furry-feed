@@ -24,24 +24,45 @@ func postTextWithAlts(data *bsky.FeedPost) string {
 	buf.WriteString(data.Text)
 
 	// Collect alt texts when only images are embedded
-	if data.Embed != nil && data.Embed.EmbedImages != nil {
-		for _, image := range data.Embed.EmbedImages.Images {
-			if image.Alt == "" {
-				continue
+	if data.Embed != nil {
+		if data.Embed.EmbedImages != nil {
+			for _, image := range data.Embed.EmbedImages.Images {
+				if image.Alt == "" {
+					continue
+				}
+				buf.WriteRune('\n')
+				buf.WriteString(image.Alt)
 			}
-			buf.WriteRune('\n')
-			buf.WriteString(image.Alt)
 		}
-	}
 
-	// Collect alt texts when images and a post is embedded (e.g a quote post that also includes an image)
-	if data.Embed != nil && data.Embed.EmbedRecordWithMedia != nil && data.Embed.EmbedRecordWithMedia.Media != nil && data.Embed.EmbedRecordWithMedia.Media.EmbedImages != nil {
-		for _, image := range data.Embed.EmbedRecordWithMedia.Media.EmbedImages.Images {
-			if image.Alt == "" {
-				continue
+		if data.Embed.EmbedGallery != nil {
+			for _, item := range data.Embed.EmbedGallery.Items {
+				if item.EmbedGallery_Image != nil && item.EmbedGallery_Image.Alt != "" {
+					buf.WriteRune('\n')
+					buf.WriteString(item.EmbedGallery_Image.Alt)
+				}
 			}
-			buf.WriteRune('\n')
-			buf.WriteString(image.Alt)
+		}
+
+		if data.Embed.EmbedRecordWithMedia != nil && data.Embed.EmbedRecordWithMedia.Media != nil {
+			// Collect alt texts when images and a post is embedded (e.g a quote post that also includes an image)
+			if data.Embed.EmbedRecordWithMedia.Media.EmbedImages != nil {
+				for _, image := range data.Embed.EmbedRecordWithMedia.Media.EmbedImages.Images {
+					if image.Alt == "" {
+						continue
+					}
+					buf.WriteRune('\n')
+					buf.WriteString(image.Alt)
+				}
+			}
+			if data.Embed.EmbedRecordWithMedia.Media.EmbedGallery != nil {
+				for _, item := range data.Embed.EmbedRecordWithMedia.Media.EmbedGallery.Items {
+					if item.EmbedGallery_Image != nil && item.EmbedGallery_Image.Alt != "" {
+						buf.WriteRune('\n')
+						buf.WriteString(item.EmbedGallery_Image.Alt)
+					}
+				}
+			}
 		}
 	}
 
@@ -50,7 +71,9 @@ func postTextWithAlts(data *bsky.FeedPost) string {
 
 func hasMedia(data *bsky.FeedPost) bool {
 	return data.Embed != nil && ((data.Embed.EmbedImages != nil && len(data.Embed.EmbedImages.Images) > 0) ||
-		(data.Embed.EmbedRecordWithMedia != nil && data.Embed.EmbedRecordWithMedia.Media != nil && data.Embed.EmbedRecordWithMedia.Media.EmbedImages != nil && len(data.Embed.EmbedRecordWithMedia.Media.EmbedImages.Images) > 0))
+		(data.Embed.EmbedRecordWithMedia != nil && data.Embed.EmbedRecordWithMedia.Media != nil && data.Embed.EmbedRecordWithMedia.Media.EmbedImages != nil && len(data.Embed.EmbedRecordWithMedia.Media.EmbedImages.Images) > 0) ||
+		(data.Embed.EmbedGallery != nil && len(data.Embed.EmbedGallery.Items) > 0) ||
+		(data.Embed.EmbedRecordWithMedia != nil && data.Embed.EmbedRecordWithMedia.Media != nil && data.Embed.EmbedRecordWithMedia.Media.EmbedGallery != nil && len(data.Embed.EmbedRecordWithMedia.Media.EmbedGallery.Items) > 0))
 }
 
 func hasVideo(data *bsky.FeedPost) bool {
