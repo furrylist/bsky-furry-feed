@@ -73,8 +73,6 @@ func bskyCmd(log *slog.Logger, env *environment) *cli.Command {
 
 					feeds := feed.ServiceWithDefaultFeeds(nil)
 					for _, meta := range feeds.Metas() {
-						meta := meta
-
 						log.Info("upserting feed", slog.String("rkey", meta.ID))
 						gen := &bsky.FeedGenerator{
 							Avatar:      blob,

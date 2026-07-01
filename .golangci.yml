@@ -4,3 +4,4 @@ linters:
     - errcheck
   enable:
     - paralleltest
+    - copyloopvar

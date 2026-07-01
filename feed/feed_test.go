@@ -248,8 +248,6 @@ func TestGenerator(t *testing.T) {
 				expectedPosts: []string{nsfwVideoPost, nsfwArtVideoPost},
 			},
 		} {
-			test := test
-
 			t.Run(test.name, func(t *testing.T) {
 				t.Parallel()
 				posts, err := chronologicalGenerator(test.opts)(ctx, harness.Store, "", "", 1000)
@@ -371,8 +369,6 @@ func TestGenerator(t *testing.T) {
 				expectedPosts: []string{nsfwVideoPost, nsfwArtVideoPost},
 			},
 		} {
-			test := test
-
 			t.Run(test.name, func(t *testing.T) {
 				t.Parallel()
 				posts, err := preScoredGenerator(test.opts)(ctx, harness.Store, "", "", 1000)
