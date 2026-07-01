@@ -43,22 +43,22 @@ func (m *mockPDS) isFollowed(subjectDID string) bool {
 	return m.Following[subjectDID]
 }
 
-type mockBGS struct {
+type mockRelay struct {
 	sync.Mutex
 	records map[string]typegen.CBORMarshaler
 }
 
-func (m *mockBGS) fullPath(collection string, actorDID string, rkey string) string {
+func (m *mockRelay) fullPath(collection string, actorDID string, rkey string) string {
 	return fmt.Sprintf("%s/%s/%s", actorDID, collection, rkey)
 }
 
-func (m *mockBGS) setRecord(collection string, actorDID string, rkey string, record typegen.CBORMarshaler) {
+func (m *mockRelay) setRecord(collection string, actorDID string, rkey string, record typegen.CBORMarshaler) {
 	m.Lock()
 	defer m.Unlock()
 	m.records[m.fullPath(collection, actorDID, rkey)] = record
 }
 
-func (m *mockBGS) SyncGetRecord(
+func (m *mockRelay) SyncGetRecord(
 	ctx context.Context, collection string, actorDID string, rkey string,
 ) (record typegen.CBORMarshaler, repoRev string, err error) {
 	m.Lock()
@@ -112,19 +112,19 @@ func TestWorker(t *testing.T) {
 	}
 	require.NoError(t, pds.Follow(ctx, alreadyFollowingDID))
 
-	bgs := &mockBGS{
+	relay := &mockRelay{
 		records: map[string]typegen.CBORMarshaler{},
 	}
-	bgs.setRecord("app.bsky.actor.profile", toFollowDID, "self", &bsky.ActorProfile{
+	relay.setRecord("app.bsky.actor.profile", toFollowDID, "self", &bsky.ActorProfile{
 		DisplayName: new("Bob Ross"),
 		Description: new("Happy little trees"),
 	})
 
 	w := Worker{
-		log:       slog.Default(),
-		store:     pgxStore,
-		pdsClient: pds,
-		bgsClient: bgs,
+		log:         slog.Default(),
+		store:       pgxStore,
+		pdsClient:   pds,
+		relayClient: relay,
 	}
 
 	workerDone := make(chan struct{})

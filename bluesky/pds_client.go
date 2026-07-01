@@ -19,7 +19,7 @@ import (
 )
 
 // DefaultPDSHost is now the vPDS - be cautious - making calls for user data who
-// aren't on the same PDS as the authenticated account may fail. Use BGS or AppView.
+// aren't on the same PDS as the authenticated account may fail. Use Relay or AppView.
 const DefaultPDSHost = "https://bsky.social"
 
 type tokenInfo struct {
