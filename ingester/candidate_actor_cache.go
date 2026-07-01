@@ -9,7 +9,7 @@ import (
 
 	"github.com/jonboulle/clockwork"
 
-	"github.com/strideynet/bsky-furry-feed/bfflog"
+	"github.com/strideynet/bsky-furry-feed/internal/bfflog"
 	v1 "github.com/strideynet/bsky-furry-feed/proto/bff/v1"
 	"github.com/strideynet/bsky-furry-feed/store"
 )

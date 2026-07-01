@@ -9,8 +9,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/strideynet/bsky-furry-feed/bfflog"
 	"github.com/strideynet/bsky-furry-feed/bluesky"
+	"github.com/strideynet/bsky-furry-feed/internal/bfflog"
 	"github.com/strideynet/bsky-furry-feed/store/gen"
 	"google.golang.org/protobuf/types/known/timestamppb"
 

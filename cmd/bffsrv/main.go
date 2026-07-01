@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"github.com/grafana/pyroscope-go"
-	"github.com/strideynet/bsky-furry-feed/bfflog"
+	"github.com/strideynet/bsky-furry-feed/internal/bfflog"
 	"github.com/strideynet/bsky-furry-feed/internal/env"
 	"github.com/strideynet/bsky-furry-feed/scoring"
 	"github.com/strideynet/bsky-furry-feed/worker"

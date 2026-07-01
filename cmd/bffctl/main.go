@@ -9,8 +9,8 @@ import (
 	"slices"
 
 	"github.com/joho/godotenv"
-	"github.com/strideynet/bsky-furry-feed/bfflog"
 	"github.com/strideynet/bsky-furry-feed/bluesky"
+	"github.com/strideynet/bsky-furry-feed/internal/bfflog"
 	"github.com/strideynet/bsky-furry-feed/internal/env"
 	"github.com/urfave/cli/v2"
 )

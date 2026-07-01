@@ -6,7 +6,7 @@ import (
 	"log/slog"
 	"time"
 
-	"github.com/strideynet/bsky-furry-feed/bfflog"
+	"github.com/strideynet/bsky-furry-feed/internal/bfflog"
 	"github.com/strideynet/bsky-furry-feed/store"
 )
 

@@ -18,7 +18,7 @@ import (
 	jsparallel "github.com/bluesky-social/jetstream/pkg/client/schedulers/parallel"
 	"github.com/bluesky-social/jetstream/pkg/models"
 
-	"github.com/strideynet/bsky-furry-feed/bfflog"
+	"github.com/strideynet/bsky-furry-feed/internal/bfflog"
 	v1 "github.com/strideynet/bsky-furry-feed/proto/bff/v1"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/codes"
