@@ -138,6 +138,7 @@ func TestWorker(t *testing.T) {
 		close(workerDone)
 	}()
 
+	//nolint:paralleltest // This is sequential
 	t.Run("unfollow", func(t *testing.T) {
 		err := pgxStore.EnqueueUnfollow(ctx, alreadyFollowingDID)
 		require.NoError(t, err)
@@ -150,6 +151,7 @@ func TestWorker(t *testing.T) {
 		}, time.Second*10, time.Millisecond*100)
 	})
 
+	//nolint:paralleltest // This is sequential
 	t.Run("follow", func(t *testing.T) {
 		err := pgxStore.EnqueueFollow(ctx, toFollowDID)
 		require.NoError(t, err)

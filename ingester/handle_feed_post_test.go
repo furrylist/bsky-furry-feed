@@ -83,6 +83,8 @@ func Test_extractNormalizedHashtags(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
 			require.ElementsMatch(t, tt.want, normalizeHashtags(extractHashtags(tt.post), tt.post.Langs))
 		})
 	}
@@ -172,6 +174,8 @@ func Test_hasMedia(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
 			require.Equal(t, tt.want, hasMedia(tt.post))
 		})
 	}
@@ -251,6 +255,8 @@ func Test_hasVideo(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
 			require.Equal(t, tt.want, hasVideo(tt.post))
 		})
 	}
@@ -340,6 +346,8 @@ func Test_postTextWithAlts(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
 			require.Equal(t, tt.want, postTextWithAlts(tt.post))
 		})
 	}

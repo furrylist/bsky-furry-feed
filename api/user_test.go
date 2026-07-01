@@ -1,14 +1,15 @@
 package api
 
 import (
-	"connectrpc.com/connect"
 	"context"
+	"net/http"
+	"testing"
+
+	"connectrpc.com/connect"
 	"github.com/stretchr/testify/require"
 	bffv1pb "github.com/strideynet/bsky-furry-feed/proto/bff/v1"
 	"github.com/strideynet/bsky-furry-feed/proto/bff/v1/bffv1pbconnect"
 	"github.com/strideynet/bsky-furry-feed/store"
-	"net/http"
-	"testing"
 )
 
 func TestAPI_UserServiceHandler_GetMe(t *testing.T) {
@@ -21,6 +22,7 @@ func TestAPI_UserServiceHandler_GetMe(t *testing.T) {
 	defer cancel()
 	harness := startAPIHarness(ctx, t)
 
+	//nolint:paralleltest // This is broken in parallel
 	t.Run("existing actor", func(t *testing.T) {
 		actor := harness.PDS.MustNewUser(t, "existing.tpds")
 		_, err := harness.Store.CreateActor(ctx, store.CreateActorOpts{
@@ -41,6 +43,7 @@ func TestAPI_UserServiceHandler_GetMe(t *testing.T) {
 		require.Equal(t, bffv1pb.ActorStatus_ACTOR_STATUS_APPROVED, res.Msg.Actor.Status)
 	})
 
+	//nolint:paralleltest // This is broken in parallel
 	t.Run("non-existing actor", func(t *testing.T) {
 		actor := harness.PDS.MustNewUser(t, "non-existing.tpds")
 		userSvcClient := bffv1pbconnect.NewUserServiceClient(

@@ -424,6 +424,7 @@ func TestFirehoseIngester(t *testing.T) {
 		testPosts[i].uri = resp.Uri
 	}
 
+	//nolint:paralleltest // This is sequential
 	t.Run("waiting for posts", func(t *testing.T) {
 		for _, tp := range testPosts {
 			if tp.wantPost == nil {

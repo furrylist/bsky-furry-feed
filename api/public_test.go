@@ -1,15 +1,18 @@
 package api
 
 import (
-	"connectrpc.com/connect"
 	"context"
+	"testing"
+
+	"connectrpc.com/connect"
 	"github.com/stretchr/testify/require"
 	"github.com/strideynet/bsky-furry-feed/feed"
 	v1 "github.com/strideynet/bsky-furry-feed/proto/bff/v1"
-	"testing"
 )
 
 func TestPublicServiceHandler_ListFeeds(t *testing.T) {
+	t.Parallel()
+
 	h := PublicServiceHandler{feedService: &fakeFeedService{
 		metas: []feed.Meta{
 			{
