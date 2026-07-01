@@ -23,16 +23,16 @@ type pdsClient interface {
 	Follow(ctx context.Context, subjectDID string) error
 }
 
-type bgsClient interface {
+type relayClient interface {
 	SyncGetRecord(ctx context.Context, collection string, actorDID string, rkey string) (record typegen.CBORMarshaler, repoRev string, err error)
 }
 
 type Worker struct {
-	log       *slog.Logger
-	pdsHost   string
-	pdsClient pdsClient
-	bgsClient bgsClient
-	store     *store.PGXStore
+	log         *slog.Logger
+	pdsHost     string
+	pdsClient   pdsClient
+	relayClient relayClient
+	store       *store.PGXStore
 }
 
 func New(
@@ -46,14 +46,14 @@ func New(
 	if err != nil {
 		return nil, err
 	}
-	bgs := &bluesky.BGSClient{}
+	relay := &bluesky.RelayClient{}
 
 	return &Worker{
-		log:       log,
-		pdsHost:   pdsHost,
-		pdsClient: client,
-		store:     pgxStore,
-		bgsClient: bgs,
+		log:         log,
+		pdsHost:     pdsHost,
+		pdsClient:   client,
+		store:       pgxStore,
+		relayClient: relay,
 	}, nil
 }
 
@@ -123,7 +123,7 @@ func (w *Worker) updateProfileAndFollow(ctx context.Context, actorDid string) er
 }
 
 func (w *Worker) updateProfile(ctx context.Context, actorDid string) error {
-	record, repoRev, err := w.bgsClient.SyncGetRecord(ctx, "app.bsky.actor.profile", actorDid, "self")
+	record, repoRev, err := w.relayClient.SyncGetRecord(ctx, "app.bsky.actor.profile", actorDid, "self")
 	if err != nil {
 		if err2 := (&xrpc.Error{}); !errors.As(err, &err2) || err2.StatusCode != http.StatusNotFound {
 			return fmt.Errorf("getting profile: %w", err)

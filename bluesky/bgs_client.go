@@ -11,17 +11,17 @@ import (
 	typegen "github.com/whyrusleeping/cbor-gen"
 )
 
-const DefaultBGSHost = "https://bsky.network"
+const DefaultRelayHost = "https://bsky.network"
 
-type BGSClient struct {
-	BGSHost string
+type RelayClient struct {
+	RelayHost string
 }
 
-func (c *BGSClient) xrpcClient() *xrpc.Client {
+func (c *RelayClient) xrpcClient() *xrpc.Client {
 	ua := UserAgent
-	host := c.BGSHost
+	host := c.RelayHost
 	if host == "" {
-		host = DefaultBGSHost
+		host = DefaultRelayHost
 	}
 	return &xrpc.Client{
 		Host:      host,
@@ -29,9 +29,9 @@ func (c *BGSClient) xrpcClient() *xrpc.Client {
 	}
 }
 
-// SyncGetRecord invokes the `SyncGetRecord` RPC against the BGS, and then
+// SyncGetRecord invokes the `SyncGetRecord` RPC against the Relay, and then
 // parses the returned CAR to retrieve the record and the current repo rev.
-func (c *BGSClient) SyncGetRecord(
+func (c *RelayClient) SyncGetRecord(
 	ctx context.Context, collection string, actorDID string, rkey string,
 ) (record typegen.CBORMarshaler, repoRev string, err error) {
 	xc := c.xrpcClient()

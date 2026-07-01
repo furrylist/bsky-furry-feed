@@ -155,7 +155,7 @@ func dbCandidateActorsBackfillProfiles(log *slog.Logger, env *environment) *cli.
 			}
 			defer conn.Close(cctx.Context)
 
-			bgsClient := bluesky.BGSClient{}
+			relayClient := bluesky.RelayClient{}
 
 			db := gen.New(conn)
 			repos, err := db.ListCandidateActorsRequiringProfileBackfill(cctx.Context)
@@ -163,7 +163,7 @@ func dbCandidateActorsBackfillProfiles(log *slog.Logger, env *environment) *cli.
 				return err
 			}
 			for _, r := range repos {
-				record, repoRev, err := bgsClient.SyncGetRecord(cctx.Context, "app.bsky.actor.profile", r.DID, "self")
+				record, repoRev, err := relayClient.SyncGetRecord(cctx.Context, "app.bsky.actor.profile", r.DID, "self")
 				if err != nil {
 					if err2 := (&xrpc.Error{}); !errors.As(err, &err2) || err2.StatusCode != http.StatusNotFound {
 						return fmt.Errorf("getting profile: %w", err)
