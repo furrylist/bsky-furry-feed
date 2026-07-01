@@ -18,7 +18,7 @@ import (
 
 func handleErr(w http.ResponseWriter, log *slog.Logger, err error) {
 	log.Error("failed to handle request", bfflog.Err(err))
-	w.WriteHeader(500)
+	w.WriteHeader(http.StatusInternalServerError)
 	_, _ = fmt.Fprintf(w, "failed to handle request: %s", err)
 }
 
@@ -30,7 +30,7 @@ func jsonHandler(log *slog.Logger, h func(r *http.Request) (any, error)) http.Ha
 			return
 		}
 		w.Header().Add("Content-Type", "application/json")
-		w.WriteHeader(200)
+		w.WriteHeader(http.StatusOK)
 		encoder := json.NewEncoder(w)
 		_ = encoder.Encode(respBody)
 	}

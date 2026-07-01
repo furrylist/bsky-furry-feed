@@ -19,7 +19,7 @@ func rootHandler(log *slog.Logger) (string, http.Handler) {
 			_, _ = w.Write([]byte("Not Found"))
 			return
 		}
-		w.WriteHeader(200)
+		w.WriteHeader(http.StatusOK)
 		_, _ = w.Write(rootPage)
 
 	}

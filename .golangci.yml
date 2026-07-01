@@ -6,3 +6,4 @@ linters:
     - paralleltest
     - copyloopvar
     - modernize
+    - usestdlibvars

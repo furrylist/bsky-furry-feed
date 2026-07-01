@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"log/slog"
+	"net/http"
 	"strings"
 	"time"
 
@@ -164,7 +165,7 @@ func dbCandidateActorsBackfillProfiles(log *slog.Logger, env *environment) *cli.
 			for _, r := range repos {
 				record, repoRev, err := bgsClient.SyncGetRecord(cctx.Context, "app.bsky.actor.profile", r.DID, "self")
 				if err != nil {
-					if err2 := (&xrpc.Error{}); !errors.As(err, &err2) || err2.StatusCode != 404 {
+					if err2 := (&xrpc.Error{}); !errors.As(err, &err2) || err2.StatusCode != http.StatusNotFound {
 						return fmt.Errorf("getting profile: %w", err)
 					}
 					record = nil

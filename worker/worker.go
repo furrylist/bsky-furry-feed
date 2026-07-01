@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"log/slog"
+	"net/http"
 	"time"
 
 	"github.com/bluesky-social/indigo/api/bsky"
@@ -124,7 +125,7 @@ func (w *Worker) updateProfileAndFollow(ctx context.Context, actorDid string) er
 func (w *Worker) updateProfile(ctx context.Context, actorDid string) error {
 	record, repoRev, err := w.bgsClient.SyncGetRecord(ctx, "app.bsky.actor.profile", actorDid, "self")
 	if err != nil {
-		if err2 := (&xrpc.Error{}); !errors.As(err, &err2) || err2.StatusCode != 404 {
+		if err2 := (&xrpc.Error{}); !errors.As(err, &err2) || err2.StatusCode != http.StatusNotFound {
 			return fmt.Errorf("getting profile: %w", err)
 		}
 		record = nil
