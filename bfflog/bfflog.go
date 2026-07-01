@@ -25,14 +25,14 @@ type PyroscopeSlogAdapter struct {
 	Slog *slog.Logger
 }
 
-func (p *PyroscopeSlogAdapter) Infof(a string, b ...interface{}) {
+func (p *PyroscopeSlogAdapter) Infof(a string, b ...any) {
 	p.Slog.Info(fmt.Sprintf(a, b...))
 }
 
-func (p *PyroscopeSlogAdapter) Debugf(a string, b ...interface{}) {
+func (p *PyroscopeSlogAdapter) Debugf(a string, b ...any) {
 	p.Slog.Debug(fmt.Sprintf(a, b...))
 }
 
-func (p *PyroscopeSlogAdapter) Errorf(a string, b ...interface{}) {
+func (p *PyroscopeSlogAdapter) Errorf(a string, b ...any) {
 	p.Slog.Error(fmt.Sprintf(a, b...))
 }

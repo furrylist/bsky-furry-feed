@@ -1,7 +1,6 @@
 package api
 
 import (
-	"context"
 	"net/http"
 	"testing"
 
@@ -18,8 +17,7 @@ func TestAPI_UserServiceHandler_GetMe(t *testing.T) {
 	}
 	t.Parallel()
 
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
+	ctx := t.Context()
 	harness := startAPIHarness(ctx, t)
 
 	//nolint:paralleltest // This is broken in parallel

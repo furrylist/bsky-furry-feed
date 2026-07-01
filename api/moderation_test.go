@@ -1,7 +1,6 @@
 package api
 
 import (
-	"context"
 	"net/http"
 	"testing"
 	"time"
@@ -20,8 +19,7 @@ func TestAPI_ModerationServiceHandler_CreateActor(t *testing.T) {
 	}
 	t.Parallel()
 
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
+	ctx := t.Context()
 	harness := startAPIHarness(ctx, t)
 
 	furryActor := harness.PDS.MustNewUser(t, "furry.tpds")
@@ -62,8 +60,7 @@ func TestAPI_ModerationServiceHandler_HoldBackPendingActor(t *testing.T) {
 	}
 	t.Parallel()
 
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
+	ctx := t.Context()
 	harness := startAPIHarness(ctx, t)
 
 	furryActor := harness.PDS.MustNewUser(t, "furry.tpds")

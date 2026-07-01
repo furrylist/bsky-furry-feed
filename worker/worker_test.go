@@ -72,10 +72,6 @@ func (m *mockBGS) SyncGetRecord(
 	return record, "1", nil
 }
 
-func strPtr(s string) *string {
-	return &s
-}
-
 func TestWorker(t *testing.T) {
 	t.Parallel()
 
@@ -120,8 +116,8 @@ func TestWorker(t *testing.T) {
 		records: map[string]typegen.CBORMarshaler{},
 	}
 	bgs.setRecord("app.bsky.actor.profile", toFollowDID, "self", &bsky.ActorProfile{
-		DisplayName: strPtr("Bob Ross"),
-		Description: strPtr("Happy little trees"),
+		DisplayName: new("Bob Ross"),
+		Description: new("Happy little trees"),
 	})
 
 	w := Worker{
