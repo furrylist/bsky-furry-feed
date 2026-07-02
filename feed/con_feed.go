@@ -126,4 +126,15 @@ func registerConFeeds(r *Service) {
 			"lasvegasfurcon", "lvfc2026",
 		},
 	})
+	r.registerChronologicalConFeed(conFeed{
+		ID:       "aurawra",
+		Name:     "Aurawra",
+		MainTags: []string{"aurawra", "aurawra26", "aurawra2026"},
+		OtherTags: []string{
+			"aurawracon",
+			// I typo'd it so much while typing the name, so just to be sure.
+			"auraracon", "aurawar", "aurawar26", "aurawar2026",
+			"auwara", "auwara26", "auwara2026",
+		},
+	})
 }
