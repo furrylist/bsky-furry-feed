@@ -18,14 +18,13 @@ type RelayClient struct {
 }
 
 func (c *RelayClient) xrpcClient() *xrpc.Client {
-	ua := UserAgent
 	host := c.RelayHost
 	if host == "" {
 		host = DefaultRelayHost
 	}
 	return &xrpc.Client{
 		Host:      host,
-		UserAgent: &ua,
+		UserAgent: new(UserAgent),
 	}
 }
 
