@@ -10,8 +10,8 @@ import (
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promauto"
 	"github.com/strideynet/bsky-furry-feed/bluesky"
+	"github.com/strideynet/bsky-furry-feed/internal/tristate"
 	"github.com/strideynet/bsky-furry-feed/store"
-	"github.com/strideynet/bsky-furry-feed/tristate"
 )
 
 const PawEmoji = "🐾"

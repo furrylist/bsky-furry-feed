@@ -8,10 +8,10 @@ import (
 	"github.com/bluesky-social/indigo/api/bsky"
 	indigoTest "github.com/bluesky-social/indigo/testing"
 	"github.com/stretchr/testify/require"
+	"github.com/strideynet/bsky-furry-feed/internal/tristate"
 	bffv1pb "github.com/strideynet/bsky-furry-feed/proto/bff/v1"
 	"github.com/strideynet/bsky-furry-feed/store"
 	"github.com/strideynet/bsky-furry-feed/testenv"
-	"github.com/strideynet/bsky-furry-feed/tristate"
 )
 
 func TestGenerator(t *testing.T) {
