@@ -4,7 +4,8 @@
     .replace('🐾', '')
     .replace(/[0-9]+$/, '')
     .trim();
-  $: firstTag = data.feed?.description.match(/#\S+/)?.toString().toUpperCase();
+  $: firstTagUncased = String(data.feed?.description.match(/#\S+/)?.toString());
+  $: firstTag = firstTagUncased.length > 4 ? firstTagUncased : firstTagUncased.toUpperCase();
 </script>
 
 {#if title}
