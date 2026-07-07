@@ -7,6 +7,7 @@ import (
 	"net/url"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/golang-jwt/jwt/v5"
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
@@ -85,6 +86,7 @@ func getFeedSkeletonHandler(
 	log *slog.Logger, feedService feedService,
 ) (string, http.Handler) {
 	h := jsonHandler(log, func(r *http.Request) (any, error) {
+		start := time.Now()
 		ctx := r.Context()
 
 		params, err := parseGetFeedSkeletonParams(r.URL)
@@ -95,13 +97,17 @@ func getFeedSkeletonHandler(
 		if err != nil {
 			log.Error("failed decoding user did", slog.String("error", err.Error()))
 		}
-		log.Debug(
-			"get feed skeleton request",
-			slog.String("feed", params.feed),
-			slog.String("cursor", params.cursor),
-			slog.String("actor_did", actorDid),
-			slog.Int("limit", params.limit),
-		)
+
+		defer func() {
+			log.Debug(
+				"get feed skeleton request",
+				slog.String("feed", params.feed),
+				slog.String("cursor", params.cursor),
+				slog.String("actor_did", actorDid),
+				slog.String("duration", start.Truncate(time.Millisecond).String()),
+				slog.Int("limit", params.limit),
+			)
+		}()
 
 		posts, err := feedService.GetFeedPosts(ctx, params.feed, params.cursor, actorDid, params.limit)
 		if err != nil {
