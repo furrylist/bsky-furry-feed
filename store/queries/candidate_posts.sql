@@ -42,11 +42,18 @@ WHERE
     AND (
     -- Standard criteria.
         (
-            -- Match at least one of the queried hashtags.
+            -- Match at least one of the queried hashtags, or the text query.
             -- If unspecified, do not filter.
             (
-                COALESCE(sqlc.narg(hashtags)::TEXT [], '{}') = '{}'
-                OR sqlc.arg(hashtags)::TEXT [] && cp.hashtags
+                (
+                    COALESCE(sqlc.narg(hashtags)::TEXT [], '{}') = '{}'
+                    OR sqlc.arg(hashtags)::TEXT [] && cp.hashtags
+                )
+                -- Allow a post to contain a text
+                OR (
+                    sqlc.narg(text_contains)::TEXT IS NOT NULL
+                    AND cp.raw ->> 'text' ILIKE sqlc.narg(text_contains)::TEXT
+                )
             )
             -- If any hashtags are disallowed, filter them out.
             AND (

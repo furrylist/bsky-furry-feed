@@ -7,10 +7,11 @@ import (
 )
 
 type conFeed struct {
-	ID        string
-	Name      string
-	MainTags  []string
-	OtherTags []string
+	ID           string
+	Name         string
+	MainTags     []string
+	OtherTags    []string
+	TextContains string
 }
 
 // registerChronologicalConFeed registers a con feed (with con- prefix).
@@ -136,5 +137,6 @@ func registerConFeeds(r *Service) {
 			"auraracon", "aurawar", "aurawar26", "aurawar2026",
 			"auwara", "auwara26", "auwara2026",
 		},
+		TextContains: "aurawra",
 	})
 }

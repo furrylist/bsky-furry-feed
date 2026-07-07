@@ -58,7 +58,7 @@ func (q *Queries) CreateCandidatePost(ctx context.Context, arg CreateCandidatePo
 
 const getFurryNewFeed = `-- name: GetFurryNewFeed :many
 WITH args AS (
-    SELECT $7::TEXT [] AS allowed_embeds
+    SELECT $8::TEXT [] AS allowed_embeds
 )
 
 SELECT cp.uri, cp.actor_did, cp.created_at, cp.indexed_at, cp.is_hidden, cp.deleted_at, cp.raw, cp.hashtags, cp.has_media, cp.self_labels, cp.has_video
@@ -76,16 +76,23 @@ WHERE
     AND (
     -- Standard criteria.
         (
-            -- Match at least one of the queried hashtags.
+            -- Match at least one of the queried hashtags, or the text query.
             -- If unspecified, do not filter.
             (
-                COALESCE($1::TEXT [], '{}') = '{}'
-                OR $1::TEXT [] && cp.hashtags
+                (
+                    COALESCE($1::TEXT [], '{}') = '{}'
+                    OR $1::TEXT [] && cp.hashtags
+                )
+                -- Allow a post to contain a text
+                OR (
+                    $2::TEXT IS NOT NULL
+                    AND cp.raw ->> 'text' ILIKE $2::TEXT
+                )
             )
             -- If any hashtags are disallowed, filter them out.
             AND (
-                COALESCE($2::TEXT [], '{}') = '{}'
-                OR NOT $2::TEXT [] && cp.hashtags
+                COALESCE($3::TEXT [], '{}') = '{}'
+                OR NOT $3::TEXT [] && cp.hashtags
             )
             AND (
                 CARDINALITY(args.allowed_embeds) = 0
@@ -105,27 +112,28 @@ WHERE
             )
             -- Filter by NSFW status. If unspecified, do not filter.
             AND (
-                $3::BOOLEAN IS NULL
+                $4::BOOLEAN IS NULL
                 OR (
                     (ARRAY['nsfw', 'mursuit', 'murrsuit', 'nsfwfurry', 'furrynsfw'] && cp.hashtags)
                     OR (ARRAY['porn', 'nudity', 'sexual'] && cp.self_labels)
-                ) = $3
+                ) = $4
             )
         )
         -- Pinned DID criteria.
-        OR cp.actor_did = ANY($4::TEXT [])
+        OR cp.actor_did = ANY($5::TEXT [])
     )
     -- Remove posts newer than the cursor timestamp
-    AND (cp.indexed_at < $5)
+    AND (cp.indexed_at < $6)
     AND cp.indexed_at > NOW() - INTERVAL '7 day'
     AND cp.created_at > NOW() - INTERVAL '7 day'
 ORDER BY
     cp.indexed_at DESC
-LIMIT $6
+LIMIT $7
 `
 
 type GetFurryNewFeedParams struct {
 	Hashtags           []string
+	TextContains       pgtype.Text
 	DisallowedHashtags []string
 	IsNSFW             pgtype.Bool
 	PinnedDIDs         []string
@@ -137,6 +145,7 @@ type GetFurryNewFeedParams struct {
 func (q *Queries) GetFurryNewFeed(ctx context.Context, arg GetFurryNewFeedParams) ([]CandidatePost, error) {
 	rows, err := q.db.Query(ctx, getFurryNewFeed,
 		arg.Hashtags,
+		arg.TextContains,
 		arg.DisallowedHashtags,
 		arg.IsNSFW,
 		arg.PinnedDIDs,

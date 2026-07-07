@@ -565,6 +565,7 @@ func (s *PGXStore) DeleteFollow(ctx context.Context, opts DeleteFollowOpts) (err
 type ListPostsForNewFeedOpts struct {
 	CursorTime         time.Time
 	Hashtags           []string
+	TextContains       string
 	DisallowedHashtags []string
 	IsNSFW             tristate.Tristate
 	AllowedEmbeds      []string
@@ -596,6 +597,7 @@ func (s *PGXStore) ListPostsForNewFeed(ctx context.Context, opts ListPostsForNew
 		AllowedEmbeds:      opts.AllowedEmbeds,
 		IsNSFW:             tristateToPgtypeBool(opts.IsNSFW),
 		PinnedDIDs:         opts.PinnedDIDs,
+		TextContains:       pgtype.Text{Valid: len(opts.TextContains) > 0, String: opts.TextContains},
 	}
 	if opts.Limit != 0 {
 		queryParams.Limit = int32(opts.Limit)
