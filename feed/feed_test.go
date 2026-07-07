@@ -254,9 +254,9 @@ func TestGenerator(t *testing.T) {
 				name: "text contains",
 				opts: chronologicalGeneratorOpts{
 					generatorOpts: generatorOpts{
-						Hashtags:     []string{"fursuit"},
-						TextContains: "fursuit",
+						Hashtags: []string{"fursuit"},
 					},
+					TextContains: "fursuit",
 				},
 				expectedPosts: []string{textPost, fursuitPost, murrsuitPost},
 			},
