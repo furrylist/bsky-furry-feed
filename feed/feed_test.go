@@ -59,7 +59,7 @@ func TestGenerator(t *testing.T) {
 		{
 			URI: textPost,
 			Raw: &bsky.FeedPost{
-				Text: "fursuit",
+				Text: "woof woof fursuits :3",
 			},
 		},
 		{

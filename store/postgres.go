@@ -597,7 +597,7 @@ func (s *PGXStore) ListPostsForNewFeed(ctx context.Context, opts ListPostsForNew
 		AllowedEmbeds:      opts.AllowedEmbeds,
 		IsNSFW:             tristateToPgtypeBool(opts.IsNSFW),
 		PinnedDIDs:         opts.PinnedDIDs,
-		TextContains:       pgtype.Text{Valid: len(opts.TextContains) > 0, String: opts.TextContains},
+		TextContains:       pgtype.Text{Valid: len(opts.TextContains) > 0, String: "%" + opts.TextContains + "%"},
 	}
 	if opts.Limit != 0 {
 		queryParams.Limit = int32(opts.Limit)
