@@ -97,7 +97,6 @@ func (s *Service) GetFeedPosts(ctx context.Context, feedKey string, cursor strin
 
 type generatorOpts struct {
 	Hashtags           []string
-	TextContains       string
 	DisallowedHashtags []string
 	IsNSFW             tristate.Tristate
 	AllowedEmbeds      []EmbedType
@@ -105,7 +104,8 @@ type generatorOpts struct {
 
 type chronologicalGeneratorOpts struct {
 	generatorOpts
-	PinnedDIDs []string
+	PinnedDIDs   []string
+	TextContains string
 }
 
 type EmbedType string
