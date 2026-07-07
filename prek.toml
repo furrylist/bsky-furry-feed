@@ -36,6 +36,22 @@ entry = "mise run generate:buf"
 pass_filenames = false
 files = "\\.(go|mod|sum|toml)$|^proto"
 
+[[repos.hooks]]
+id = "go-tests"
+name = "run go tests"
+language = "system"
+entry = "go test ./..."
+pass_filenames = false
+files = "\\.(go|mod|sum|toml)$|^proto"
+
+[[repos.hooks]]
+id = "go-lint"
+name = "run go linting"
+language = "system"
+entry = "golangci-lint run ./..."
+pass_filenames = false
+files = "\\.(go|mod|sum|toml)$|^proto"
+
 [[repos]]
 repo = "https://github.com/compilerla/conventional-pre-commit"
 rev = "v4.4.0"
