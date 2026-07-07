@@ -45,6 +45,7 @@ func (s *Service) registerChronologicalConFeed(feed conFeed) {
 		generatorOpts: generatorOpts{
 			Hashtags:           append(feed.MainTags, feed.OtherTags...),
 			DisallowedHashtags: defaultDisallowedHashtags,
+			TextContains:       feed.TextContains,
 		},
 	}))
 }
