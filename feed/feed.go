@@ -97,6 +97,7 @@ func (s *Service) GetFeedPosts(ctx context.Context, feedKey string, cursor strin
 
 type generatorOpts struct {
 	Hashtags           []string
+	TextContains       string
 	DisallowedHashtags []string
 	IsNSFW             tristate.Tristate
 	AllowedEmbeds      []EmbedType
@@ -140,6 +141,7 @@ func chronologicalGenerator(opts chronologicalGeneratorOpts) GenerateFunc {
 			AllowedEmbeds:      allowedEmbeds,
 			PinnedDIDs:         opts.PinnedDIDs,
 			CursorTime:         cursorTime,
+			TextContains:       opts.TextContains,
 		}
 
 		storePosts, err := pgxStore.ListPostsForNewFeed(ctx, params)

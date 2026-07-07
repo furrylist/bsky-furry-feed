@@ -58,6 +58,9 @@ func TestGenerator(t *testing.T) {
 		},
 		{
 			URI: textPost,
+			Raw: &bsky.FeedPost{
+				Text: "fursuit",
+			},
 		},
 		{
 			URI:       oldPost,
@@ -246,6 +249,16 @@ func TestGenerator(t *testing.T) {
 					},
 				},
 				expectedPosts: []string{nsfwVideoPost, nsfwArtVideoPost},
+			},
+			{
+				name: "text contains",
+				opts: chronologicalGeneratorOpts{
+					generatorOpts: generatorOpts{
+						Hashtags:     []string{"fursuit"},
+						TextContains: "fursuit",
+					},
+				},
+				expectedPosts: []string{textPost, fursuitPost, murrsuitPost},
 			},
 		} {
 			t.Run(test.name, func(t *testing.T) {
