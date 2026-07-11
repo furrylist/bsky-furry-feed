@@ -56,7 +56,6 @@ func New(
 	c := cors.New(cors.Options{
 		AllowedOrigins: []string{
 			"https://admin.furryli.st",
-			"https://*.vercel.app",
 			"https://furryli.st",
 			"http://localhost:*",
 			"https://buf.build",
