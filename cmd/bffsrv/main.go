@@ -168,16 +168,9 @@ func runE(log *slog.Logger) error {
 
 	var poolConnector store.PoolConnector
 	switch mode {
-	case env.ModeProd:
+	case env.ModeProd, env.ModeFeedDev:
 		poolConnector = &store.DirectConnector{
 			URI: os.Getenv(env.EnvDB_URI),
-		}
-	case env.ModeFeedDev:
-		poolConnector = &store.CloudSQLConnector{
-			Instance: "bsky-furry-feed:us-east1:main-us-east",
-			Database: "bff",
-			// TODO: Fetch this from an env var or from adc
-			Username: "noah@noahstride.co.uk",
 		}
 	case env.ModeDev:
 		poolConnector = &store.DirectConnector{
