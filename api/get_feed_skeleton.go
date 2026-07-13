@@ -104,7 +104,7 @@ func getFeedSkeletonHandler(
 				slog.String("feed", params.feed),
 				slog.String("cursor", params.cursor),
 				slog.String("actor_did", actorDid),
-				slog.String("duration", start.Truncate(time.Millisecond).String()),
+				slog.String("duration", time.Since(start).Truncate(time.Millisecond).String()),
 				slog.Int("limit", params.limit),
 			)
 		}()
