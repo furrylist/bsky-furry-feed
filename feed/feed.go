@@ -12,6 +12,7 @@ import (
 	"github.com/strideynet/bsky-furry-feed/bluesky"
 	"github.com/strideynet/bsky-furry-feed/internal/tristate"
 	"github.com/strideynet/bsky-furry-feed/store"
+	"github.com/strideynet/bsky-furry-feed/store/gen"
 )
 
 const PawEmoji = "🐾"
@@ -231,6 +232,28 @@ func preScoredGenerator(opts preScoredGeneratorOpts) GenerateFunc {
 	}
 }
 
+func deduplicateConsecutiveAuthors(posts []gen.ListTestFeedPostsRow, limit int) []gen.ListTestFeedPostsRow {
+	if len(posts) == 0 {
+		return posts
+	}
+
+	result := make([]gen.ListTestFeedPostsRow, 0, limit)
+	lastAuthor := ""
+
+	for _, post := range posts {
+		if post.ActorDID != lastAuthor {
+			result = append(result, post)
+			lastAuthor = post.ActorDID
+
+			if len(result) >= limit {
+				break
+			}
+		}
+	}
+
+	return result
+}
+
 func testGenerator(opts preScoredGeneratorOpts) GenerateFunc {
 	return func(ctx context.Context, pgxStore *store.PGXStore, cursor string, actorDid string, limit int) ([]Post, error) {
 		if actorDid == "" {
@@ -251,7 +274,7 @@ func testGenerator(opts preScoredGeneratorOpts) GenerateFunc {
 			allowedEmbeds = append(allowedEmbeds, string(embed))
 		}
 		params := store.ListPostsForHotFeedOpts{
-			Limit:              limit,
+			Limit:              limit * 3,
 			Hashtags:           opts.Hashtags,
 			DisallowedHashtags: opts.DisallowedHashtags,
 			IsNSFW:             opts.IsNSFW,
@@ -281,14 +304,16 @@ func testGenerator(opts preScoredGeneratorOpts) GenerateFunc {
 		}
 		storePosts, err := pgxStore.ListTestPosts(ctx, actorDid, params)
 		if err != nil {
-			return nil, fmt.Errorf("executing ListPostsForHotFeed: %w", err)
+			return nil, fmt.Errorf("executing ListTestPosts: %w", err)
 		}
 
-		posts := make([]Post, 0, len(storePosts))
-		for _, p := range storePosts {
+		dedupedPosts := deduplicateConsecutiveAuthors(storePosts, limit)
+
+		posts := make([]Post, 0, len(dedupedPosts))
+		for _, p := range dedupedPosts {
 			postCursor, err := json.Marshal(cursorValues{
 				GenerationSeq: params.Cursor.GenerationSeq,
-				AfterScore:    p.Score,
+				AfterScore:    float32(p.FluffRelevanceScore),
 				AfterURI:      p.URI,
 			})
 			if err != nil {

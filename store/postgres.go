@@ -675,10 +675,10 @@ func (s *PGXStore) ListTestPosts(ctx context.Context, actorDid string, opts List
 	}()
 
 	queryParams := gen.ListTestFeedPostsParams{
-		Alg:           opts.Alg,
-		GenerationSeq: opts.Cursor.GenerationSeq,
-		// AfterScore:    opts.Cursor.AfterScore,
-		// AfterURI:      opts.Cursor.AfterURI,
+		Alg:                opts.Alg,
+		GenerationSeq:      opts.Cursor.GenerationSeq,
+		AfterScore:         float64(opts.Cursor.AfterScore),
+		AfterURI:           opts.Cursor.AfterURI,
 		DisallowedHashtags: opts.DisallowedHashtags,
 		ActorDID:           actorDid,
 	}
@@ -688,7 +688,7 @@ func (s *PGXStore) ListTestPosts(ctx context.Context, actorDid string, opts List
 
 	posts, err := s.queries.ListTestFeedPosts(ctx, queryParams)
 	if err != nil {
-		return nil, fmt.Errorf("executing ListScoredPosts query: %w", convertPGXError(err))
+		return nil, fmt.Errorf("executing ListTestFeedPosts query: %w", convertPGXError(err))
 	}
 
 	return posts, nil

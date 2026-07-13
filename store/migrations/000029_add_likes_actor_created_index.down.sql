@@ -1,0 +1,1 @@
+DROP INDEX CONCURRENTLY IF EXISTS candidate_likes_actor_did_created_at_idx;

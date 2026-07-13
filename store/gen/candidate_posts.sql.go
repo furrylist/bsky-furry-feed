@@ -348,171 +348,139 @@ func (q *Queries) ListScoredPosts(ctx context.Context, arg ListScoredPostsParams
 }
 
 const listTestFeedPosts = `-- name: ListTestFeedPosts :many
-WITH my_network AS (
-    SELECT subject_did AS did
-    FROM candidate_follows
-    WHERE
-        actor_did = $1
-        AND subject_did != 'did:plc:jdkvwye2lf4mingzk7qdebzc'
-    UNION
-    SELECT actor_did AS did
-    FROM candidate_follows
-    WHERE
-        subject_did = $1
-        AND actor_did != 'did:plc:jdkvwye2lf4mingzk7qdebzc'
-),
-
-my_network_quiet AS (
-    SELECT
-        did,
-        recent_posts
-    FROM (
-        SELECT
-            did,
-            COUNT(*) AS recent_posts
-        FROM my_network
-        INNER JOIN candidate_posts ON actor_did = did
-        WHERE created_at > NOW() - INTERVAL '7 days'
-        GROUP BY did
-    ) WHERE recent_posts <= 2
-),
-
-my_network_yappers AS (
-    SELECT
-        did,
-        recent_posts
-    FROM (
-        SELECT
-            did,
-            COUNT(*) AS recent_posts
-        FROM my_network
-        INNER JOIN candidate_posts ON actor_did = did
-        WHERE created_at > NOW() - INTERVAL '7 days'
-        GROUP BY did
-    ) WHERE recent_posts >= 5
-),
-
-my_top_liked_dids AS (
-    SELECT
-        cp.actor_did AS did,
-        COUNT(*) AS liked_count
+WITH my_recent_likes AS (
+    SELECT cl.subject_uri
     FROM candidate_likes AS cl
-    INNER JOIN candidate_posts AS cp ON cl.subject_uri = cp.uri
     WHERE
-        cl.actor_did = $1
-        AND cp.created_at > NOW() - INTERVAL '30 days'
-    GROUP BY did
-    ORDER BY liked_count DESC
-    LIMIT 20
+        cl.actor_did = $6
+        AND cl.deleted_at IS NULL
+        AND cl.created_at > NOW() - INTERVAL '30 days'
+    LIMIT 500
 ),
 
-most_recent_likes_from_my_network AS (
-    SELECT cp.actor_did AS did
+similar_users AS (
+    SELECT
+        cl.actor_did AS did,
+        COUNT(*) AS shared_likes
     FROM candidate_likes AS cl
-    INNER JOIN candidate_posts AS cp ON cl.subject_uri = cp.uri
-    WHERE cl.actor_did = ANY(SELECT did FROM my_network)
-    ORDER BY cp.created_at DESC
+    WHERE
+        cl.subject_uri IN (SELECT subject_uri FROM my_recent_likes)
+        AND cl.actor_did != $6
+        AND cl.deleted_at IS NULL
+    GROUP BY cl.actor_did
+    HAVING COUNT(*) >= 2
+    ORDER BY shared_likes DESC
     LIMIT 100
 ),
 
-horniness_rate AS (
-    SELECT SUM(is_nsfw::INT) / COUNT(*)::FLOAT AS hornyness_rate
-    FROM (
-        SELECT
-            (ARRAY['nsfw', 'mursuit', 'murrsuit', 'nsfwfurry', 'furrynsfw'] && cp.hashtags)
-            OR (ARRAY['porn', 'nudity', 'sexual'] && cp.self_labels) AS is_nsfw
-        FROM candidate_likes AS cl
-        INNER JOIN candidate_posts AS cp
-            ON
-                cl.subject_uri = cp.uri
-                AND cl.actor_did = $1
-                AND cp.has_media
-                AND cp.created_at > NOW() - INTERVAL '30 days'
-    )
+candidate_posts_recent AS (
+    SELECT
+        cp.uri,
+        cp.actor_did,
+        cp.created_at,
+        cp.hashtags
+    FROM candidate_posts AS cp
+    INNER JOIN candidate_actors AS ca ON cp.actor_did = ca.did
+    WHERE
+        cp.deleted_at IS NULL
+        AND ca.status = 'approved'
+        AND cp.created_at > NOW() - INTERVAL '3 days'
+        AND (
+            COALESCE($7::TEXT [], '{}') = '{}'
+            OR NOT $7::TEXT [] && cp.hashtags
+        )
+),
+
+my_follows AS (
+    SELECT subject_did
+    FROM candidate_follows
+    WHERE
+        actor_did = $6
+        AND deleted_at IS NULL
+),
+
+their_recent_likes AS (
+    SELECT
+        cl.subject_uri,
+        COUNT(*) AS like_count,
+        MAX(cl.created_at) AS most_recent_like_at,
+        BOOL_OR(su.did IN (SELECT subject_did FROM my_follows)) AS liked_by_friend
+    FROM candidate_likes_recent AS cl
+    INNER JOIN similar_users AS su ON cl.actor_did = su.did
+    INNER JOIN candidate_posts_recent AS cpr ON cl.subject_uri = cpr.uri
+    WHERE
+        NOT EXISTS (
+            SELECT 1 FROM candidate_likes_recent AS my_like
+            WHERE
+                my_like.subject_uri = cl.subject_uri
+                AND my_like.actor_did = $6
+        )
+    GROUP BY cl.subject_uri
+    HAVING COUNT(*) >= 1
+),
+
+scored_candidates AS MATERIALIZED (
+    SELECT
+        cpr.uri,
+        cpr.actor_did,
+        trl.like_count,
+        trl.most_recent_like_at,
+        CASE
+            WHEN
+                cpr.actor_did IN (SELECT subject_did FROM my_follows)
+                THEN trl.most_recent_like_at + INTERVAL '12 hours'
+            WHEN trl.liked_by_friend THEN trl.most_recent_like_at + INTERVAL '6 hours'
+            WHEN trl.like_count = 1 THEN trl.most_recent_like_at + INTERVAL '3 hours'
+            ELSE trl.most_recent_like_at
+        END AS boosted_time
+    FROM their_recent_likes AS trl
+    INNER JOIN candidate_posts_recent AS cpr ON trl.subject_uri = cpr.uri
 )
 
 SELECT
-    cp.uri,
-    ph.score,
-    ((
-        SELECT COUNT(*) + 1
-        FROM candidate_likes AS cl2
-        WHERE
-            subject_uri = cp.uri
-            AND (
-                cl2.actor_did = ANY(SELECT did FROM my_network)
-                AND cl2.actor_did != $1
-            )
-    )
-    * (CASE cp.actor_did = ANY(SELECT did FROM most_recent_likes_from_my_network) WHEN TRUE THEN 1.25 ELSE 1 END)
-    * (CASE cp.actor_did = ANY(SELECT did FROM my_top_liked_dids) WHEN TRUE THEN 1.75 ELSE 0.5 END)
-    * (CASE cp.actor_did = ANY(SELECT did FROM my_network_quiet) WHEN TRUE THEN 2.33 ELSE 1 END)
-    * (CASE cp.actor_did = ANY(SELECT did FROM my_network_yappers) WHEN TRUE THEN 0.75 ELSE 1 END)
-    * (CASE (
-        (ARRAY['nsfw', 'mursuit', 'murrsuit', 'nsfwfurry', 'furrynsfw'] && cp.hashtags)
-        OR (ARRAY['porn', 'nudity', 'sexual'] && cp.self_labels)
-    ) WHEN TRUE THEN 1 + (SELECT hornyness_rate FROM horniness_rate) * 1.5 ELSE 1
-    END)
-    * (CASE cp.actor_did = ANY(SELECT did FROM my_network) WHEN TRUE THEN 100 ELSE 0.5 END)
-    )::FLOAT AS fluff_relevance_score,
-    (
-        (ARRAY['nsfw', 'mursuit', 'murrsuit', 'nsfwfurry', 'furrynsfw'] && cp.hashtags)
-        OR (ARRAY['porn', 'nudity', 'sexual'] && cp.self_labels)
-    ) AS is_nsfw
-FROM candidate_posts AS cp
-INNER JOIN candidate_actors AS ca ON cp.actor_did = ca.did
-INNER JOIN post_scores AS ph
+    sc.uri,
+    sc.actor_did,
+    EXTRACT(EPOCH FROM sc.boosted_time)::FLOAT AS fluff_relevance_score,
+    COALESCE(ph.score, 0) AS score
+FROM scored_candidates AS sc
+LEFT JOIN post_scores AS ph
     ON
-        cp.uri = ph.uri AND ph.alg = $2
-        AND ph.generation_seq = $3
+        sc.uri = ph.uri
+        AND ph.alg = $1
+        AND ph.generation_seq = $2
 WHERE
-    cp.created_at > NOW() - INTERVAL '7 day'
-    AND actor_did != $1
-    AND (
-        actor_did = ANY(SELECT did FROM most_recent_likes_from_my_network)
-        OR actor_did = ANY(SELECT did FROM my_network)
-        OR actor_did = ANY(SELECT did FROM my_top_liked_dids)
-    )
-    AND NOT EXISTS (
-        SELECT 1
-        FROM candidate_likes AS cl
-        WHERE
-            cl.subject_uri = cp.uri
-            AND cl.actor_did = $1
-            AND cl.created_at > NOW() - INTERVAL '1 day'
-    )
-
-    AND (
-        COALESCE($4::TEXT [], '{}') = '{}'
-        OR NOT $4::TEXT [] && cp.hashtags
-    )
-ORDER BY
-    fluff_relevance_score DESC, ph.score DESC, ph.uri DESC
+    ROW(sc.boosted_time, sc.uri)
+    < ROW(TO_TIMESTAMP(($3)::DOUBLE PRECISION), ($4)::TEXT)
+ORDER BY sc.boosted_time DESC, sc.uri DESC
 LIMIT $5
 `
 
 type ListTestFeedPostsParams struct {
-	ActorDID           string
 	Alg                string
 	GenerationSeq      int64
-	DisallowedHashtags []string
+	AfterScore         float64
+	AfterURI           string
 	Limit              int32
+	ActorDID           string
+	DisallowedHashtags []string
 }
 
 type ListTestFeedPostsRow struct {
 	URI                 string
-	Score               float32
+	ActorDID            string
 	FluffRelevanceScore float64
-	IsNSFW              pgtype.Bool
+	Score               float32
 }
 
 func (q *Queries) ListTestFeedPosts(ctx context.Context, arg ListTestFeedPostsParams) ([]ListTestFeedPostsRow, error) {
 	rows, err := q.db.Query(ctx, listTestFeedPosts,
-		arg.ActorDID,
 		arg.Alg,
 		arg.GenerationSeq,
-		arg.DisallowedHashtags,
+		arg.AfterScore,
+		arg.AfterURI,
 		arg.Limit,
+		arg.ActorDID,
+		arg.DisallowedHashtags,
 	)
 	if err != nil {
 		return nil, err
@@ -523,9 +491,9 @@ func (q *Queries) ListTestFeedPosts(ctx context.Context, arg ListTestFeedPostsPa
 		var i ListTestFeedPostsRow
 		if err := rows.Scan(
 			&i.URI,
-			&i.Score,
+			&i.ActorDID,
 			&i.FluffRelevanceScore,
-			&i.IsNSFW,
+			&i.Score,
 		); err != nil {
 			return nil, err
 		}

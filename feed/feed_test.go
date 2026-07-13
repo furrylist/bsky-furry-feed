@@ -11,6 +11,7 @@ import (
 	"github.com/strideynet/bsky-furry-feed/internal/tristate"
 	bffv1pb "github.com/strideynet/bsky-furry-feed/proto/bff/v1"
 	"github.com/strideynet/bsky-furry-feed/store"
+	"github.com/strideynet/bsky-furry-feed/store/gen"
 	"github.com/strideynet/bsky-furry-feed/testenv"
 )
 
@@ -394,4 +395,93 @@ func TestGenerator(t *testing.T) {
 			})
 		}
 	})
+}
+
+func TestDeduplicateConsecutiveAuthors(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name     string
+		posts    []gen.ListTestFeedPostsRow
+		limit    int
+		expected []string
+	}{
+		{
+			name:     "empty list",
+			posts:    []gen.ListTestFeedPostsRow{},
+			limit:    10,
+			expected: []string{},
+		},
+		{
+			name: "no duplicates",
+			posts: []gen.ListTestFeedPostsRow{
+				{URI: "post1", ActorDID: "alice"},
+				{URI: "post2", ActorDID: "bob"},
+				{URI: "post3", ActorDID: "charlie"},
+			},
+			limit:    10,
+			expected: []string{"post1", "post2", "post3"},
+		},
+		{
+			name: "consecutive duplicates removed",
+			posts: []gen.ListTestFeedPostsRow{
+				{URI: "post1", ActorDID: "alice"},
+				{URI: "post2", ActorDID: "alice"},
+				{URI: "post3", ActorDID: "bob"},
+				{URI: "post4", ActorDID: "bob"},
+				{URI: "post5", ActorDID: "charlie"},
+			},
+			limit:    10,
+			expected: []string{"post1", "post3", "post5"},
+		},
+		{
+			name: "non-consecutive duplicates kept",
+			posts: []gen.ListTestFeedPostsRow{
+				{URI: "post1", ActorDID: "alice"},
+				{URI: "post2", ActorDID: "bob"},
+				{URI: "post3", ActorDID: "alice"},
+				{URI: "post4", ActorDID: "bob"},
+			},
+			limit:    10,
+			expected: []string{"post1", "post2", "post3", "post4"},
+		},
+		{
+			name: "respects limit",
+			posts: []gen.ListTestFeedPostsRow{
+				{URI: "post1", ActorDID: "alice"},
+				{URI: "post2", ActorDID: "bob"},
+				{URI: "post3", ActorDID: "charlie"},
+				{URI: "post4", ActorDID: "david"},
+			},
+			limit:    2,
+			expected: []string{"post1", "post2"},
+		},
+		{
+			name: "limit with consecutive duplicates",
+			posts: []gen.ListTestFeedPostsRow{
+				{URI: "post1", ActorDID: "alice"},
+				{URI: "post2", ActorDID: "alice"},
+				{URI: "post3", ActorDID: "alice"},
+				{URI: "post4", ActorDID: "bob"},
+				{URI: "post5", ActorDID: "charlie"},
+			},
+			limit:    2,
+			expected: []string{"post1", "post4"},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			result := deduplicateConsecutiveAuthors(tt.posts, tt.limit)
+
+			resultURIs := make([]string, len(result))
+			for i, post := range result {
+				resultURIs[i] = post.URI
+			}
+
+			require.Equal(t, tt.expected, resultURIs)
+		})
+	}
 }

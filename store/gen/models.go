@@ -112,6 +112,14 @@ type CandidateLike struct {
 	DeletedAt  pgtype.Timestamptz
 }
 
+type CandidateLikesRecent struct {
+	URI        string
+	ActorDID   string
+	SubjectURI string
+	CreatedAt  pgtype.Timestamptz
+	IndexedAt  pgtype.Timestamptz
+}
+
 type CandidatePost struct {
 	URI        string
 	ActorDID   string
