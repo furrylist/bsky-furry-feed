@@ -1,5 +1,5 @@
 ## Build layer
-FROM golang:1.26.4-bookworm AS build
+FROM golang:1.26.5-bookworm AS build
 
 WORKDIR /app
 
