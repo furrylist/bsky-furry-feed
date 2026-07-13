@@ -7,7 +7,7 @@ import { AppBskyFeedDefs } from "@atproto/api";
 import { ActorStatus } from "../../../proto/bff/v1/types_pb";
 
 const props = defineProps<{
-  actorDid: string;
+  actorDid?: string;
   post: AppBskyFeedDefs.FeedViewPost;
 }>();
 
@@ -17,7 +17,8 @@ const postType = computed(() => {
     return props.post.post.author.did === props.actorDid
       ? "self-repost"
       : "repost";
-  if (props.post.post.author.did !== props.actorDid) return "unknown-other";
+  if (props.actorDid && props.post.post.author.did !== props.actorDid)
+    return "unknown-other";
   return "post";
 });
 const showPost = computed(
@@ -105,6 +106,9 @@ const isNSFW = computed(() => {
         </span>
       </div>
       <div class="meta text-sm text-muted">
+        <span v-if="!actorDid" class="meta-item">
+          <user-link class="text-sm text-muted" :did="post.post.author.did" />
+        </span>
         <span class="meta-item">
           <shared-date :date="new Date(post.post.indexedAt)" />
         </span>

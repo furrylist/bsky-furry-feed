@@ -49,6 +49,8 @@ onBeforeUnmount(() => {
 
     <nuxt-link class="nav-link" href="/audit-log"> Audit log </nuxt-link>
 
+    <nuxt-link class="nav-link" href="/feeds"> Feeds </nuxt-link>
+
     <div class="ml-auto flex items-center gap-2">
       <shared-search @toggle-search="showSearch = !showSearch" />
       <div ref="dropdownRef" class="relative">

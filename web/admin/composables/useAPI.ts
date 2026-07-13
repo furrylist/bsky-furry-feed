@@ -2,6 +2,7 @@ import { Transport, createPromiseClient } from "@bufbuild/connect";
 import { createConnectTransport } from "@bufbuild/connect-web";
 import { ModerationService } from "../../proto/bff/v1/moderation_service_connectweb";
 import { UserService } from "../../proto/bff/v1/user_service_connectweb";
+import { PublicService } from "../../proto/bff/v1/public_service_connectweb";
 import { createRegistry } from "@bufbuild/protobuf";
 import {
   AssignRolesAuditPayload,
@@ -54,4 +55,9 @@ export default async function () {
 export async function useUserAPI() {
   const transport = await useAPITransport();
   return createPromiseClient(UserService, transport);
+}
+
+export async function usePublicAPI() {
+  const transport = await useAPITransport();
+  return createPromiseClient(PublicService, transport);
 }
