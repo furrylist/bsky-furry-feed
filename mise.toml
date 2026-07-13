@@ -13,7 +13,7 @@ python = "3.8.16"
 "pipx" = "1.7.1"
 "pipx:sqlfluff" = "2.3.2"
 golangci-lint = "2.12.2"
-prek = "0.3.6"
+prek = "0.4.9"
 
 [tasks]
 "generate:sqlc" = "sqlc generate"
