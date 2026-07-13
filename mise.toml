@@ -1,7 +1,7 @@
 [tools]
 go = "1.26.4"
 "go:connectrpc.com/connect/cmd/protoc-gen-connect-go" = "v1.11.0"
-"go:github.com/bufbuild/buf/cmd/buf" = "v1.62.1"
+"go:github.com/bufbuild/buf/cmd/buf" = "1.71.0"
 "go:github.com/golang-migrate/migrate/v4/cmd/migrate" = { version = "4.19.0", tags = "postgres" }
 "go:github.com/sqlc-dev/sqlc/cmd/sqlc" = "v1.30.0"
 "go:google.golang.org/protobuf/cmd/protoc-gen-go" = "v1.31.0"
