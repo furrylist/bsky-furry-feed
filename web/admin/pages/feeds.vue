@@ -11,7 +11,9 @@ const { feeds } = await publicApi.listFeeds({});
 
 const currentFeedId = ref("furry-test");
 
+const cursor = ref("");
 const posts = ref<PostView[]>([]);
+const loading = ref(false);
 
 // generateJwt generates a mock JWT that just sets the DID as issuer.
 async function generateJwt() {
@@ -33,22 +35,36 @@ async function urisToPosts(allUris: string[]) {
 }
 
 async function fetchFeedSkeleton() {
+  loading.value = true;
   const { apiUrl } = useRuntimeConfig().public;
   const url = new URL(apiUrl);
   url.pathname = "/xrpc/app.bsky.feed.getFeedSkeleton";
   url.searchParams.set("feed", currentFeedId.value);
+  if (cursor.value) {
+    url.searchParams.set("cursor", cursor.value);
+  }
 
-  const postURIs = await $fetch(url.href, {
+  const resp: any = await $fetch(url.href, {
     headers: { authorization: `Bearer ${await generateJwt()}` },
-  }).then(
-    (r: any) => r.feed?.map((p: any) => p.post).filter(Boolean) as string[]
-  );
+  });
+  const postURIs = resp.feed
+    ?.map((p: any) => p.post)
+    .filter(Boolean) as string[];
+  cursor.value = resp.cursor;
 
-  posts.value = await urisToPosts(postURIs);
+  posts.value = [...posts.value, ...(await urisToPosts(postURIs))];
+  loading.value = false;
 }
 
 onMounted(() => {
-  watch(currentFeedId, fetchFeedSkeleton, { immediate: true });
+  watch(
+    currentFeedId,
+    async () => {
+      posts.value = [];
+      await fetchFeedSkeleton();
+    },
+    { immediate: true }
+  );
 });
 </script>
 
@@ -71,8 +87,17 @@ onMounted(() => {
     </select>
   </div>
   <div
-    class="max-w-[80%] border border-gray-300 dark:border-gray-700 rounded-lg"
+    class="md:max-w-[80%] border border-gray-300 dark:border-gray-700 rounded-lg mb-3"
   >
     <UserRecentPost v-for="post in posts" :post="{ post }" />
+  </div>
+  <div class="flex justify-center md:max-w-[80%]">
+    <button
+      class="py-1 max-md:py-1.5 max-md:px-3 px-2 max-md:ml-auto mr-1 text-white bg-blue-500 dark:bg-blue-600 rounded-lg hover:bg-blue-600 dark:hover:bg-blue-700 disabled:bg-blue-300 disabled:dark:bg-blue-500 disabled:cursor-not-allowed"
+      :disabled="loading"
+      @click="fetchFeedSkeleton"
+    >
+      Load more
+    </button>
   </div>
 </template>
