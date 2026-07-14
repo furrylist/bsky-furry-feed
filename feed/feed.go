@@ -545,7 +545,7 @@ func ServiceWithDefaultFeeds(pgxStore *store.PGXStore) *Service {
 	r.Register(Meta{
 		ID:          "furry-test",
 		DisplayName: "🐾 Test 🚨🛠️",
-		Description: "Experimental version of the '🐾 Hot' feed.\ntest\ntest\n\ndouble break",
+		Description: "New experimental '🐾 Fur You' feed algorithm (yes, idea stolen from For You).\ntest\ntest\n\ndouble break",
 		Priority:    -1,
 	}, testGenerator(preScoredGeneratorOpts{
 		Alg: "classic",
