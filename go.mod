@@ -6,7 +6,7 @@ require (
 	connectrpc.com/connect v1.19.1
 	connectrpc.com/otelconnect v0.9.0
 	github.com/bluesky-social/indigo v0.0.0-20260629160527-dfe5578fd537
-	github.com/bluesky-social/jetstream v0.0.0-20260226214936-e0274250f654
+	github.com/bluesky-social/jetstream v0.0.0-20260714015557-f6d220f3551e
 	github.com/docker/go-connections v0.6.0
 	github.com/golang-migrate/migrate/v4 v4.19.1
 	github.com/google/go-cmp v0.7.0
