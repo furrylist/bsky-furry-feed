@@ -428,7 +428,7 @@ scored_candidates AS MATERIALIZED (
         CASE
             WHEN
                 cpr.actor_did IN (SELECT subject_did FROM my_follows)
-                THEN trl.most_recent_like_at + INTERVAL '12 hours'
+                THEN trl.most_recent_like_at + INTERVAL '18 hours'
             WHEN trl.liked_by_friend THEN trl.most_recent_like_at + INTERVAL '6 hours'
             WHEN trl.like_count = 1 THEN trl.most_recent_like_at + INTERVAL '3 hours'
             ELSE trl.most_recent_like_at
