@@ -95,7 +95,7 @@ importers:
         version: 2.1.11(svelte@4.2.19)
       '@portabletext/types':
         specifier: ^2.0.5
-        version: 2.0.13
+        version: 2.0.15
       '@rgossiaux/svelte-headlessui':
         specifier: ^2.0.0
         version: 2.0.0(svelte@4.2.19)
@@ -2142,8 +2142,8 @@ packages:
     resolution: {integrity: sha512-aBvnD8MscoAlEIuZBn0Aksd+oCuoMGFOT3CtHIgRBaac0Vu4YnnMUF45xo/B/T5vmwWcnDXoJEJdn+SKDg1m+A==}
     engines: {node: ^14.13.1 || >=16.0.0}
 
-  '@portabletext/types@2.0.13':
-    resolution: {integrity: sha512-5xk5MSyQU9CrDho3Rsguj38jhijhD36Mk8S6mZo3huv6PM+t4M/5kJN2KFIxgvt4ONpvOEs1pVIZAV0cL0Vi+Q==}
+  '@portabletext/types@2.0.15':
+    resolution: {integrity: sha512-2e6i2gSQsrA/5OL5Gm4/9bxB9MNO73Fa47zj+0mT93xkoQUCGCWX5fZh1YBJ86hszaRYlqvqG08oULxvvPPp/Q==}
     engines: {node: ^14.13.1 || >=16.0.0 || >=18.0.0}
 
   '@publint/pack@0.1.4':
@@ -10973,9 +10973,9 @@ snapshots:
 
   '@portabletext/toolkit@2.0.16':
     dependencies:
-      '@portabletext/types': 2.0.13
+      '@portabletext/types': 2.0.15
 
-  '@portabletext/types@2.0.13': {}
+  '@portabletext/types@2.0.15': {}
 
   '@publint/pack@0.1.4': {}
 
