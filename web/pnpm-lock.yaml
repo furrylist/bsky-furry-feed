@@ -30,7 +30,7 @@ importers:
         version: 6.2.3
       marked:
         specifier: ^7.0.1
-        version: 7.0.1
+        version: 7.0.5
       theta-delta:
         specifier: ^1.1.0
         version: 1.1.0
@@ -5800,8 +5800,8 @@ packages:
     resolution: {integrity: sha512-g3FeP20LNwhALb/6Cz6Dd4F2ngze0jz7tbzrD2wAV+o9FeNHe4rL+yK2md0J/fiSf1sa1ADhXqi5+oVwOM/eGw==}
     engines: {node: '>=8'}
 
-  marked@7.0.1:
-    resolution: {integrity: sha512-m8Aze620Ts62yaciz2DghZGUkUfdgvSNRicS2/XtQkStMNoce3NWjOD2b/jWF32+XXK6udM6pRhv2dKNlneAFA==}
+  marked@7.0.5:
+    resolution: {integrity: sha512-lwNAFTfXgqpt/XvK17a/8wY9/q6fcSPZT1aP6QW0u74VwaJF/Z9KbRcX23sWE4tODM+AolJNcUtErTkgOeFP/Q==}
     engines: {node: '>= 16'}
     hasBin: true
 
@@ -15451,7 +15451,7 @@ snapshots:
     dependencies:
       semver: 6.3.1
 
-  marked@7.0.1: {}
+  marked@7.0.5: {}
 
   md5-hex@3.0.1:
     dependencies:
