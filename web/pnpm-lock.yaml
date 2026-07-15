@@ -143,7 +143,7 @@ importers:
         version: 12.1.1(eslint@9.15.0(jiti@2.7.0))
       eslint-plugin-svelte:
         specifier: ^2.46.0
-        version: 2.46.0(eslint@9.15.0(jiti@2.7.0))(svelte@4.2.19)
+        version: 2.46.1(eslint@9.15.0(jiti@2.7.0))(svelte@4.2.19)
       eslint-plugin-unused-imports:
         specifier: ^4.1.4
         version: 4.1.4(@typescript-eslint/eslint-plugin@8.15.0(@typescript-eslint/parser@8.15.0(eslint@9.15.0(jiti@2.7.0))(typescript@5.6.3))(eslint@9.15.0(jiti@2.7.0))(typescript@5.6.3))(eslint@9.15.0(jiti@2.7.0))
@@ -1623,6 +1623,12 @@ packages:
 
   '@eslint-community/eslint-utils@4.4.0':
     resolution: {integrity: sha512-1/sA4dwrzBAyeUoQ6oxahHKmrZvsnLCg4RfxW3ZFGGmQkSNQPFNLV9CUEFQP1x9EYXHTo5p6xdhZM1Ne9p/AfA==}
+    engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
+    peerDependencies:
+      eslint: ^6.0.0 || ^7.0.0 || >=8.0.0
+
+  '@eslint-community/eslint-utils@4.9.1':
+    resolution: {integrity: sha512-phrYmNiYppR7znFEdqgfWHXR6NCkZEK7hwWDHZUjit/2/U0r6XvkDl0SYnoM51Hq7FhCGdLDT6zxCCOY1hexsQ==}
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
     peerDependencies:
       eslint: ^6.0.0 || ^7.0.0 || >=8.0.0
@@ -4468,8 +4474,8 @@ packages:
     peerDependencies:
       eslint: '>=5.0.0'
 
-  eslint-plugin-svelte@2.46.0:
-    resolution: {integrity: sha512-1A7iEMkzmCZ9/Iz+EAfOGYL8IoIG6zeKEq1SmpxGeM5SXmoQq+ZNnCpXFVJpsxPWYx8jIVGMerQMzX20cqUl0g==}
+  eslint-plugin-svelte@2.46.1:
+    resolution: {integrity: sha512-7xYr2o4NID/f9OEYMqxsEQsCsj4KaMy4q5sANaKkAb6/QeCjYFxRmDm2S3YC3A3pl1kyPZ/syOx/i7LcWYSbIw==}
     engines: {node: ^14.17.0 || >=16.0.0}
     peerDependencies:
       eslint: ^7.0.0 || ^8.0.0-0 || ^9.0.0-0
@@ -6723,6 +6729,10 @@ packages:
     resolution: {integrity: sha512-Q8qQfPiZ+THO/3ZrOrO0cJJKfpYCagtMUkXbnEfmgUjwXg6z/WBeOyS9APBBPCTSiDV+s4SwQGu8yFsiMRIudg==}
     engines: {node: '>=4'}
 
+  postcss-selector-parser@6.1.4:
+    resolution: {integrity: sha512-bIoJLOmjCO1S9XdY/DcnR5hJxvrDir1PbGChrzXG3vw0/FOliy/fA3dmdhQ441kah4gKv+TwckGzex6wNS5cnQ==}
+    engines: {node: '>=4'}
+
   postcss-svgo@6.0.0:
     resolution: {integrity: sha512-r9zvj/wGAoAIodn84dR/kFqwhINp5YsJkLoujybWG59grR/IHx+uQ2Zo+IcOwM0jskfYX3R0mo+1Kip1VSNcvw==}
     engines: {node: ^14 || ^16 || >= 18}
@@ -8735,8 +8745,8 @@ packages:
   yallist@4.0.0:
     resolution: {integrity: sha512-3wdGidZyq5PB084XLES5TpOSRA3wjXAlIWMhum2kRcv/41Sn2emQ0dycQW4uZXLejwKvg6EsvbdlVL+FYEct7A==}
 
-  yaml@1.10.2:
-    resolution: {integrity: sha512-r3vXyErRCYJ7wg28yvBY5VSoAF8ZvlcW9/BwUzEtUsjvX/DKs24dIkuwjtuprwJJHsbyUbLApepYTR1BN4uHrg==}
+  yaml@1.10.3:
+    resolution: {integrity: sha512-vIYeF1u3CjlhAFekPPAk2h/Kv4T3mAkMox5OymRiJQB0spDP10LHvt+K7G9Ny6NuuMAb25/6n1qyUjAcGNf/AA==}
     engines: {node: '>= 6'}
 
   yaml@2.3.1:
@@ -10214,6 +10224,16 @@ snapshots:
       eslint: 9.15.0(jiti@2.7.0)
       eslint-visitor-keys: 3.4.1
 
+  '@eslint-community/eslint-utils@4.9.1(eslint@8.28.0)':
+    dependencies:
+      eslint: 8.28.0
+      eslint-visitor-keys: 3.4.3
+
+  '@eslint-community/eslint-utils@4.9.1(eslint@9.15.0(jiti@2.7.0))':
+    dependencies:
+      eslint: 9.15.0(jiti@2.7.0)
+      eslint-visitor-keys: 3.4.3
+
   '@eslint-community/regexpp@4.12.1': {}
 
   '@eslint-community/regexpp@4.5.1': {}
@@ -10342,7 +10362,7 @@ snapshots:
   '@jridgewell/gen-mapping@0.3.5':
     dependencies:
       '@jridgewell/set-array': 1.2.1
-      '@jridgewell/sourcemap-codec': 1.5.0
+      '@jridgewell/sourcemap-codec': 1.5.5
       '@jridgewell/trace-mapping': 0.3.25
 
   '@jridgewell/remapping@2.3.5':
@@ -10457,7 +10477,7 @@ snapshots:
       nopt: 5.0.0
       npmlog: 5.0.1
       rimraf: 3.0.2
-      semver: 7.7.4
+      semver: 7.8.5
       tar: 6.2.1
     transitivePeerDependencies:
       - encoding
@@ -10621,7 +10641,7 @@ snapshots:
       pathe: 1.1.2
       pkg-types: 1.3.1
       scule: 1.3.0
-      semver: 7.7.4
+      semver: 7.8.5
       unctx: 2.5.0
       unimport: 3.13.2(rollup@3.26.2)
       untyped: 1.5.1
@@ -11841,7 +11861,7 @@ snapshots:
       debug: 4.3.7(supports-color@5.5.0)
       globby: 11.1.0
       is-glob: 4.0.3
-      semver: 7.7.4
+      semver: 7.8.5
       tsutils: 3.21.0(typescript@4.9.5)
     optionalDependencies:
       typescript: 4.9.5
@@ -11855,7 +11875,7 @@ snapshots:
       debug: 4.3.7(supports-color@5.5.0)
       globby: 11.1.0
       is-glob: 4.0.3
-      semver: 7.7.4
+      semver: 7.8.5
       ts-api-utils: 1.0.1(typescript@4.9.5)
     optionalDependencies:
       typescript: 4.9.5
@@ -11869,7 +11889,7 @@ snapshots:
       debug: 4.3.7(supports-color@5.5.0)
       globby: 11.1.0
       is-glob: 4.0.3
-      semver: 7.7.4
+      semver: 7.8.5
       ts-api-utils: 1.0.1(typescript@4.9.5)
     optionalDependencies:
       typescript: 4.9.5
@@ -11884,7 +11904,7 @@ snapshots:
       fast-glob: 3.3.2
       is-glob: 4.0.3
       minimatch: 9.0.5
-      semver: 7.7.4
+      semver: 7.8.5
       ts-api-utils: 1.4.0(typescript@5.6.3)
     optionalDependencies:
       typescript: 5.6.3
@@ -11893,7 +11913,7 @@ snapshots:
 
   '@typescript-eslint/utils@5.61.0(eslint@8.28.0)(typescript@4.9.5)':
     dependencies:
-      '@eslint-community/eslint-utils': 4.4.0(eslint@8.28.0)
+      '@eslint-community/eslint-utils': 4.9.1(eslint@8.28.0)
       '@types/json-schema': 7.0.12
       '@types/semver': 7.5.0
       '@typescript-eslint/scope-manager': 5.61.0
@@ -11901,28 +11921,28 @@ snapshots:
       '@typescript-eslint/typescript-estree': 5.61.0(typescript@4.9.5)
       eslint: 8.28.0
       eslint-scope: 5.1.1
-      semver: 7.7.4
+      semver: 7.6.3
     transitivePeerDependencies:
       - supports-color
       - typescript
 
   '@typescript-eslint/utils@6.1.0(eslint@8.28.0)(typescript@4.9.5)':
     dependencies:
-      '@eslint-community/eslint-utils': 4.4.0(eslint@8.28.0)
+      '@eslint-community/eslint-utils': 4.9.1(eslint@8.28.0)
       '@types/json-schema': 7.0.12
       '@types/semver': 7.5.0
       '@typescript-eslint/scope-manager': 6.1.0
       '@typescript-eslint/types': 6.1.0
       '@typescript-eslint/typescript-estree': 6.1.0(typescript@4.9.5)
       eslint: 8.28.0
-      semver: 7.7.4
+      semver: 7.5.4
     transitivePeerDependencies:
       - supports-color
       - typescript
 
   '@typescript-eslint/utils@6.4.0(eslint@8.28.0)(typescript@4.9.5)':
     dependencies:
-      '@eslint-community/eslint-utils': 4.4.0(eslint@8.28.0)
+      '@eslint-community/eslint-utils': 4.9.1(eslint@8.28.0)
       '@types/json-schema': 7.0.12
       '@types/semver': 7.5.0
       '@typescript-eslint/scope-manager': 6.4.0
@@ -11936,7 +11956,7 @@ snapshots:
 
   '@typescript-eslint/utils@8.15.0(eslint@9.15.0(jiti@2.7.0))(typescript@5.6.3)':
     dependencies:
-      '@eslint-community/eslint-utils': 4.4.0(eslint@9.15.0(jiti@2.7.0))
+      '@eslint-community/eslint-utils': 4.9.1(eslint@9.15.0(jiti@2.7.0))
       '@typescript-eslint/scope-manager': 8.15.0
       '@typescript-eslint/types': 8.15.0
       '@typescript-eslint/typescript-estree': 8.15.0(typescript@5.6.3)
@@ -11949,7 +11969,7 @@ snapshots:
   '@typescript-eslint/visitor-keys@5.61.0':
     dependencies:
       '@typescript-eslint/types': 5.61.0
-      eslint-visitor-keys: 3.4.1
+      eslint-visitor-keys: 3.4.3
 
   '@typescript-eslint/visitor-keys@6.1.0':
     dependencies:
@@ -12351,7 +12371,7 @@ snapshots:
       '@vue/shared': 3.3.4
       estree-walker: 2.0.2
       magic-string: 0.30.21
-      postcss: 8.4.49
+      postcss: 8.5.19
       source-map-js: 1.2.1
 
   '@vue/compiler-sfc@3.5.39':
@@ -12557,6 +12577,10 @@ snapshots:
   acorn-jsx@5.3.2(acorn@8.14.0):
     dependencies:
       acorn: 8.14.0
+
+  acorn-jsx@5.3.2(acorn@8.17.0):
+    dependencies:
+      acorn: 8.17.0
 
   acorn-walk@8.2.0: {}
 
@@ -13167,7 +13191,7 @@ snapshots:
       js-string-escape: 1.0.1
       lodash: 4.17.21
       md5-hex: 3.0.1
-      semver: 7.7.4
+      semver: 7.8.5
       well-known-symbols: 2.0.0
 
   confbox@0.1.8: {}
@@ -13236,7 +13260,7 @@ snapshots:
       import-fresh: 3.3.0
       parse-json: 5.2.0
       path-type: 4.0.0
-      yaml: 1.10.2
+      yaml: 1.10.3
 
   crc-32@1.2.2: {}
 
@@ -13883,7 +13907,7 @@ snapshots:
   eslint-compat-utils@0.5.1(eslint@9.15.0(jiti@2.7.0)):
     dependencies:
       eslint: 9.15.0(jiti@2.7.0)
-      semver: 7.7.4
+      semver: 7.8.5
 
   eslint-config-prettier@9.1.2(eslint@9.15.0(jiti@2.7.0)):
     dependencies:
@@ -13947,10 +13971,10 @@ snapshots:
     dependencies:
       eslint: 9.15.0(jiti@2.7.0)
 
-  eslint-plugin-svelte@2.46.0(eslint@9.15.0(jiti@2.7.0))(svelte@4.2.19):
+  eslint-plugin-svelte@2.46.1(eslint@9.15.0(jiti@2.7.0))(svelte@4.2.19):
     dependencies:
-      '@eslint-community/eslint-utils': 4.4.0(eslint@9.15.0(jiti@2.7.0))
-      '@jridgewell/sourcemap-codec': 1.5.0
+      '@eslint-community/eslint-utils': 4.9.1(eslint@9.15.0(jiti@2.7.0))
+      '@jridgewell/sourcemap-codec': 1.5.5
       eslint: 9.15.0(jiti@2.7.0)
       eslint-compat-utils: 0.5.1(eslint@9.15.0(jiti@2.7.0))
       esutils: 2.0.3
@@ -13958,8 +13982,8 @@ snapshots:
       postcss: 8.4.49
       postcss-load-config: 3.1.4(postcss@8.4.49)
       postcss-safe-parser: 6.0.0(postcss@8.4.49)
-      postcss-selector-parser: 6.1.2
-      semver: 7.6.3
+      postcss-selector-parser: 6.1.4
+      semver: 7.8.5
       svelte-eslint-parser: 0.43.0(svelte@4.2.19)
     optionalDependencies:
       svelte: 4.2.19
@@ -14119,8 +14143,8 @@ snapshots:
 
   espree@9.6.1:
     dependencies:
-      acorn: 8.14.0
-      acorn-jsx: 5.3.2(acorn@8.14.0)
+      acorn: 8.17.0
+      acorn-jsx: 5.3.2(acorn@8.17.0)
       eslint-visitor-keys: 3.4.3
 
   esprima@4.0.1: {}
@@ -15385,7 +15409,7 @@ snapshots:
 
   magic-string@0.30.12:
     dependencies:
-      '@jridgewell/sourcemap-codec': 1.5.0
+      '@jridgewell/sourcemap-codec': 1.5.5
 
   magic-string@0.30.21:
     dependencies:
@@ -16212,7 +16236,7 @@ snapshots:
   postcss-calc@9.0.1(postcss@8.4.49):
     dependencies:
       postcss: 8.4.49
-      postcss-selector-parser: 6.0.13
+      postcss-selector-parser: 6.1.4
       postcss-value-parser: 4.2.0
 
   postcss-colormin@6.0.0(postcss@8.4.49):
@@ -16279,7 +16303,7 @@ snapshots:
   postcss-load-config@3.1.4(postcss@8.4.49):
     dependencies:
       lilconfig: 2.1.0
-      yaml: 1.10.2
+      yaml: 1.10.3
     optionalDependencies:
       postcss: 8.4.49
 
@@ -16319,7 +16343,7 @@ snapshots:
       caniuse-api: 3.0.0
       cssnano-utils: 4.0.0(postcss@8.4.49)
       postcss: 8.4.49
-      postcss-selector-parser: 6.0.13
+      postcss-selector-parser: 6.1.4
 
   postcss-minify-font-values@6.0.0(postcss@8.4.49):
     dependencies:
@@ -16343,7 +16367,7 @@ snapshots:
   postcss-minify-selectors@6.0.0(postcss@8.4.49):
     dependencies:
       postcss: 8.4.49
-      postcss-selector-parser: 6.0.13
+      postcss-selector-parser: 6.1.4
 
   postcss-modules-extract-imports@3.0.0(postcss@8.4.49):
     dependencies:
@@ -16353,13 +16377,13 @@ snapshots:
     dependencies:
       icss-utils: 5.1.0(postcss@8.4.49)
       postcss: 8.4.49
-      postcss-selector-parser: 6.0.13
+      postcss-selector-parser: 6.1.4
       postcss-value-parser: 4.2.0
 
   postcss-modules-scope@3.0.0(postcss@8.4.49):
     dependencies:
       postcss: 8.4.49
-      postcss-selector-parser: 6.0.13
+      postcss-selector-parser: 6.1.4
 
   postcss-modules-values@4.0.0(postcss@8.4.49):
     dependencies:
@@ -16462,6 +16486,11 @@ snapshots:
       cssesc: 3.0.0
       util-deprecate: 1.0.2
 
+  postcss-selector-parser@6.1.4:
+    dependencies:
+      cssesc: 3.0.0
+      util-deprecate: 1.0.2
+
   postcss-svgo@6.0.0(postcss@8.4.49):
     dependencies:
       postcss: 8.4.49
@@ -16471,7 +16500,7 @@ snapshots:
   postcss-unique-selectors@6.0.0(postcss@8.4.49):
     dependencies:
       postcss: 8.4.49
-      postcss-selector-parser: 6.0.13
+      postcss-selector-parser: 6.1.4
 
   postcss-url@10.1.3(postcss@8.4.49):
     dependencies:
@@ -17247,7 +17276,7 @@ snapshots:
 
   sorcery@0.11.0:
     dependencies:
-      '@jridgewell/sourcemap-codec': 1.5.0
+      '@jridgewell/sourcemap-codec': 1.5.5
       buffer-crc32: 0.2.13
       minimist: 1.2.8
       sander: 0.5.1
@@ -17426,7 +17455,7 @@ snapshots:
     dependencies:
       browserslist: 4.24.2
       postcss: 8.4.49
-      postcss-selector-parser: 6.0.13
+      postcss-selector-parser: 6.1.4
 
   sucrase@3.32.0:
     dependencies:
@@ -17672,7 +17701,7 @@ snapshots:
   terser@5.19.1:
     dependencies:
       '@jridgewell/source-map': 0.3.5
-      acorn: 8.16.0
+      acorn: 8.10.0
       commander: 2.20.3
       source-map-support: 0.5.21
 
@@ -18217,7 +18246,7 @@ snapshots:
       lodash.debounce: 4.0.8
       lodash.pick: 4.4.0
       npm-run-path: 4.0.1
-      semver: 7.7.4
+      semver: 7.8.5
       strip-ansi: 6.0.1
       tiny-invariant: 1.3.1
       vite: 4.3.9(@types/node@18.16.19)(sass@1.81.0)(terser@5.49.0)
@@ -18273,7 +18302,7 @@ snapshots:
   vite@4.4.9(@types/node@18.16.19)(sass@1.81.0)(terser@5.49.0):
     dependencies:
       esbuild: 0.18.14
-      postcss: 8.4.49
+      postcss: 8.5.19
       rollup: 3.28.0
     optionalDependencies:
       '@types/node': 18.16.19
@@ -18284,7 +18313,7 @@ snapshots:
   vite@4.4.9(@types/node@26.1.1)(sass@1.81.0)(terser@5.49.0):
     dependencies:
       esbuild: 0.18.14
-      postcss: 8.4.49
+      postcss: 8.5.19
       rollup: 3.28.0
     optionalDependencies:
       '@types/node': 26.1.1
@@ -18350,7 +18379,7 @@ snapshots:
   vscode-languageclient@7.0.0:
     dependencies:
       minimatch: 3.1.2
-      semver: 7.7.4
+      semver: 7.8.5
       vscode-languageserver-protocol: 3.16.0
 
   vscode-languageserver-protocol@3.16.0:
@@ -18649,7 +18678,7 @@ snapshots:
 
   yallist@4.0.0: {}
 
-  yaml@1.10.2: {}
+  yaml@1.10.3: {}
 
   yaml@2.3.1: {}
 
