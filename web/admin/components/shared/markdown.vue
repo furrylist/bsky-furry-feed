@@ -43,4 +43,8 @@ const renderedMarkdown = computed(() => {
 .markdown :deep(blockquote:not(:last-child)) {
   @apply mb-2;
 }
+
+.markdown :deep(ol) {
+  @apply list-decimal pl-4;
+}
 </style>
