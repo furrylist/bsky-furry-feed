@@ -4,7 +4,7 @@ go 1.26
 
 require (
 	github.com/bluesky-social/indigo v0.0.0-20260629160527-dfe5578fd537
-	github.com/cockroachdb/pebble v1.1.2
+	github.com/cockroachdb/pebble v1.1.5
 	github.com/goccy/go-json v0.10.2
 	github.com/gorilla/websocket v1.5.3
 	github.com/klauspost/compress v1.17.9
