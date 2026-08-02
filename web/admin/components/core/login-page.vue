@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import * as auth from "~/lib/auth";
 
+const serviceUrl = ref<string>(auth.DEFAULT_SERVICE_URL);
 const identifier = ref<string>("");
 const password = ref<string>("");
 const error = ref<any>();
@@ -9,7 +10,11 @@ async function login() {
   error.value = null;
 
   const isSignedIn = await auth
-    .login(identifier.value?.replace(/^@/, ""), password.value)
+    .login(
+      serviceUrl.value,
+      identifier.value?.replace(/^@/, ""),
+      password.value
+    )
     .catch((error) => ({ error }));
 
   if (isSignedIn.error) {
@@ -47,6 +52,16 @@ async function login() {
             v-model="password"
             class="bg-white dark:bg-gray-900 rounded border border-gray-400 dark:border-gray-700 px-2 py-1"
             type="password"
+          />
+        </div>
+
+        <div class="flex flex-col mb-4 text-sm">
+          <label class="mb-1" for="service-url">Service URL</label>
+          <input
+            id="service-url"
+            v-model="serviceUrl"
+            class="bg-white dark:bg-gray-900 rounded border border-gray-400 dark:border-gray-700 px-1.5 py-0.5"
+            type="text"
           />
         </div>
 

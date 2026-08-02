@@ -1,12 +1,16 @@
 import * as atproto from "@atproto/api";
 
 export const COOKIE_NAME = "furrylist-bsky-session";
-const BSKY_API = "https://bsky.social";
+export const DEFAULT_SERVICE_URL = "https://bsky.social";
 
-export function newAgent(): atproto.BskyAgent {
-  const agent = new atproto.BskyAgent({ service: BSKY_API });
+type SessionData = atproto.AtpSessionData & { serviceUrl?: string };
 
-  const user = useState<atproto.AtpSessionData>("user").value;
+export function newAgent(serviceUrl?: string): atproto.BskyAgent {
+  const user = useState<SessionData>("user").value;
+
+  const agent = new atproto.BskyAgent({
+    service: serviceUrl || user?.serviceUrl || DEFAULT_SERVICE_URL,
+  });
 
   if (user) {
     agent.session = user;
@@ -24,12 +28,13 @@ export async function logout() {
 }
 
 export async function login(
+  serviceUrl: string,
   identifier: string,
   password: string
 ): Promise<{ error: any; success: boolean }> {
-  const agent = newAgent();
+  const agent = newAgent(serviceUrl);
   let success: boolean;
-  let data: atproto.AtpSessionData;
+  let data: SessionData;
 
   try {
     const result = await agent.login({ identifier, password });
@@ -43,16 +48,18 @@ export async function login(
     return { success, error: "Invalid identifier or password" };
   }
 
-  useCookie<atproto.AtpSessionData>(COOKIE_NAME, {
+  data.serviceUrl = serviceUrl;
+
+  useCookie<SessionData>(COOKIE_NAME, {
     expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30),
   }).value = data;
-  useState("user").value = data;
+  useState<SessionData>("user").value = data;
 
   return { success, error: null };
 }
 
-export async function fetchUser(): Promise<atproto.AtpSessionData | null> {
-  const cookie = useCookie<atproto.AtpSessionData | null>(COOKIE_NAME, {
+export async function fetchUser(): Promise<SessionData | null> {
+  const cookie = useCookie<SessionData | null>(COOKIE_NAME, {
     expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30),
   });
 
