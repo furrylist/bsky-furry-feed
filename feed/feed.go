@@ -410,7 +410,7 @@ func ServiceWithDefaultFeeds(pgxStore *store.PGXStore) *Service {
 		},
 	},
 	))
-	var furryArtHashtags = []string{"furryart", "artfight", "sharemyattack2026"}
+	var furryArtHashtags = []string{"furryart"}
 	r.Register(Meta{
 		ID:          "furry-art",
 		DisplayName: "🐾 Art",
