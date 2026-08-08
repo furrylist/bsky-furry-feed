@@ -20,13 +20,20 @@ const loading = ref(false);
 const showRolesModal = ref(false);
 const data = ref<ProfileViewDetailed>();
 const labels = ref<Array<BlueskyLabel>>([]);
+const postsError = ref<string>("");
+
 const loadProfile = async () => {
+  postsError.value = "";
   const labelsQuery = useBlueskyLabels(props.did);
   data.value = await getProfile(props.did);
 
-  posts.value = await newAgent()
-    .getAuthorFeed({ actor: props.did })
-    .then((r) => r.data.feed);
+  try {
+    posts.value = await newAgent()
+      .getAuthorFeed({ actor: props.did })
+      .then((r) => r.data.feed);
+  } catch (error) {
+    postsError.value = String(error);
+  }
   labels.value = await labelsQuery;
 };
 
@@ -196,12 +203,20 @@ await loadProfile();
         </shared-card>
       </div>
       <div class="mb-3 md:w-[50%]">
+        <shared-card v-if="postsError" variant="error">
+          Cannot show posts:
+          {{ postsError.replace(/^Error:/i, "").replace(`: ${did}`, "") }}
+        </shared-card>
         <shared-card
-          v-if="actor"
+          v-else-if="actor"
           :class="{ 'loading-flash': loading }"
           no-padding
         >
-          <user-recent-posts :actor-did="actor.did" :posts="posts" />
+          <user-recent-posts
+            v-if="posts"
+            :actor-did="actor.did"
+            :posts="posts"
+          />
         </shared-card>
       </div>
     </div>
