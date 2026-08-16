@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"log/slog"
+	"net/http"
 	"strings"
 
 	"connectrpc.com/connect"
@@ -126,40 +127,21 @@ type authContext struct {
 // action.
 func (a *AuthEngine) auth(ctx context.Context, req connect.AnyRequest) (*authContext, error) {
 	// Extract the token from the headers
-	authHeader := req.Header().Get("Authorization")
-	if authHeader == "" {
-		return nil, connect.NewError(connect.CodeUnauthenticated, fmt.Errorf("no token provided"))
-	}
-	authTyp, token, ok := strings.Cut(authHeader, " ")
-	if !ok {
-		return nil, connect.NewError(connect.CodeUnauthenticated, fmt.Errorf("malformed header"))
-	}
-	if authTyp != "Bearer" {
-		return nil, connect.NewError(connect.CodeUnauthenticated, fmt.Errorf("only Bearer auth supported"))
-	}
-
-	data, err := jwt.Parse(token, func(token *jwt.Token) (any, error) {
-		return nil, nil
-	}, jwt.WithoutClaimsValidation())
-	if data == nil {
-		return nil, connect.NewError(connect.CodeUnauthenticated, fmt.Errorf("jwt parsing failed: %w", err))
-	}
-
-	userDID, err := data.Claims.GetSubject()
+	token, userDID, err := extractTokenAndSubject(req.Header())
 	if err != nil {
-		return nil, connect.NewError(connect.CodeUnauthenticated, err)
+		return nil, err
 	}
 
 	endpoint, err := a.resolveDIDToPDS(ctx, userDID)
-	if errors.Is(err, identity.ErrDIDNotFound) {
+	switch {
+	case errors.Is(err, identity.ErrDIDNotFound):
 		return nil, connect.NewError(connect.CodeUnauthenticated, fmt.Errorf("user does not exist: %w", err))
-	}
-	if err != nil {
+	case err != nil:
 		return nil, connect.NewError(connect.CodeUnauthenticated, fmt.Errorf("resolving DID to PDS: %w", err))
 	}
 
 	// Validate the token from the header
-	_, err = a.TokenValidator(ctx, data.Raw, endpoint)
+	_, err = a.TokenValidator(ctx, token.Raw, endpoint)
 	if err != nil {
 		return nil, fmt.Errorf("validating token: %w", err)
 	}
@@ -224,4 +206,32 @@ func (a *AuthEngine) resolveDIDToPDS(ctx context.Context, did string) (string, e
 		return "", err
 	}
 	return identity.PDSEndpoint(), nil
+}
+
+func extractTokenAndSubject(header http.Header) (*jwt.Token, string, error) {
+	authHeader := header.Get("Authorization")
+	if authHeader == "" {
+		return nil, "", connect.NewError(connect.CodeUnauthenticated, fmt.Errorf("no token provided"))
+	}
+	authTyp, token, ok := strings.Cut(authHeader, " ")
+	if !ok {
+		return nil, "", connect.NewError(connect.CodeUnauthenticated, fmt.Errorf("malformed header"))
+	}
+	if authTyp != "Bearer" {
+		return nil, "", connect.NewError(connect.CodeUnauthenticated, fmt.Errorf("only Bearer auth supported"))
+	}
+
+	data, err := jwt.Parse(token, func(token *jwt.Token) (any, error) {
+		return nil, nil
+	}, jwt.WithoutClaimsValidation())
+	if data == nil {
+		return nil, "", connect.NewError(connect.CodeUnauthenticated, fmt.Errorf("jwt parsing failed: %w", err))
+	}
+
+	subject, err := data.Claims.GetSubject()
+	if err != nil {
+		return nil, "", connect.NewError(connect.CodeUnauthenticated, fmt.Errorf("missing DID (sub) in JWT: %w", err))
+	}
+
+	return data, subject, nil
 }
