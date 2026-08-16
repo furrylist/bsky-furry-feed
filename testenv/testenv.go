@@ -9,6 +9,7 @@ import (
 
 	"github.com/bluesky-social/indigo/atproto/identity"
 	"github.com/docker/go-connections/nat"
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/golang-migrate/migrate/v4"
 	_ "github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
@@ -128,4 +129,14 @@ func StartHarness(ctx context.Context, t *testing.T) *Harness {
 		PDS:   pds,
 		Store: pgxStore,
 	}
+}
+
+const signingKey = "woof"
+
+func NewTokenForDID(t *testing.T, did string) string {
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.RegisteredClaims{Subject: did})
+
+	str, err := token.SignedString([]byte(signingKey))
+	require.NoError(t, err)
+	return str
 }
