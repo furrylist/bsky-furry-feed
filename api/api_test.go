@@ -67,8 +67,9 @@ func startAPIHarness(ctx context.Context, t *testing.T) *apiHarness {
 		harness.Store,
 		harness.PDS.HTTPHost(),
 		&AuthEngine{
-			TokenValidator: BSkyTokenValidator(harness.PDS.HTTPHost()),
-			ActorGetter:    harness.Store,
+			TokenValidator:    BSkyTokenValidator(harness.PDS.HTTPHost()),
+			ActorGetter:       harness.Store,
+			IdentityDirectory: harness.PDS.Directory(),
 		},
 	)
 	require.NoError(t, err)

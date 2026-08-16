@@ -9,6 +9,7 @@ import (
 	"os/signal"
 	"time"
 
+	"github.com/bluesky-social/indigo/atproto/identity"
 	"github.com/grafana/pyroscope-go"
 	"github.com/strideynet/bsky-furry-feed/internal/bfflog"
 	"github.com/strideynet/bsky-furry-feed/internal/env"
@@ -234,9 +235,10 @@ func runE(log *slog.Logger) error {
 			pgxStore,
 			bluesky.DefaultPDSHost,
 			&api.AuthEngine{
-				ActorGetter:    pgxStore,
-				TokenValidator: api.BSkyTokenValidator(bluesky.DefaultPDSHost),
-				Log:            bfflog.ChildLogger(log, "auth_engine"),
+				ActorGetter:       pgxStore,
+				TokenValidator:    api.BSkyTokenValidator(bluesky.DefaultPDSHost),
+				IdentityDirectory: identity.DefaultDirectory(),
+				Log:               bfflog.ChildLogger(log, "auth_engine"),
 			},
 		)
 		if err != nil {

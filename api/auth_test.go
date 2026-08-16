@@ -8,10 +8,13 @@ import (
 	"unsafe"
 
 	"connectrpc.com/connect"
+	"github.com/bluesky-social/indigo/atproto/identity"
+	"github.com/bluesky-social/indigo/atproto/syntax"
 	"github.com/google/go-cmp/cmp"
 	"github.com/stretchr/testify/require"
 	v1 "github.com/strideynet/bsky-furry-feed/proto/bff/v1"
 	"github.com/strideynet/bsky-furry-feed/store"
+	"github.com/strideynet/bsky-furry-feed/testenv"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/testing/protocmp"
 )
@@ -38,6 +41,22 @@ func setSpec(req connect.AnyRequest, spec connect.Spec) {
 func TestAuthEngine(t *testing.T) {
 	t.Parallel()
 
+	const adminDID = "did:web:feed.test.furryli.st"
+	const otherDID = "did:web:user.test.furryli.st"
+	adminToken := testenv.NewTokenForDID(t, adminDID)
+	otherUserToken := testenv.NewTokenForDID(t, otherDID)
+	unknownUserToken := testenv.NewTokenForDID(t, "did:web:unknown.test.furryli.st")
+
+	directory := identity.NewMockDirectory()
+	directory.Insert(identity.Identity{
+		DID:    syntax.DID(adminDID),
+		Handle: syntax.Handle("feed.test.furryli.st"),
+	})
+	directory.Insert(identity.Identity{
+		DID:    syntax.DID(otherDID),
+		Handle: syntax.Handle("user.test.furryli.st"),
+	})
+
 	tests := []struct {
 		name string
 
@@ -52,29 +71,35 @@ func TestAuthEngine(t *testing.T) {
 		{
 			name:          "success",
 			headerKey:     "Authorization",
-			headerValue:   "Bearer exists",
+			headerValue:   "Bearer " + adminToken,
 			procedureName: "/bff.v1.ModerationService/CreateActor",
 			actor: &v1.Actor{
-				Did:   "exists",
+				Did:   adminDID,
 				Roles: []string{"admin"},
 			},
 			want: &authContext{
-				DID: "exists",
+				DID: adminDID,
 				Actor: &v1.Actor{
-					Did:   "exists",
+					Did:   adminDID,
 					Roles: []string{"admin"},
 				},
 			},
 		},
 		{
-			name:          "success: non-existent user",
+			name:          "success: existent but unregistered user",
 			headerKey:     "Authorization",
-			headerValue:   "Bearer non-existent",
+			headerValue:   "Bearer " + otherUserToken,
 			procedureName: "/bff.v1.ModerationService/Ping",
 			want: &authContext{
-				DID:   "non-existent",
-				Actor: nil,
+				DID: otherDID,
 			},
+		},
+		{
+			name:          "success: non-existent user",
+			headerKey:     "Authorization",
+			headerValue:   "Bearer " + unknownUserToken,
+			procedureName: "/bff.v1.ModerationService/Ping",
+			wantErr:       "unauthenticated: user does not exist: DID not found",
 		},
 		{
 			name:          "no header",
@@ -108,10 +133,11 @@ func TestAuthEngine(t *testing.T) {
 			}
 			ae := &AuthEngine{
 				ActorGetter: mag,
-				TokenValidator: func(ctx context.Context, token string) (did string, err error) {
+				TokenValidator: func(ctx context.Context, token, pdsHost string) (did string, err error) {
 					return token, nil
 				},
-				Log: slog.Default(),
+				IdentityDirectory: directory,
+				Log:               slog.Default(),
 			}
 
 			req := connect.NewRequest(&v1.PingRequest{})

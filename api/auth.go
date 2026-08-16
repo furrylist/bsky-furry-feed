@@ -8,7 +8,10 @@ import (
 	"strings"
 
 	"connectrpc.com/connect"
+	"github.com/bluesky-social/indigo/atproto/identity"
+	"github.com/bluesky-social/indigo/atproto/syntax"
 	"github.com/bluesky-social/indigo/xrpc"
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/strideynet/bsky-furry-feed/bluesky"
 	"github.com/strideynet/bsky-furry-feed/internal/bfflog"
 	v1 "github.com/strideynet/bsky-furry-feed/proto/bff/v1"
@@ -19,11 +22,14 @@ type actorGetter interface {
 	GetActorByDID(ctx context.Context, did string) (*v1.Actor, error)
 }
 
-func BSkyTokenValidator(pdsHost string) func(ctx context.Context, token string) (did string, err error) {
+func BSkyTokenValidator(defaultPdsHost string) func(ctx context.Context, token, pdsHost string) (did string, err error) {
 	// Check the presented token is valid against the real bsky.
 	// This also lets us introspect information about the user - we can't just
 	// parse the JWT as they do not use public key signing for the JWT.
-	return func(ctx context.Context, token string) (did string, err error) {
+	return func(ctx context.Context, token, pdsHost string) (did string, err error) {
+		if pdsHost == "" {
+			pdsHost = defaultPdsHost
+		}
 		ua := bluesky.UserAgent
 		res, err := getBlueskySession(ctx, &xrpc.Client{
 			Host:      pdsHost,
@@ -98,8 +104,11 @@ type AuthEngine struct {
 	ActorGetter actorGetter
 	// TokenValidator validates a given token and returns the DID associated
 	// with that token.
-	TokenValidator func(ctx context.Context, token string) (did string, err error)
-	Log            *slog.Logger
+	TokenValidator func(ctx context.Context, token, pdsHost string) (did string, err error)
+	// IdentityDirectory allows resolving the DID to a PDS.
+	IdentityDirectory identity.Directory
+
+	Log *slog.Logger
 }
 
 type authContext struct {
@@ -129,8 +138,28 @@ func (a *AuthEngine) auth(ctx context.Context, req connect.AnyRequest) (*authCon
 		return nil, connect.NewError(connect.CodeUnauthenticated, fmt.Errorf("only Bearer auth supported"))
 	}
 
+	data, err := jwt.Parse(token, func(token *jwt.Token) (any, error) {
+		return nil, nil
+	}, jwt.WithoutClaimsValidation())
+	if data == nil {
+		return nil, connect.NewError(connect.CodeUnauthenticated, fmt.Errorf("jwt parsing failed: %w", err))
+	}
+
+	userDID, err := data.Claims.GetSubject()
+	if err != nil {
+		return nil, connect.NewError(connect.CodeUnauthenticated, err)
+	}
+
+	endpoint, err := a.resolveDIDToPDS(ctx, userDID)
+	if errors.Is(err, identity.ErrDIDNotFound) {
+		return nil, connect.NewError(connect.CodeUnauthenticated, fmt.Errorf("user does not exist: %w", err))
+	}
+	if err != nil {
+		return nil, connect.NewError(connect.CodeUnauthenticated, fmt.Errorf("resolving DID to PDS: %w", err))
+	}
+
 	// Validate the token from the header
-	did, err := a.TokenValidator(ctx, token)
+	_, err = a.TokenValidator(ctx, data.Raw, endpoint)
 	if err != nil {
 		return nil, fmt.Errorf("validating token: %w", err)
 	}
@@ -138,7 +167,7 @@ func (a *AuthEngine) auth(ctx context.Context, req connect.AnyRequest) (*authCon
 	// Try to fetch the actor to find any roles they have associated with them.
 	// If they don't exist - we continue - so act with caution, actor may be
 	// nil.
-	actor, err := a.ActorGetter.GetActorByDID(ctx, did)
+	actor, err := a.ActorGetter.GetActorByDID(ctx, userDID)
 	if err != nil && !errors.Is(err, store.ErrNotFound) {
 		return nil, fmt.Errorf("fetching actor for token: %w", err)
 	}
@@ -161,7 +190,7 @@ func (a *AuthEngine) auth(ctx context.Context, req connect.AnyRequest) (*authCon
 			a.Log.Warn(
 				"unrecognized role",
 				slog.String("role", role),
-				bfflog.ActorDID(did),
+				bfflog.ActorDID(userDID),
 			)
 			continue
 		}
@@ -175,12 +204,24 @@ func (a *AuthEngine) auth(ctx context.Context, req connect.AnyRequest) (*authCon
 	if !permissions[procedureName] {
 		return nil, connect.NewError(
 			connect.CodePermissionDenied,
-			fmt.Errorf("user (%s) does not have permissions for %q", did, procedureName),
+			fmt.Errorf("user (%s) does not have permissions for %q", userDID, procedureName),
 		)
 	}
 
 	return &authContext{
-		DID:   did,
+		DID:   userDID,
 		Actor: actor,
 	}, nil
+}
+
+func (a *AuthEngine) resolveDIDToPDS(ctx context.Context, did string) (string, error) {
+	parsedDID, err := syntax.ParseDID(did)
+	if err != nil {
+		return "", err
+	}
+	identity, err := a.IdentityDirectory.LookupDID(ctx, parsedDID)
+	if err != nil {
+		return "", err
+	}
+	return identity.PDSEndpoint(), nil
 }
