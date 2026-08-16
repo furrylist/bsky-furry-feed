@@ -7,6 +7,7 @@ import (
 	"log/slog"
 	"testing"
 
+	"github.com/bluesky-social/indigo/atproto/identity"
 	"github.com/docker/go-connections/nat"
 	"github.com/golang-migrate/migrate/v4"
 	_ "github.com/golang-migrate/migrate/v4/database/postgres"
@@ -68,7 +69,8 @@ func startPDS(ctx context.Context, t *testing.T) *TestPDS {
 	require.NoError(t, err, "getting PDS host")
 
 	return &TestPDS{
-		rawHost: fmt.Sprintf("%s:%d", host, mappedPort.Int()),
+		rawHost:   fmt.Sprintf("%s:%d", host, mappedPort.Int()),
+		directory: identity.NewMockDirectory(),
 	}
 }
 

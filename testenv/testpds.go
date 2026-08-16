@@ -6,13 +6,20 @@ import (
 	"testing"
 
 	comatproto "github.com/bluesky-social/indigo/api/atproto"
+	"github.com/bluesky-social/indigo/atproto/identity"
+	"github.com/bluesky-social/indigo/atproto/syntax"
 	"github.com/bluesky-social/indigo/xrpc"
 	"github.com/stretchr/testify/require"
 )
 
 // TestPDS represents a running PDS container for testing.
 type TestPDS struct {
-	rawHost string
+	rawHost   string
+	directory *identity.MockDirectory
+}
+
+func (p *TestPDS) Directory() identity.Directory {
+	return p.directory
 }
 
 // RawHost returns a host:port string for the PDS.
@@ -51,6 +58,11 @@ func (p *TestPDS) MustNewUser(t *testing.T, handle string) *TestUser {
 		Handle:     out.Handle,
 		Did:        out.Did,
 	}
+
+	p.directory.Insert(identity.Identity{
+		DID:    syntax.DID(out.Did),
+		Handle: syntax.Handle(handle),
+	})
 
 	return &TestUser{
 		did:    out.Did,
