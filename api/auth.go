@@ -121,16 +121,16 @@ func (a *AuthEngine) auth(ctx context.Context, req connect.AnyRequest) (*authCon
 	if authHeader == "" {
 		return nil, connect.NewError(connect.CodeUnauthenticated, fmt.Errorf("no token provided"))
 	}
-	authParts := strings.Split(authHeader, " ")
-	if len(authParts) != 2 {
+	authTyp, token, ok := strings.Cut(authHeader, " ")
+	if !ok {
 		return nil, connect.NewError(connect.CodeUnauthenticated, fmt.Errorf("malformed header"))
 	}
-	if authParts[0] != "Bearer" {
+	if authTyp != "Bearer" {
 		return nil, connect.NewError(connect.CodeUnauthenticated, fmt.Errorf("only Bearer auth supported"))
 	}
 
 	// Validate the token from the header
-	did, err := a.TokenValidator(ctx, authParts[1])
+	did, err := a.TokenValidator(ctx, token)
 	if err != nil {
 		return nil, fmt.Errorf("validating token: %w", err)
 	}
