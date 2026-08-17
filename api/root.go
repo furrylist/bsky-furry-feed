@@ -8,7 +8,7 @@ import (
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 )
 
-//go:embed html/root.html
+//go:embed html/root.txt
 var rootPage []byte
 
 func rootHandler(log *slog.Logger) (string, http.Handler) {
@@ -19,6 +19,7 @@ func rootHandler(log *slog.Logger) (string, http.Handler) {
 			_, _ = w.Write([]byte("Not Found"))
 			return
 		}
+		w.Header().Set("content-type", "text/plain; charset=utf-8")
 		w.WriteHeader(http.StatusOK)
 		_, _ = w.Write(rootPage)
 
