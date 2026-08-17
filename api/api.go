@@ -130,14 +130,14 @@ func unaryLoggingInterceptor(log *slog.Logger) connect.UnaryInterceptorFunc {
 				log.Error(
 					"gRPC request failed",
 					slog.String("procedure", req.Spec().Procedure),
-					slog.Duration("duration", time.Since(start)),
+					slog.Int64("duration_ms", time.Since(start).Milliseconds()),
 					bfflog.Err(err),
 				)
 			} else {
 				log.Info(
 					"gRPC request handled",
 					slog.String("procedure", req.Spec().Procedure),
-					slog.Duration("duration", time.Since(start)),
+					slog.Int64("duration_ms", time.Since(start).Milliseconds()),
 				)
 			}
 			return res, err
