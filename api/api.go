@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log/slog"
 	"net/http"
+	"time"
 
 	"connectrpc.com/connect"
 	"connectrpc.com/otelconnect"
@@ -123,17 +124,20 @@ func New(
 func unaryLoggingInterceptor(log *slog.Logger) connect.UnaryInterceptorFunc {
 	interceptor := func(next connect.UnaryFunc) connect.UnaryFunc {
 		return func(ctx context.Context, req connect.AnyRequest) (connect.AnyResponse, error) {
+			start := time.Now()
 			res, err := next(ctx, req)
 			if err != nil {
 				log.Error(
 					"gRPC request failed",
 					slog.String("procedure", req.Spec().Procedure),
+					slog.Duration("duration", time.Since(start)),
 					bfflog.Err(err),
 				)
 			} else {
 				log.Info(
 					"gRPC request handled",
 					slog.String("procedure", req.Spec().Procedure),
+					slog.Duration("duration", time.Since(start)),
 				)
 			}
 			return res, err
