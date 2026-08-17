@@ -2,17 +2,20 @@ package api
 
 import (
 	"context"
+	"crypto/sha256"
 	"errors"
 	"fmt"
 	"log/slog"
 	"net/http"
 	"strings"
+	"time"
 
 	"connectrpc.com/connect"
 	"github.com/bluesky-social/indigo/atproto/identity"
 	"github.com/bluesky-social/indigo/atproto/syntax"
 	"github.com/bluesky-social/indigo/xrpc"
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/hashicorp/golang-lru/v2/expirable"
 	"github.com/strideynet/bsky-furry-feed/bluesky"
 	"github.com/strideynet/bsky-furry-feed/internal/bfflog"
 	v1 "github.com/strideynet/bsky-furry-feed/proto/bff/v1"
@@ -97,6 +100,8 @@ var roleToPermissions = map[string][]string{
 	"approver":  approverPermissions,
 }
 
+type ValidatorFn = func(ctx context.Context, token, pdsHost string) (did string, err error)
+
 // AuthEngine helps authenticate requests made by users and apply authorization
 // rules based on the identity found during authentication.
 type AuthEngine struct {
@@ -105,9 +110,11 @@ type AuthEngine struct {
 	ActorGetter actorGetter
 	// TokenValidator validates a given token and returns the DID associated
 	// with that token.
-	TokenValidator func(ctx context.Context, token, pdsHost string) (did string, err error)
+	TokenValidator ValidatorFn
 	// IdentityDirectory allows resolving the DID to a PDS.
 	IdentityDirectory identity.Directory
+	// validationCache stores
+	validationCache *expirable.LRU[string, struct{}]
 
 	Log *slog.Logger
 }
@@ -140,10 +147,10 @@ func (a *AuthEngine) auth(ctx context.Context, req connect.AnyRequest) (*authCon
 		return nil, connect.NewError(connect.CodeUnauthenticated, fmt.Errorf("resolving DID to PDS: %w", err))
 	}
 
-	// Validate the token from the header
-	_, err = a.TokenValidator(ctx, token.Raw, endpoint)
+	// Validate the token against PDS (or cache)
+	err = a.validateTokenCached(ctx, token, endpoint)
 	if err != nil {
-		return nil, fmt.Errorf("validating token: %w", err)
+		return nil, err
 	}
 
 	// Try to fetch the actor to find any roles they have associated with them.
@@ -194,6 +201,27 @@ func (a *AuthEngine) auth(ctx context.Context, req connect.AnyRequest) (*authCon
 		DID:   userDID,
 		Actor: actor,
 	}, nil
+}
+
+// validateTokenCached validates the token using the engine's [ValidatorFn].
+//
+// If the token is valid, calling this method again validate it again for 15 minutes
+// after the first invocation.
+func (a *AuthEngine) validateTokenCached(ctx context.Context, token *jwt.Token, endpoint string) error {
+	if a.validationCache == nil {
+		a.validationCache = expirable.NewLRU[string, struct{}](50, nil, time.Minute*15)
+	}
+	key := fmt.Sprintf("%x", sha256.Sum256([]byte(token.Raw)))
+	_, ok := a.validationCache.Get(key)
+	if ok {
+		return nil
+	}
+	_, err := a.TokenValidator(ctx, token.Raw, endpoint)
+	if err != nil {
+		return fmt.Errorf("validating token: %w", err)
+	}
+	a.validationCache.Add(key, struct{}{})
+	return nil
 }
 
 func (a *AuthEngine) resolveDIDToPDS(ctx context.Context, did string) (string, error) {
