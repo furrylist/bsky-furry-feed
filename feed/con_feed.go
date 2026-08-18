@@ -60,12 +60,13 @@ func registerConFeeds(r *Service) {
 		ID:   "eurofurence",
 		Name: "Eurofurence",
 		MainTags: []string{
-			"eurofurence", "eurofurence2025", "eurofurence29",
-			"ef", "ef2025", "ef29",
+			"ef", "eurofurence", "ef30",
 		},
 		OtherTags: []string{
 			"eurofurence2023", "eurofurence27", "ef2023", "ef27",
 			"eurofurence2024", "eurofurence28", "ef2024", "ef28",
+			"eurofurence2025", "eurofurence29", "ef2025", "ef29",
+			"eurofurence2026", "eurofurence30", "ef2026", "ef30",
 			"euroference",
 		},
 	})
