@@ -69,6 +69,7 @@ func registerConFeeds(r *Service) {
 			"eurofurence2026", "eurofurence30", "ef2026", "ef30",
 			"euroference", "eurofurance",
 		},
+		TextContains: "eurofurence",
 	})
 	r.registerChronologicalConFeed(conFeed{
 		ID:       "blfc",
