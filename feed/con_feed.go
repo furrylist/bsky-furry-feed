@@ -67,7 +67,7 @@ func registerConFeeds(r *Service) {
 			"eurofurence2024", "eurofurence28", "ef2024", "ef28",
 			"eurofurence2025", "eurofurence29", "ef2025", "ef29",
 			"eurofurence2026", "eurofurence30", "ef2026", "ef30",
-			"euroference",
+			"euroference", "eurofurance",
 		},
 	})
 	r.registerChronologicalConFeed(conFeed{
