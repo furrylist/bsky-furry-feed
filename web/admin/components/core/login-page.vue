@@ -6,6 +6,11 @@ const identifier = ref<string>("");
 const password = ref<string>("");
 const error = ref<any>();
 
+// credit: https://bsky.app/profile/socksthewolf.com/post/3msy72akz622w
+const isAppPassword = computed(() =>
+  password.value.match(/(?:[0-9a-z]{4}-){3}[0-9a-z]{4}/i)
+);
+
 async function login() {
   error.value = null;
 
@@ -53,6 +58,13 @@ async function login() {
             class="bg-white dark:bg-gray-900 rounded border border-gray-400 dark:border-gray-700 px-2 py-1"
             type="password"
           />
+          <span
+            v-if="password.length > 0 && !isAppPassword"
+            class="mr-auto px-1 py-2 text-sm text-orange-500"
+          >
+            Please use an app password. Generate one in Bluesky by visiting
+            Settings &rarr; Privacy &rarr; App passwords.
+          </span>
         </div>
 
         <div class="flex flex-col mb-4 text-sm">
