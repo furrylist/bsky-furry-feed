@@ -24,8 +24,12 @@ const labelers: Array<Labeler> = [
   },
   {
     did: "did:plc:2qawvcwumvgxmed6iy6pmt6l",
-    name: "sonasky.app"
-  }
+    name: "sonasky.app",
+  },
+  {
+    did: "did:plc:bpkpvmwpd3nr2ry4btt55ack",
+    name: "aimod.social",
+  },
 ];
 
 type Labeler = {
