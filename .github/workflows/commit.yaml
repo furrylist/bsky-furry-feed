@@ -56,6 +56,15 @@ jobs:
       - run: sqlc generate
       - name: Check that sqlc queries are up-to-date
         run: git diff --exit-code
+  check-proto:
+    name: Check proto generation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: jdx/mise-action@v4
+      - run: mise run generate:buf
+      - name: Check that proto generations are up-to-date
+        run: git diff --exit-code
   lint-sql:
     runs-on: ubuntu-latest
     steps:
