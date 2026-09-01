@@ -319,8 +319,8 @@ func (fi *FirehoseIngester) handleRecordCreate(
 	}
 
 	// Only collect events from actors we care about e.g those that are
-	// approved.
-	if actor.Status != v1.ActorStatus_ACTOR_STATUS_APPROVED {
+	// approved and pending.
+	if actor.Status != v1.ActorStatus_ACTOR_STATUS_APPROVED && actor.Status != v1.ActorStatus_ACTOR_STATUS_PENDING {
 		return nil
 	}
 
