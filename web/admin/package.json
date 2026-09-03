@@ -11,7 +11,7 @@
   },
   "devDependencies": {
     "@nuxt/devtools": "latest",
-    "@nuxt/eslint-config": "^0.1.1",
+    "@nuxt/eslint-config": "^0.7.0",
     "@nuxtjs/tailwindcss": "^6.8.0",
     "@types/dompurify": "^3.0.2",
     "@types/node": "^18.16.19",
