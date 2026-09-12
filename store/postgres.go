@@ -430,9 +430,9 @@ func (s *PGXStore) DeleteLike(ctx context.Context, opts DeleteLikeOpts) (err err
 		endSpan(span, err)
 	}()
 
-	err = s.queries.SoftDeleteCandidateLike(ctx, opts.URI)
+	err = s.queries.HardDeleteCandidateLike(ctx, opts.URI)
 	if err != nil {
-		return fmt.Errorf("executing SoftDeleteCandidateLike query: %w", convertPGXError(err))
+		return fmt.Errorf("executing HardDeleteCandidateLike query: %w", convertPGXError(err))
 	}
 
 	return nil

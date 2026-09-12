@@ -7,10 +7,7 @@ candidate_likes (
 VALUES
 ($1, $2, $3, $4, $5);
 
--- name: SoftDeleteCandidateLike :exec
-UPDATE
-candidate_likes
-SET
-    deleted_at = NOW()
+-- name: HardDeleteCandidateLike :exec
+DELETE FROM candidate_likes
 WHERE
     uri = $1;
