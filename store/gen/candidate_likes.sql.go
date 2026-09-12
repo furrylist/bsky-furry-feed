@@ -40,16 +40,13 @@ func (q *Queries) CreateCandidateLike(ctx context.Context, arg CreateCandidateLi
 	return err
 }
 
-const softDeleteCandidateLike = `-- name: SoftDeleteCandidateLike :exec
-UPDATE
-candidate_likes
-SET
-    deleted_at = NOW()
+const hardDeleteCandidateLike = `-- name: HardDeleteCandidateLike :exec
+DELETE FROM candidate_likes
 WHERE
     uri = $1
 `
 
-func (q *Queries) SoftDeleteCandidateLike(ctx context.Context, uri string) error {
-	_, err := q.db.Exec(ctx, softDeleteCandidateLike, uri)
+func (q *Queries) HardDeleteCandidateLike(ctx context.Context, uri string) error {
+	_, err := q.db.Exec(ctx, hardDeleteCandidateLike, uri)
 	return err
 }
