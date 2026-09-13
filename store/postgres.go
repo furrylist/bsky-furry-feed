@@ -37,6 +37,12 @@ func (s *PGXStore) Close() {
 	s.pool.Close()
 }
 
+// GetPool returns the underlying connection pool. Treat this like a borrowed
+// toothbrush of a friend, don't put it in the toilet and don't close (destroy) it.
+func (s *PGXStore) GetPool() *pgxpool.Pool {
+	return s.pool
+}
+
 func convertPGXError(err error) error {
 	if err == nil {
 		return nil

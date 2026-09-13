@@ -3,10 +3,15 @@ package ingester
 import (
 	"context"
 	"fmt"
-	"github.com/bluesky-social/indigo/api/bsky"
-	"github.com/strideynet/bsky-furry-feed/bluesky"
-	"github.com/strideynet/bsky-furry-feed/store"
+	"log/slog"
 	"time"
+
+	"github.com/bluesky-social/indigo/api/bsky"
+	"github.com/bluesky-social/indigo/atproto/syntax"
+
+	"github.com/strideynet/bsky-furry-feed/bluesky"
+	bffv1pb "github.com/strideynet/bsky-furry-feed/proto/bff/v1"
+	"github.com/strideynet/bsky-furry-feed/store"
 )
 
 func (fi *FirehoseIngester) handleFeedLikeCreate(
@@ -19,6 +24,11 @@ func (fi *FirehoseIngester) handleFeedLikeCreate(
 	defer func() {
 		endSpan(span, err)
 	}()
+
+	if fi.shouldSkipLike(data) {
+		fi.log.Debug("skipping like", "uri", recordUri)
+		return nil
+	}
 
 	createdAt, err := bluesky.ParseTime(data.CreatedAt)
 	if err != nil {
@@ -36,6 +46,20 @@ func (fi *FirehoseIngester) handleFeedLikeCreate(
 	}
 
 	return nil
+}
+
+// shouldSkipLike returns true if a like is for the post of a user, who
+// isn't approved and isn't pending.
+func (fi *FirehoseIngester) shouldSkipLike(like *bsky.FeedLike) bool {
+	uri, err := syntax.ParseATURI(like.Subject.Uri)
+	if err != nil {
+		slog.Warn("invalid at:// uri", "uri", like.Subject.Uri[:min(50, len(like.Subject.Uri))], "err", err.Error())
+		return true
+	}
+
+	did := uri.Authority().DID().String()
+	actor := fi.actorCache.GetByDID(did)
+	return actor == nil || (actor.Status != bffv1pb.ActorStatus_ACTOR_STATUS_APPROVED && actor.Status != bffv1pb.ActorStatus_ACTOR_STATUS_PENDING)
 }
 
 func (fi *FirehoseIngester) handleFeedLikeDelete(
