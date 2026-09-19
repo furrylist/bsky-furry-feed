@@ -253,7 +253,7 @@ scored_candidates AS MATERIALIZED (
                 THEN trl.most_recent_like_at + INTERVAL '1 hours'
             WHEN trl.liked_by_friend THEN trl.most_recent_like_at + INTERVAL '30 minutes'
             WHEN trl.like_count < 5 THEN trl.most_recent_like_at + INTERVAL '10 minutes'
-            ELSE trl.most_recent_like_at
+            ELSE trl.most_recent_like_at - INTERVAL '3 hour'
         END AS boosted_time
     FROM their_recent_likes AS trl
     INNER JOIN candidate_posts_recent AS cpr ON trl.subject_uri = cpr.uri
