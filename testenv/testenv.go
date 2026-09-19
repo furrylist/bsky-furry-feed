@@ -20,6 +20,8 @@ import (
 	"github.com/testcontainers/testcontainers-go/wait"
 )
 
+const PostgresVersion = "16.13"
+
 func startPDS(ctx context.Context, t *testing.T) *TestPDS {
 	t.Helper()
 
@@ -82,7 +84,7 @@ func StartDatabase(ctx context.Context, t *testing.T) (url string) {
 		return fmt.Sprintf("postgres://bff:bff@%s:%d/bff?sslmode=disable", host, port.Int())
 	})
 	container, err := postgres.Run(ctx,
-		"postgres:16.13-alpine",
+		"postgres:"+PostgresVersion+"-alpine",
 		postgres.WithDatabase("bff"),
 		postgres.WithUsername("bff"),
 		postgres.WithPassword("bff"),
