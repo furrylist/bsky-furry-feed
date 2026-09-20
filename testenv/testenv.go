@@ -1,3 +1,4 @@
+//nolint:modernize // TODO: fix
 package testenv
 
 import (

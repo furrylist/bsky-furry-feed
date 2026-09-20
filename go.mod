@@ -1,6 +1,6 @@
 module github.com/strideynet/bsky-furry-feed
 
-go 1.26.5
+go 1.27.1
 
 require (
 	connectrpc.com/connect v1.19.1
