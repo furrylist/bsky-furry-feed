@@ -20,7 +20,7 @@ import (
 	"github.com/testcontainers/testcontainers-go/wait"
 )
 
-const PostgresVersion = "16.15"
+const PostgresVersion = "18.6"
 
 func startPDS(ctx context.Context, t *testing.T) *TestPDS {
 	t.Helper()
