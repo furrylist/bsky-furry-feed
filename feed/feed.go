@@ -1,4 +1,3 @@
-//nolint:modernize // TODO: fix
 package feed
 
 import (
@@ -259,10 +258,8 @@ func testGenerator(opts preScoredGeneratorOpts) GenerateFunc {
 	return func(ctx context.Context, pgxStore *store.PGXStore, cursor string, actorDid string, limit int) ([]Post, error) {
 		if actorDid == "" {
 			return preScoredGenerator(preScoredGeneratorOpts{
-				Alg: "classic",
-				generatorOpts: generatorOpts{
-					DisallowedHashtags: defaultDisallowedHashtags,
-				},
+				Alg:                "classic",
+				DisallowedHashtags: defaultDisallowedHashtags,
 			})(ctx, pgxStore, cursor, actorDid, limit)
 		}
 		type cursorValues struct {
@@ -348,10 +345,8 @@ func ServiceWithDefaultFeeds(pgxStore *store.PGXStore) *Service {
 		Description: "Hottest posts by furries across Bluesky. Contains a mix of SFW and NSFW content.\n\nJoin the furry feeds by following @furryli.st",
 		Priority:    100,
 	}, preScoredGenerator(preScoredGeneratorOpts{
-		Alg: "classic",
-		generatorOpts: generatorOpts{
-			DisallowedHashtags: defaultDisallowedHashtags,
-		},
+		Alg:                "classic",
+		DisallowedHashtags: defaultDisallowedHashtags,
 	}))
 	r.Register(Meta{
 		ID:          "hot-nsfw",
@@ -359,11 +354,9 @@ func ServiceWithDefaultFeeds(pgxStore *store.PGXStore) *Service {
 		Description: "Hottest NSFW posts by furries across Bluesky. Contains only NSFW content.\n\nJoin the furry feeds by following @furryli.st",
 		Priority:    100,
 	}, preScoredGenerator(preScoredGeneratorOpts{
-		Alg: "classic",
-		generatorOpts: generatorOpts{
-			DisallowedHashtags: defaultDisallowedHashtags,
-			IsNSFW:             tristate.True,
-		},
+		Alg:                "classic",
+		DisallowedHashtags: defaultDisallowedHashtags,
+		IsNSFW:             tristate.True,
 	}))
 
 	// Reverse chronological based feeds
@@ -378,11 +371,9 @@ func ServiceWithDefaultFeeds(pgxStore *store.PGXStore) *Service {
 		DisplayName: "🐾 Fursuits",
 		Description: "Posts by furries with #fursuit.\n\nJoin the furry feeds by following @furryli.st",
 	}, chronologicalGenerator(chronologicalGeneratorOpts{
-		generatorOpts: generatorOpts{
-			Hashtags:           []string{"fursuit", "fursuitfriday"},
-			DisallowedHashtags: defaultDisallowedHashtags,
-			AllowedEmbeds:      allowImageAndVideo,
-		},
+		Hashtags:           []string{"fursuit", "fursuitfriday"},
+		DisallowedHashtags: defaultDisallowedHashtags,
+		AllowedEmbeds:      allowImageAndVideo,
 	},
 	))
 	r.Register(Meta{
@@ -390,12 +381,10 @@ func ServiceWithDefaultFeeds(pgxStore *store.PGXStore) *Service {
 		DisplayName: "🐾 Murrsuits 🌙",
 		Description: "Posts by furries that have an image and #murrsuit or #fursuit.\n\nJoin the furry feeds by following @furryli.st",
 	}, chronologicalGenerator(chronologicalGeneratorOpts{
-		generatorOpts: generatorOpts{
-			Hashtags:           []string{"fursuit", "fursuitfriday", "murrsuit", "mursuit"},
-			DisallowedHashtags: defaultDisallowedHashtags,
-			AllowedEmbeds:      allowImageAndVideo,
-			IsNSFW:             tristate.True,
-		},
+		Hashtags:           []string{"fursuit", "fursuitfriday", "murrsuit", "mursuit"},
+		DisallowedHashtags: defaultDisallowedHashtags,
+		AllowedEmbeds:      allowImageAndVideo,
+		IsNSFW:             tristate.True,
 	},
 	))
 	r.Register(Meta{
@@ -403,12 +392,10 @@ func ServiceWithDefaultFeeds(pgxStore *store.PGXStore) *Service {
 		DisplayName: "🐾 Fursuits 🧼",
 		Description: "Posts by furries with #fursuit that haven't been marked NSFW.\n\nJoin the furry feeds by following @furryli.st",
 	}, chronologicalGenerator(chronologicalGeneratorOpts{
-		generatorOpts: generatorOpts{
-			Hashtags:           []string{"fursuit", "fursuitfriday"},
-			DisallowedHashtags: defaultDisallowedHashtags,
-			AllowedEmbeds:      allowImageAndVideo,
-			IsNSFW:             tristate.False,
-		},
+		Hashtags:           []string{"fursuit", "fursuitfriday"},
+		DisallowedHashtags: defaultDisallowedHashtags,
+		AllowedEmbeds:      allowImageAndVideo,
+		IsNSFW:             tristate.False,
 	},
 	))
 	var furryArtHashtags = []string{"furryart"}
@@ -417,11 +404,9 @@ func ServiceWithDefaultFeeds(pgxStore *store.PGXStore) *Service {
 		DisplayName: "🐾 Art",
 		Description: "Posts by furries with #furryart. Contains a mix of SFW and NSFW content.\n\nJoin the furry feeds by following @furryli.st",
 	}, chronologicalGenerator(chronologicalGeneratorOpts{
-		generatorOpts: generatorOpts{
-			Hashtags:           furryArtHashtags,
-			DisallowedHashtags: defaultDisallowedHashtags,
-			AllowedEmbeds:      allowImageAndVideo,
-		},
+		Hashtags:           furryArtHashtags,
+		DisallowedHashtags: defaultDisallowedHashtags,
+		AllowedEmbeds:      allowImageAndVideo,
 	},
 	))
 	r.Register(Meta{
@@ -429,70 +414,58 @@ func ServiceWithDefaultFeeds(pgxStore *store.PGXStore) *Service {
 		DisplayName: "🐾 Art 🧼",
 		Description: "Posts by furries with #furryart and that haven't been marked NSFW.\n\nJoin the furry feeds by following @furryli.st",
 	}, chronologicalGenerator(chronologicalGeneratorOpts{
-		generatorOpts: generatorOpts{
-			Hashtags:           furryArtHashtags,
-			DisallowedHashtags: defaultDisallowedHashtags,
-			AllowedEmbeds:      allowImageAndVideo,
-			IsNSFW:             tristate.False,
-		},
+		Hashtags:           furryArtHashtags,
+		DisallowedHashtags: defaultDisallowedHashtags,
+		AllowedEmbeds:      allowImageAndVideo,
+		IsNSFW:             tristate.False,
 	}))
 	r.Register(Meta{
 		ID:          "art-nsfw",
 		DisplayName: "🐾 Art 🌙",
 		Description: "Posts by furries with #furryart and marked NSFW.\n\nJoin the furry feeds by following @furryli.st",
 	}, chronologicalGenerator(chronologicalGeneratorOpts{
-		generatorOpts: generatorOpts{
-			Hashtags:           furryArtHashtags,
-			DisallowedHashtags: defaultDisallowedHashtags,
-			AllowedEmbeds:      allowImageAndVideo,
-			IsNSFW:             tristate.True,
-		},
+		Hashtags:           furryArtHashtags,
+		DisallowedHashtags: defaultDisallowedHashtags,
+		AllowedEmbeds:      allowImageAndVideo,
+		IsNSFW:             tristate.True,
 	}))
 	r.Register(Meta{
 		ID:          "art-hot",
 		DisplayName: "🐾 Hot Art",
 		Description: "Hottest posts by furries with #furryart. Contains a mix of SFW and NSFW content.\n\nJoin the furry feeds by following @furryli.st",
 	}, preScoredGenerator(preScoredGeneratorOpts{
-		Alg: "classic",
-		generatorOpts: generatorOpts{
-			Hashtags:           furryArtHashtags,
-			DisallowedHashtags: defaultDisallowedHashtags,
-			AllowedEmbeds:      allowImageAndVideo,
-		},
+		Alg:                "classic",
+		Hashtags:           furryArtHashtags,
+		DisallowedHashtags: defaultDisallowedHashtags,
+		AllowedEmbeds:      allowImageAndVideo,
 	}))
 	r.Register(Meta{
 		ID:          "art-hot-nsfw",
 		DisplayName: "🐾 Hot Art 🌙",
 		Description: "Hottest posts by furries with #furryart and marked NSFW.\n\nJoin the furry feeds by following @furryli.st",
 	}, preScoredGenerator(preScoredGeneratorOpts{
-		Alg: "classic",
-		generatorOpts: generatorOpts{
-			Hashtags:           furryArtHashtags,
-			DisallowedHashtags: defaultDisallowedHashtags,
-			AllowedEmbeds:      allowImageAndVideo,
-			IsNSFW:             tristate.True,
-		},
+		Alg:                "classic",
+		Hashtags:           furryArtHashtags,
+		DisallowedHashtags: defaultDisallowedHashtags,
+		AllowedEmbeds:      allowImageAndVideo,
+		IsNSFW:             tristate.True,
 	}))
 	r.Register(Meta{
 		ID:          "furry-nsfw",
 		DisplayName: "🐾 New 🌙",
 		Description: "Posts by furries that have been marked NSFW.\n\nJoin the furry feeds by following @furryli.st",
 	}, chronologicalGenerator(chronologicalGeneratorOpts{
-		generatorOpts: generatorOpts{
-			DisallowedHashtags: defaultDisallowedHashtags,
-			AllowedEmbeds:      allowImageAndVideo,
-			IsNSFW:             tristate.True,
-		},
+		DisallowedHashtags: defaultDisallowedHashtags,
+		AllowedEmbeds:      allowImageAndVideo,
+		IsNSFW:             tristate.True,
 	}))
 	r.Register(Meta{
 		ID:          "furry-comms",
 		DisplayName: "🐾 #CommsOpen",
 		Description: "Posts by furries that have #commsopen.\n\nJoin the furry feeds by following @furryli.st",
 	}, chronologicalGenerator(chronologicalGeneratorOpts{
-		generatorOpts: generatorOpts{
-			Hashtags:           []string{"commsopen"},
-			DisallowedHashtags: defaultDisallowedHashtags,
-		},
+		Hashtags:           []string{"commsopen"},
+		DisallowedHashtags: defaultDisallowedHashtags,
 	}))
 	registerConFeeds(r)
 	r.Register(Meta{
@@ -500,48 +473,40 @@ func ServiceWithDefaultFeeds(pgxStore *store.PGXStore) *Service {
 		DisplayName: "🐾 #FurSale",
 		Description: "Buy and sell furry merch on the FurSale feed. Use #fursale or #merch to include a post in the feed.\n\nJoin the furry feeds by following @furryli.st",
 	}, chronologicalGenerator(chronologicalGeneratorOpts{
-		generatorOpts: generatorOpts{
-			Hashtags:           []string{"fursale", "merch"},
-			DisallowedHashtags: defaultDisallowedHashtags,
-		},
+		Hashtags:           []string{"fursale", "merch"},
+		DisallowedHashtags: defaultDisallowedHashtags,
 	}))
 	r.Register(Meta{
 		ID:          "streamers",
 		DisplayName: "🐾 Streamers",
 		Description: "Find furs going live on streaming platforms. Use #goinglive or #furrylive to include a post in the feed.\n\nJoin the furry feeds by following @furryli.st",
 	}, chronologicalGenerator(chronologicalGeneratorOpts{
-		generatorOpts: generatorOpts{
-			Hashtags:           []string{"goinglive", "furrylive"},
-			DisallowedHashtags: defaultDisallowedHashtags,
-		},
+		Hashtags:           []string{"goinglive", "furrylive"},
+		DisallowedHashtags: defaultDisallowedHashtags,
 	}))
 	r.Register(Meta{
 		ID:          "games",
 		DisplayName: "🐾 Games",
 		Description: "A feed for talking about and showing off furry visual novels and games. Use #FurryVN or #FurryGame to include a post in the feed. \n\nSponsored by @MinoHotel.bsky.social\n\nJoin the furry feeds by following @furryli.st",
 	}, chronologicalGenerator(chronologicalGeneratorOpts{
-		generatorOpts: generatorOpts{
-			Hashtags:           []string{"furryvn", "furrygames", "furrygame"},
-			DisallowedHashtags: defaultDisallowedHashtags,
-		},
+		Hashtags:           []string{"furryvn", "furrygames", "furrygame"},
+		DisallowedHashtags: defaultDisallowedHashtags,
 	}))
 	r.Register(Meta{
 		ID:          "literature",
 		DisplayName: "🐾 Literature",
 		Description: "A feed for talking about and showing off furry literature. Use #FurFic, #FurLit or #FurryWriting to include a post in the feed. \n\nJoin the furry feeds by following @furryli.st",
 	}, chronologicalGenerator(chronologicalGeneratorOpts{
-		generatorOpts: generatorOpts{
-			Hashtags: []string{
-				"furfic",
-				"furlit",
-				"furrylit",
-				"furryfic",
-				"furryfiction",
-				"furryliterature",
-				"furrywriting",
-			},
-			DisallowedHashtags: defaultDisallowedHashtags,
+		Hashtags: []string{
+			"furfic",
+			"furlit",
+			"furrylit",
+			"furryfic",
+			"furryfiction",
+			"furryliterature",
+			"furrywriting",
 		},
+		DisallowedHashtags: defaultDisallowedHashtags,
 	}))
 	r.Register(Meta{
 		ID:          "furry-test",
@@ -549,10 +514,8 @@ func ServiceWithDefaultFeeds(pgxStore *store.PGXStore) *Service {
 		Description: "New experimental '🐾 Fur You' feed algorithm (yes, idea stolen from For You).\ntest\ntest\n\ndouble break",
 		Priority:    -1,
 	}, testGenerator(preScoredGeneratorOpts{
-		Alg: "classic",
-		generatorOpts: generatorOpts{
-			DisallowedHashtags: defaultDisallowedHashtags,
-		},
+		Alg:                "classic",
+		DisallowedHashtags: defaultDisallowedHashtags,
 	}))
 
 	r.Register(Meta{
@@ -562,11 +525,9 @@ func ServiceWithDefaultFeeds(pgxStore *store.PGXStore) *Service {
 		Priority:    100,
 		VideoOnly:   true,
 	}, preScoredGenerator(preScoredGeneratorOpts{
-		Alg: "classic",
-		generatorOpts: generatorOpts{
-			DisallowedHashtags: defaultDisallowedHashtags,
-			AllowedEmbeds:      allowVideoOnly,
-		},
+		Alg:                "classic",
+		DisallowedHashtags: defaultDisallowedHashtags,
+		AllowedEmbeds:      allowVideoOnly,
 	}))
 	r.Register(Meta{
 		ID:          "video-new",
@@ -574,10 +535,8 @@ func ServiceWithDefaultFeeds(pgxStore *store.PGXStore) *Service {
 		Description: "Latest video posts by furries across Bluesky. Contains a mix of SFW and NSFW content.\n\nJoin the furry feeds by following @furryli.st",
 		VideoOnly:   true,
 	}, chronologicalGenerator(chronologicalGeneratorOpts{
-		generatorOpts: generatorOpts{
-			DisallowedHashtags: defaultDisallowedHashtags,
-			AllowedEmbeds:      allowVideoOnly,
-		},
+		DisallowedHashtags: defaultDisallowedHashtags,
+		AllowedEmbeds:      allowVideoOnly,
 	}))
 	r.Register(Meta{
 		ID:          "video-hot-nsfw",
@@ -586,12 +545,10 @@ func ServiceWithDefaultFeeds(pgxStore *store.PGXStore) *Service {
 		Priority:    100,
 		VideoOnly:   true,
 	}, preScoredGenerator(preScoredGeneratorOpts{
-		Alg: "classic",
-		generatorOpts: generatorOpts{
-			DisallowedHashtags: defaultDisallowedHashtags,
-			AllowedEmbeds:      allowVideoOnly,
-			IsNSFW:             tristate.True,
-		},
+		Alg:                "classic",
+		DisallowedHashtags: defaultDisallowedHashtags,
+		AllowedEmbeds:      allowVideoOnly,
+		IsNSFW:             tristate.True,
 	}))
 	r.Register(Meta{
 		ID:          "video-new-nsfw",
@@ -599,11 +556,9 @@ func ServiceWithDefaultFeeds(pgxStore *store.PGXStore) *Service {
 		Description: "Latest NSFW video posts by furries across Bluesky. Contains only NSFW content.\n\nJoin the furry feeds by following @furryli.st",
 		VideoOnly:   true,
 	}, chronologicalGenerator(chronologicalGeneratorOpts{
-		generatorOpts: generatorOpts{
-			DisallowedHashtags: defaultDisallowedHashtags,
-			AllowedEmbeds:      allowVideoOnly,
-			IsNSFW:             tristate.True,
-		},
+		DisallowedHashtags: defaultDisallowedHashtags,
+		AllowedEmbeds:      allowVideoOnly,
+		IsNSFW:             tristate.True,
 	}))
 
 	return r

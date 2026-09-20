@@ -1,4 +1,3 @@
-//nolint:modernize // TODO: fix
 package testenv
 
 import (
@@ -29,37 +28,35 @@ func startPDS(ctx context.Context, t *testing.T) *TestPDS {
 	const pdsPort = "3000/tcp"
 
 	container, err := testcontainers.GenericContainer(ctx, testcontainers.GenericContainerRequest{
-		ContainerRequest: testcontainers.ContainerRequest{
-			Image:        "ghcr.io/bluesky-social/pds:0.4.5009",
-			ExposedPorts: []string{pdsPort},
-			Env: map[string]string{
-				"PDS_HOSTNAME":       "localhost",
-				"PDS_JWT_SECRET":     "test-jwt-secret-not-for-production",
-				"PDS_ADMIN_PASSWORD": "admin",
-				"PDS_PLC_ROTATION_KEY_K256_PRIVATE_KEY_HEX": "3ee68ca7de7f9af37d9e02a21f3c49de87d4e7c2aa6c6e8a1c26e2f1e8bb8a7f",
-				"PDS_DATA_DIRECTORY":                        "/pds",
-				"PDS_BLOBSTORE_DISK_LOCATION":               "/pds/blocks",
-				"PDS_DID_PLC_URL":                           "http://127.0.0.1:2582",
-				"PDS_DEV_MODE":                              "true",
-				"PDS_INVITE_REQUIRED":                       "false",
-				"PDS_SERVICE_HANDLE_DOMAINS":                ".tpds",
-				"NODE_ENV":                                  "production",
+		Image:        "ghcr.io/bluesky-social/pds:0.4.5009",
+		ExposedPorts: []string{pdsPort},
+		Env: map[string]string{
+			"PDS_HOSTNAME":       "localhost",
+			"PDS_JWT_SECRET":     "test-jwt-secret-not-for-production",
+			"PDS_ADMIN_PASSWORD": "admin",
+			"PDS_PLC_ROTATION_KEY_K256_PRIVATE_KEY_HEX": "3ee68ca7de7f9af37d9e02a21f3c49de87d4e7c2aa6c6e8a1c26e2f1e8bb8a7f",
+			"PDS_DATA_DIRECTORY":                        "/pds",
+			"PDS_BLOBSTORE_DISK_LOCATION":               "/pds/blocks",
+			"PDS_DID_PLC_URL":                           "http://127.0.0.1:2582",
+			"PDS_DEV_MODE":                              "true",
+			"PDS_INVITE_REQUIRED":                       "false",
+			"PDS_SERVICE_HANDLE_DOMAINS":                ".tpds",
+			"NODE_ENV":                                  "production",
 
-				// just in case we want to run against the public app view
-				// "PDS_BSKY_APP_VIEW_URL": "https://api.bsky.app",
-				// "PDS_BSKY_APP_VIEW_DID": "did:web:api.bsky.app",
-			},
-			Entrypoint: []string{"sh", "-c", pdsEntrypoint},
-			Files: []testcontainers.ContainerFile{
-				{
-					Reader:            bytes.NewReader(plcServerScript),
-					ContainerFilePath: "/app/plc.js",
-					FileMode:          0o644,
-				},
-			},
-			WaitingFor: wait.ForHTTP("/xrpc/com.atproto.server.describeServer").WithPort(nat.Port(pdsPort)),
+			// just in case we want to run against the public app view
+			// "PDS_BSKY_APP_VIEW_URL": "https://api.bsky.app",
+			// "PDS_BSKY_APP_VIEW_DID": "did:web:api.bsky.app",
 		},
-		Started: true,
+		Entrypoint: []string{"sh", "-c", pdsEntrypoint},
+		Files: []testcontainers.ContainerFile{
+			{
+				Reader:            bytes.NewReader(plcServerScript),
+				ContainerFilePath: "/app/plc.js",
+				FileMode:          0o644,
+			},
+		},
+		WaitingFor: wait.ForHTTP("/xrpc/com.atproto.server.describeServer").WithPort(nat.Port(pdsPort)),
+		Started:    true,
 	})
 	require.NoError(t, err, "starting PDS container")
 	t.Cleanup(func() {

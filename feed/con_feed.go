@@ -1,4 +1,3 @@
-//nolint:modernize // TODO: fix
 package feed
 
 import (
@@ -43,11 +42,9 @@ func (s *Service) registerChronologicalConFeed(feed conFeed) {
 			tags,
 		),
 	}, chronologicalGenerator(chronologicalGeneratorOpts{
-		generatorOpts: generatorOpts{
-			Hashtags:           append(feed.MainTags, feed.OtherTags...),
-			DisallowedHashtags: defaultDisallowedHashtags,
-		},
-		TextContains: feed.TextContains,
+		Hashtags:           append(feed.MainTags, feed.OtherTags...),
+		DisallowedHashtags: defaultDisallowedHashtags,
+		TextContains:       feed.TextContains,
 	}))
 }
 
