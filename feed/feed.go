@@ -271,21 +271,15 @@ func testGenerator(opts preScoredGeneratorOpts) GenerateFunc {
 		for _, embed := range opts.AllowedEmbeds {
 			allowedEmbeds = append(allowedEmbeds, string(embed))
 		}
-		params := store.ListPostsForHotFeedOpts{
+		params := store.ListTestPostsOpts{
 			Limit:              limit * 3,
 			Hashtags:           opts.Hashtags,
 			DisallowedHashtags: opts.DisallowedHashtags,
 			IsNSFW:             opts.IsNSFW,
 			AllowedEmbeds:      allowedEmbeds,
-			Alg:                opts.Alg,
 		}
 		if cursor == "" {
-			seq, err := pgxStore.GetLatestScoreGeneration(ctx, opts.Alg)
-			if err != nil {
-				return nil, fmt.Errorf("executing GetLatestScoreGeneration: %w", err)
-			}
-			params.Cursor = store.ListPostsForHotFeedCursor{
-				GenerationSeq: seq,
+			params.Cursor = store.ListTestPostsCursor{
 				AfterScore:    float32(math.Inf(1)),
 				AfterURI:      "",
 			}
@@ -294,8 +288,7 @@ func testGenerator(opts preScoredGeneratorOpts) GenerateFunc {
 			if err := json.Unmarshal([]byte(cursor), &p); err != nil {
 				return nil, fmt.Errorf("unmarshaling cursor: %w", err)
 			}
-			params.Cursor = store.ListPostsForHotFeedCursor{
-				GenerationSeq: p.GenerationSeq,
+			params.Cursor = store.ListTestPostsCursor{
 				AfterScore:    p.AfterScore,
 				AfterURI:      p.AfterURI,
 			}
@@ -310,7 +303,6 @@ func testGenerator(opts preScoredGeneratorOpts) GenerateFunc {
 		posts := make([]Post, 0, len(dedupedPosts))
 		for _, p := range dedupedPosts {
 			postCursor, err := json.Marshal(cursorValues{
-				GenerationSeq: params.Cursor.GenerationSeq,
 				AfterScore:    float32(p.FluffRelevanceScore),
 				AfterURI:      p.URI,
 			})

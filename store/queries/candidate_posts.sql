@@ -279,14 +279,8 @@ scored_candidates AS MATERIALIZED (
 SELECT
     sc.uri,
     sc.actor_did,
-    EXTRACT(EPOCH FROM sc.boosted_time)::FLOAT AS fluff_relevance_score,
-    COALESCE(ph.score, 0) AS score
+    EXTRACT(EPOCH FROM sc.boosted_time)::FLOAT AS fluff_relevance_score
 FROM scored_candidates AS sc
-LEFT JOIN post_scores AS ph
-    ON
-        sc.uri = ph.uri
-        AND ph.alg = sqlc.arg(alg)
-        AND ph.generation_seq = sqlc.arg(generation_seq)
 WHERE
     ROW(sc.boosted_time, sc.uri)
     < ROW(TO_TIMESTAMP((sqlc.arg(after_score))::DOUBLE PRECISION), (sqlc.arg(after_uri))::TEXT)

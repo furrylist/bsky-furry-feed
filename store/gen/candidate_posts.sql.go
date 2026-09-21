@@ -352,7 +352,7 @@ WITH my_recent_likes AS (
     SELECT cl.subject_uri
     FROM candidate_likes AS cl
     WHERE
-        cl.actor_did = $6
+        cl.actor_did = $4
         AND cl.deleted_at IS NULL
         AND cl.created_at > NOW() - INTERVAL '30 days'
     LIMIT 500
@@ -365,7 +365,7 @@ similar_users AS (
     FROM candidate_likes AS cl
     WHERE
         cl.subject_uri IN (SELECT subject_uri FROM my_recent_likes)
-        AND cl.actor_did != $6
+        AND cl.actor_did != $4
         AND cl.deleted_at IS NULL
     GROUP BY cl.actor_did
     HAVING COUNT(*) >= 2
@@ -386,8 +386,8 @@ candidate_posts_recent AS (
         AND ca.status = 'approved'
         AND cp.created_at > NOW() - INTERVAL '3 days'
         AND (
-            COALESCE($7::TEXT [], '{}') = '{}'
-            OR NOT $7::TEXT [] && cp.hashtags
+            COALESCE($5::TEXT [], '{}') = '{}'
+            OR NOT $5::TEXT [] && cp.hashtags
         )
 ),
 
@@ -395,7 +395,7 @@ my_follows AS (
     SELECT subject_did
     FROM candidate_follows
     WHERE
-        actor_did = $6
+        actor_did = $4
         AND deleted_at IS NULL
 ),
 
@@ -404,7 +404,7 @@ liked_authors AS (
     FROM candidate_likes AS cl
     INNER JOIN candidate_posts AS cp ON cl.subject_uri = cp.uri
     WHERE
-        cl.actor_did = $6
+        cl.actor_did = $4
         AND cl.deleted_at IS NULL
         AND cl.created_at > NOW() - INTERVAL '30 days'
 ),
@@ -423,7 +423,7 @@ their_recent_likes AS (
             SELECT 1 FROM candidate_likes_recent AS my_like
             WHERE
                 my_like.subject_uri = cl.subject_uri
-                AND my_like.actor_did = $6
+                AND my_like.actor_did = $4
         )
     GROUP BY cl.subject_uri
     HAVING COUNT(*) >= 1
@@ -457,24 +457,16 @@ scored_candidates AS MATERIALIZED (
 SELECT
     sc.uri,
     sc.actor_did,
-    EXTRACT(EPOCH FROM sc.boosted_time)::FLOAT AS fluff_relevance_score,
-    COALESCE(ph.score, 0) AS score
+    EXTRACT(EPOCH FROM sc.boosted_time)::FLOAT AS fluff_relevance_score
 FROM scored_candidates AS sc
-LEFT JOIN post_scores AS ph
-    ON
-        sc.uri = ph.uri
-        AND ph.alg = $1
-        AND ph.generation_seq = $2
 WHERE
     ROW(sc.boosted_time, sc.uri)
-    < ROW(TO_TIMESTAMP(($3)::DOUBLE PRECISION), ($4)::TEXT)
+    < ROW(TO_TIMESTAMP(($1)::DOUBLE PRECISION), ($2)::TEXT)
 ORDER BY sc.boosted_time DESC, sc.uri DESC
-LIMIT $5
+LIMIT $3
 `
 
 type ListTestFeedPostsParams struct {
-	Alg                string
-	GenerationSeq      int64
 	AfterScore         float64
 	AfterURI           string
 	Limit              int32
@@ -486,13 +478,10 @@ type ListTestFeedPostsRow struct {
 	URI                 string
 	ActorDID            string
 	FluffRelevanceScore float64
-	Score               float32
 }
 
 func (q *Queries) ListTestFeedPosts(ctx context.Context, arg ListTestFeedPostsParams) ([]ListTestFeedPostsRow, error) {
 	rows, err := q.db.Query(ctx, listTestFeedPosts,
-		arg.Alg,
-		arg.GenerationSeq,
 		arg.AfterScore,
 		arg.AfterURI,
 		arg.Limit,
@@ -506,12 +495,7 @@ func (q *Queries) ListTestFeedPosts(ctx context.Context, arg ListTestFeedPostsPa
 	var items []ListTestFeedPostsRow
 	for rows.Next() {
 		var i ListTestFeedPostsRow
-		if err := rows.Scan(
-			&i.URI,
-			&i.ActorDID,
-			&i.FluffRelevanceScore,
-			&i.Score,
-		); err != nil {
+		if err := rows.Scan(&i.URI, &i.ActorDID, &i.FluffRelevanceScore); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
