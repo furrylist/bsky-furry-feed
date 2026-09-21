@@ -399,6 +399,16 @@ my_follows AS (
         AND deleted_at IS NULL
 ),
 
+liked_authors AS (
+    SELECT DISTINCT cp.actor_did
+    FROM candidate_likes AS cl
+    INNER JOIN candidate_posts AS cp ON cl.subject_uri = cp.uri
+    WHERE
+        cl.actor_did = $6
+        AND cl.deleted_at IS NULL
+        AND cl.created_at > NOW() - INTERVAL '30 days'
+),
+
 their_recent_likes AS (
     SELECT
         cl.subject_uri,
@@ -425,14 +435,21 @@ scored_candidates AS MATERIALIZED (
         cpr.actor_did,
         trl.like_count,
         trl.most_recent_like_at,
+        -- This is all VERY vibes based. There ARE better values because
+        -- this gives us a lot of recently posted posts.
+        -- I added some random time jitter, so we have more variance. This,
+        -- however, might have to be added to the cursor?
         CASE
-            WHEN
-                cpr.actor_did IN (SELECT subject_did FROM my_follows)
-                THEN trl.most_recent_like_at + INTERVAL '1 hours'
-            WHEN trl.liked_by_friend THEN trl.most_recent_like_at + INTERVAL '30 minutes'
-            WHEN trl.like_count < 5 THEN trl.most_recent_like_at + INTERVAL '10 minutes'
-            ELSE trl.most_recent_like_at - INTERVAL '3 hour'
-        END AS boosted_time
+            WHEN cpr.actor_did IN (SELECT subject_did FROM my_follows)
+                THEN trl.most_recent_like_at + INTERVAL '2 hours'
+            WHEN cpr.actor_did IN (SELECT actor_did FROM liked_authors)
+                THEN trl.most_recent_like_at + INTERVAL '1 hour'
+            WHEN trl.liked_by_friend
+                THEN trl.most_recent_like_at + INTERVAL '30 minutes'
+            WHEN trl.like_count < 5
+                THEN trl.most_recent_like_at + INTERVAL '10 minutes'
+            ELSE trl.most_recent_like_at - INTERVAL '2 hours'
+        END + (RANDOM() - 0.25) * INTERVAL '1 hour' AS boosted_time
     FROM their_recent_likes AS trl
     INNER JOIN candidate_posts_recent AS cpr ON trl.subject_uri = cpr.uri
 )
