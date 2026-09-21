@@ -200,7 +200,8 @@ candidate_posts_recent AS (
         cp.uri,
         cp.actor_did,
         cp.created_at,
-        cp.hashtags
+        cp.hashtags,
+        cp.self_labels
     FROM candidate_posts AS cp
     INNER JOIN candidate_actors AS ca ON cp.actor_did = ca.did
     WHERE
@@ -211,6 +212,21 @@ candidate_posts_recent AS (
             COALESCE(sqlc.narg(disallowed_hashtags)::TEXT [], '{}') = '{}'
             OR NOT sqlc.narg(disallowed_hashtags)::TEXT [] && cp.hashtags
         )
+),
+
+nsfw_engagement AS (
+    SELECT
+        COUNT(*) FILTER (
+            WHERE
+            (ARRAY['nsfw', 'mursuit', 'murrsuit', 'nsfwfurry', 'furrynsfw'] && cp.hashtags)
+            OR (ARRAY['porn', 'nudity', 'sexual'] && cp.self_labels)
+        )::FLOAT / GREATEST(COUNT(*), 1) AS nsfw_ratio
+    FROM candidate_likes AS cl
+    INNER JOIN candidate_posts AS cp ON cl.subject_uri = cp.uri
+    WHERE
+        cl.actor_did = sqlc.arg('actor_did')
+        AND cl.deleted_at IS NULL
+        AND cl.created_at > NOW() - INTERVAL '30 days'
 ),
 
 my_follows AS (
@@ -271,7 +287,18 @@ scored_candidates AS MATERIALIZED (
             WHEN trl.like_count < 5
                 THEN trl.most_recent_like_at + INTERVAL '10 minutes'
             ELSE trl.most_recent_like_at - INTERVAL '2 hours'
-        END + (RANDOM() - 0.25) * INTERVAL '1 hour' AS boosted_time
+        END
+        -- Penalize NSFW posts for users who don't engage much with NSFW content.
+        -- nsfw_ratio < 10% means low engagement. Debuff scales linearly to -6 hours.
+        - CASE
+            WHEN (
+                (ARRAY['nsfw', 'mursuit', 'murrsuit', 'nsfwfurry', 'furrynsfw'] && cpr.hashtags)
+                OR (ARRAY['porn', 'nudity', 'sexual'] && cpr.self_labels)
+            )
+                THEN (1.0 - LEAST((SELECT nsfw_ratio FROM nsfw_engagement) / 0.1, 1.0)) * INTERVAL '6 hours'
+            ELSE INTERVAL '0'
+        END
+        + (RANDOM() - 0.25) * INTERVAL '1 hour' AS boosted_time
     FROM their_recent_likes AS trl
     INNER JOIN candidate_posts_recent AS cpr ON trl.subject_uri = cpr.uri
 )
