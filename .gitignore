@@ -27,3 +27,4 @@ infra/secrets/
 
 scratch/
 /.vscode
+/tmp

@@ -14,6 +14,7 @@ python = "3.14.6"
 "pipx:sqlfluff" = "2.3.5"
 golangci-lint = "2.13.2"
 prek = "0.4.14"
+"aqua:air-verse/air" = "1.67.4"
 
 [tasks]
 "generate:sqlc" = "sqlc generate"
