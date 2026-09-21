@@ -11,15 +11,17 @@ const { feeds } = await publicApi.listFeeds({});
 
 const currentFeedId = ref("furry-test");
 
+const did = ref(currentUser.value.did);
 const cursor = ref("");
 const posts = ref<PostView[]>([]);
 const loading = ref(false);
+const durations = ref<number[]>([]);
 
 // generateJwt generates a mock JWT that just sets the DID as issuer.
 async function generateJwt() {
   const { privateKey } = await generateKeyPair("PS256");
   return await new SignJWT({})
-    .setIssuer(currentUser.value.did)
+    .setIssuer(did.value)
     .setProtectedHeader({ alg: "PS256" })
     .sign(privateKey);
 }
@@ -35,6 +37,7 @@ async function urisToPosts(allUris: string[]) {
 }
 
 async function fetchFeedSkeleton() {
+  const start = Date.now();
   loading.value = true;
   const { apiUrl } = useRuntimeConfig().public;
   const url = new URL(apiUrl);
@@ -54,42 +57,74 @@ async function fetchFeedSkeleton() {
 
   posts.value = [...posts.value, ...(await urisToPosts(postURIs))];
   loading.value = false;
+  durations.value.push(Date.now() - start);
+}
+
+async function reload() {
+  durations.value = [];
+  cursor.value = "";
+  posts.value = [];
+  await fetchFeedSkeleton();
 }
 
 onMounted(() => {
-  watch(
-    currentFeedId,
-    async () => {
-      posts.value = [];
-      await fetchFeedSkeleton();
-    },
-    { immediate: true }
-  );
+  watch(currentFeedId, reload, { immediate: true });
 });
 </script>
 
 <template>
-  <div class="mb-3">
-    <label for="feed" class="text-muted block mb-0.5 text-sm">Feed</label>
-    <select
-      class="dark:text-black p-1 px-2 rounded"
-      name="feed"
-      id="feed"
-      v-model="currentFeedId"
-    >
-      <option
-        v-for="feed in feeds.sort((a, b) => a.id.localeCompare(b.id))"
-        :key="feed.id"
-        :value="feed.id"
+  <div class="mb-3 flex items-end gap-2">
+    <div>
+      <label for="feed" class="text-muted block mb-0.5 text-sm">Feed</label>
+      <select
+        class="dark:text-black p-1 px-2 rounded"
+        name="feed"
+        id="feed"
+        v-model="currentFeedId"
       >
-        {{ feed.displayName }} ({{ feed.id }})
-      </option>
-    </select>
+        <option
+          v-for="feed in feeds.sort((a, b) => a.id.localeCompare(b.id))"
+          :key="feed.id"
+          :value="feed.id"
+        >
+          {{ feed.displayName }} ({{ feed.id }})
+        </option>
+      </select>
+    </div>
+    <div>
+      <span class="text-muted block text-sm mb-0.5">
+        <label for="did">User DID</label>
+        <template v-if="did !== currentUser.did">
+          (<button class="underline" @click="did = currentUser.did">
+            reset</button
+          >)
+        </template>
+      </span>
+      <input
+        class="dark:text-black p-1 px-2 rounded text-sm"
+        name="did"
+        id="did"
+        v-model="did"
+      />
+    </div>
+    <button
+      @click="reload"
+      class="py-1 max-md:py-1.5 max-md:px-3 px-2 max-md:ml-auto mr-1 text-white bg-blue-500 dark:bg-blue-600 rounded-lg hover:bg-blue-600 dark:hover:bg-blue-700 disabled:bg-blue-300 disabled:dark:bg-blue-500 disabled:cursor-not-allowed"
+      :disabled="loading"
+    >
+      Reload
+    </button>
+    <div v-if="durations.length > 0" class="mb-1 text-sm text-muted">
+      Loaded in {{ durations.map((duration) => `${duration}ms`).join(", ") }}
+    </div>
   </div>
   <div
     class="md:max-w-[80%] border border-gray-300 dark:border-gray-700 rounded-lg mb-3"
   >
     <UserRecentPost v-for="post in posts" :post="{ post }" />
+    <div v-if="loading && posts.length === 0" class="text-muted py-2 px-3">
+      Loading...
+    </div>
   </div>
   <div class="flex justify-center md:max-w-[80%]">
     <button
