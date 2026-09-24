@@ -52,6 +52,12 @@ func TestFirehoseIngester(t *testing.T) {
 		DID:    pendingFurry.DID(),
 	})
 	require.NoError(t, err)
+	bannedFurry := harness.PDS.MustNewUser(t, "banned-furry.tpds")
+	_, err = harness.Store.CreateActor(ctx, store.CreateActorOpts{
+		Status: bffv1pb.ActorStatus_ACTOR_STATUS_BANNED,
+		DID:    bannedFurry.DID(),
+	})
+	require.NoError(t, err)
 	approvedFurry := harness.PDS.MustNewUser(t, "approvedFurry.tpds")
 	_, err = harness.Store.CreateActor(ctx, store.CreateActorOpts{
 		Status: bffv1pb.ActorStatus_ACTOR_STATUS_APPROVED,
@@ -134,8 +140,34 @@ func TestFirehoseIngester(t *testing.T) {
 			},
 		},
 		{
-			name: "pending furry ignored",
+			name: "pending furry tracked",
 			user: pendingFurry,
+			post: &bsky.FeedPost{
+				LexiconTypeID: "app.bsky.feed.post",
+				CreatedAt:     now.Format(time.RFC3339Nano),
+				Text:          "lorem ipsum dolor sit amet",
+			},
+			wantPost: &gen.CandidatePost{
+				ActorDID: pendingFurry.DID(),
+				CreatedAt: pgtype.Timestamptz{
+					Time:  now,
+					Valid: true,
+				},
+				Hashtags: []string{},
+				HasMedia: pgtype.Bool{
+					Bool:  false,
+					Valid: true,
+				},
+				HasVideo: pgtype.Bool{
+					Bool:  false,
+					Valid: true,
+				},
+				SelfLabels: []string{},
+			},
+		},
+		{
+			name: "banned furry ignored",
+			user: bannedFurry,
 			post: &bsky.FeedPost{
 				LexiconTypeID: "app.bsky.feed.post",
 				CreatedAt:     now.Format(time.RFC3339Nano),
@@ -469,8 +501,10 @@ func TestFirehoseIngester(t *testing.T) {
 		if tp.wantPost != nil {
 			continue
 		}
-		_, err := harness.Store.GetPostByURI(ctx, tp.uri)
-		require.ErrorIs(t, err, store.ErrNotFound)
+		t.Run("ensure_ignored_"+tp.name, func(t *testing.T) {
+			_, err := harness.Store.GetPostByURI(ctx, tp.uri)
+			require.ErrorIs(t, err, store.ErrNotFound)
+		})
 	}
 
 	// Ensure ingester closes properly
