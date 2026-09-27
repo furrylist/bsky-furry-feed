@@ -9,7 +9,7 @@ services:
     ports:
       - '5432:5432'
     volumes:
-      - db:/var/lib/postgresql/18/docker
+      - db:/var/lib/postgresql
   jaeger:
     image: jaegertracing/all-in-one:1.6
     environment:
