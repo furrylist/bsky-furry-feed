@@ -164,7 +164,11 @@ WHERE
         < ROW((sqlc.arg(after_score))::REAL, (sqlc.arg(after_uri))::TEXT)
     )
     AND cp.indexed_at > NOW() - INTERVAL '7 day'
-    AND cp.created_at > NOW() - INTERVAL '7 day'
+    -- querying by both indexed_at and created_at causes the query planner to get
+    -- VERY confused. idk why, i've even asked AI and it's doing even stupider shit
+    -- than me. we need the double indexed_at/created_at check in the new feeds but
+    -- here, we can live just with the gate for posts indexed in the last 7 days.
+    --AND cp.created_at > NOW() - INTERVAL '7 day'
 ORDER BY
     ph.score DESC, ph.uri DESC
 LIMIT sqlc.arg(_limit);
