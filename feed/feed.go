@@ -503,8 +503,17 @@ func ServiceWithDefaultFeeds(pgxStore *store.PGXStore) *Service {
 	r.Register(Meta{
 		ID:          "furry-test",
 		DisplayName: "🐾 Test 🚨🛠️",
-		Description: "New experimental '🐾 Fur You' feed algorithm (yes, idea stolen from For You).\ntest\ntest\n\ndouble break",
+		Description: "woof woof\ntest\ntest\n\ndouble break",
 		Priority:    -1,
+	}, testGenerator(preScoredGeneratorOpts{
+		Alg:                "classic",
+		DisallowedHashtags: defaultDisallowedHashtags,
+	}))
+	r.Register(Meta{
+		ID:          "fur-you",
+		DisplayName: "🐾 Fur You (beta)",
+		Description: "New experimental Fur You feed algorithm (inspired by For You).\n\nJoin the furry feeds by following @furryli.st",
+		Priority:    20,
 	}, testGenerator(preScoredGeneratorOpts{
 		Alg:                "classic",
 		DisallowedHashtags: defaultDisallowedHashtags,
