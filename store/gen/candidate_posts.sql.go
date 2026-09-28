@@ -358,7 +358,8 @@ WITH my_recent_likes AS (
     WHERE
         cl.actor_did = $4
         AND cl.deleted_at IS NULL
-        AND cl.created_at > NOW() - INTERVAL '30 days'
+        AND cl.created_at > NOW() - INTERVAL '90 days'
+    ORDER BY cl.created_at DESC
     LIMIT 500
 ),
 
