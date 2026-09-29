@@ -28,6 +28,12 @@ WHERE
     did = sqlc.arg(did)
 RETURNING *;
 
+-- name: SetActorRecommendationConsent :exec
+UPDATE candidate_actors ca
+SET
+    refuses_algorithmic_recommendations = sqlc.arg(refuses_algorithmic_recommendations)
+WHERE did = sqlc.arg(did);
+
 -- name: CreateLatestActorProfile :exec
 WITH
 ap AS (

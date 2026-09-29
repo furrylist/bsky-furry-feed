@@ -40,4 +40,7 @@ message Actor {
   // is ignored in the queue to be processed later, e.g. when the actor doesn’t
   // have an avatar
   google.protobuf.Timestamp held_until = 8;
+  // refuses_algorithmic_recommendations is true if the actor asks that their
+  // posts aren't shown in algorithmic recommendations (like the Fur You feed).
+  bool refuses_algorithmic_recommendations = 9;
 }

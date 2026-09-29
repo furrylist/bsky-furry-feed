@@ -473,6 +473,29 @@ func TestFirehoseIngester(t *testing.T) {
 		require.ErrorIs(t, err, store.ErrNotFound)
 	}
 
+	//nolint:paralleltest // This is sequential
+	t.Run("content visibility declaration", func(t *testing.T) {
+		actor, err := harness.Store.GetActorByDID(ctx, approvedFurry.DID())
+		require.NoError(t, err)
+		require.False(t, actor.RefusesAlgorithmicRecommendations)
+		_, err = atproto.RepoCreateRecord(ctx, testenv.ExtractClientFromTestUser(approvedFurry), &atproto.RepoCreateRecord_Input{
+			Collection: "app.bsky.actor.contentVisibilityDeclaration",
+			Repo:       approvedFurry.DID(),
+			Record: &lexutil.LexiconTypeDecoder{
+				Val: &bsky.ActorContentVisibilityDeclaration{
+					LexiconTypeID:                      "app.bsky.actor.contentVisibilityDeclaration",
+					HideFromAlgorithmicRecommendations: true,
+				},
+			},
+		})
+		require.NoError(t, err)
+		require.Eventually(t, func() bool {
+			actor, err = harness.Store.GetActorByDID(ctx, approvedFurry.DID())
+			require.NoError(t, err)
+			return actor.RefusesAlgorithmicRecommendations
+		}, time.Millisecond*1000, time.Millisecond*5)
+	})
+
 	// Ensure ingester closes properly
 	fiCancel()
 	select {

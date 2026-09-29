@@ -99,9 +99,12 @@ type Actor struct {
 	// held_until is the time until an actor with the PENDING status
 	// is ignored in the queue to be processed later, e.g. when the actor doesn’t
 	// have an avatar
-	HeldUntil     *timestamppb.Timestamp `protobuf:"bytes,8,opt,name=held_until,json=heldUntil,proto3" json:"held_until,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	HeldUntil *timestamppb.Timestamp `protobuf:"bytes,8,opt,name=held_until,json=heldUntil,proto3" json:"held_until,omitempty"`
+	// refuses_algorithmic_recommendations is true if the actor asks that their
+	// posts aren't shown in algorithmic recommendations (like the Fur You feed).
+	RefusesAlgorithmicRecommendations bool `protobuf:"varint,9,opt,name=refuses_algorithmic_recommendations,json=refusesAlgorithmicRecommendations,proto3" json:"refuses_algorithmic_recommendations,omitempty"`
+	unknownFields                     protoimpl.UnknownFields
+	sizeCache                         protoimpl.SizeCache
 }
 
 func (x *Actor) Reset() {
@@ -183,11 +186,18 @@ func (x *Actor) GetHeldUntil() *timestamppb.Timestamp {
 	return nil
 }
 
+func (x *Actor) GetRefusesAlgorithmicRecommendations() bool {
+	if x != nil {
+		return x.RefusesAlgorithmicRecommendations
+	}
+	return false
+}
+
 var File_bff_v1_types_proto protoreflect.FileDescriptor
 
 const file_bff_v1_types_proto_rawDesc = "" +
 	"\n" +
-	"\x12bff/v1/types.proto\x12\x06bff.v1\x1a\x1fgoogle/protobuf/timestamp.proto\"\x8f\x02\n" +
+	"\x12bff/v1/types.proto\x12\x06bff.v1\x1a\x1fgoogle/protobuf/timestamp.proto\"\xdf\x02\n" +
 	"\x05Actor\x12\x10\n" +
 	"\x03did\x18\x01 \x01(\tR\x03did\x12\x1b\n" +
 	"\tis_artist\x18\x03 \x01(\bR\bisArtist\x12\x18\n" +
@@ -197,7 +207,8 @@ const file_bff_v1_types_proto_rawDesc = "" +
 	"created_at\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x12\x14\n" +
 	"\x05roles\x18\a \x03(\tR\x05roles\x129\n" +
 	"\n" +
-	"held_until\x18\b \x01(\v2\x1a.google.protobuf.TimestampR\theldUntilJ\x04\b\x02\x10\x03*\x90\x01\n" +
+	"held_until\x18\b \x01(\v2\x1a.google.protobuf.TimestampR\theldUntil\x12N\n" +
+	"#refuses_algorithmic_recommendations\x18\t \x01(\bR!refusesAlgorithmicRecommendationsJ\x04\b\x02\x10\x03*\x90\x01\n" +
 	"\vActorStatus\x12\x1c\n" +
 	"\x18ACTOR_STATUS_UNSPECIFIED\x10\x00\x12\x18\n" +
 	"\x14ACTOR_STATUS_PENDING\x10\x01\x12\x19\n" +

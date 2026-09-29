@@ -16,7 +16,7 @@ INSERT INTO
 candidate_actors (did, created_at, is_artist, comment, status, roles)
 VALUES
 ($1, $2, $3, $4, $5, $6)
-RETURNING did, created_at, is_artist, comment, status, roles, current_profile_commit_cid, held_until
+RETURNING did, created_at, is_artist, comment, status, roles, current_profile_commit_cid, held_until, refuses_algorithmic_recommendations
 `
 
 type CreateCandidateActorParams struct {
@@ -47,6 +47,7 @@ func (q *Queries) CreateCandidateActor(ctx context.Context, arg CreateCandidateA
 		&i.Roles,
 		&i.CurrentProfileCommitCid,
 		&i.HeldUntil,
+		&i.RefusesAlgorithmicRecommendations,
 	)
 	return i, err
 }
@@ -145,7 +146,7 @@ func (q *Queries) GetActorProfileHistory(ctx context.Context, actorDid string) (
 }
 
 const getCandidateActorByDID = `-- name: GetCandidateActorByDID :one
-SELECT did, created_at, is_artist, comment, status, roles, current_profile_commit_cid, held_until
+SELECT did, created_at, is_artist, comment, status, roles, current_profile_commit_cid, held_until, refuses_algorithmic_recommendations
 FROM
     candidate_actors
 WHERE
@@ -164,6 +165,7 @@ func (q *Queries) GetCandidateActorByDID(ctx context.Context, did string) (Candi
 		&i.Roles,
 		&i.CurrentProfileCommitCid,
 		&i.HeldUntil,
+		&i.RefusesAlgorithmicRecommendations,
 	)
 	return i, err
 }
@@ -216,7 +218,7 @@ func (q *Queries) HoldBackPendingActor(ctx context.Context, arg HoldBackPendingA
 }
 
 const listCandidateActors = `-- name: ListCandidateActors :many
-SELECT did, created_at, is_artist, comment, status, roles, current_profile_commit_cid, held_until
+SELECT did, created_at, is_artist, comment, status, roles, current_profile_commit_cid, held_until, refuses_algorithmic_recommendations
 FROM
     candidate_actors AS ca
 WHERE
@@ -246,6 +248,7 @@ func (q *Queries) ListCandidateActors(ctx context.Context, status NullActorStatu
 			&i.Roles,
 			&i.CurrentProfileCommitCid,
 			&i.HeldUntil,
+			&i.RefusesAlgorithmicRecommendations,
 		); err != nil {
 			return nil, err
 		}
@@ -258,7 +261,7 @@ func (q *Queries) ListCandidateActors(ctx context.Context, status NullActorStatu
 }
 
 const listCandidateActorsRequiringProfileBackfill = `-- name: ListCandidateActorsRequiringProfileBackfill :many
-SELECT did, created_at, is_artist, comment, status, roles, current_profile_commit_cid, held_until
+SELECT did, created_at, is_artist, comment, status, roles, current_profile_commit_cid, held_until, refuses_algorithmic_recommendations
 FROM
     candidate_actors AS ca
 WHERE
@@ -286,6 +289,7 @@ func (q *Queries) ListCandidateActorsRequiringProfileBackfill(ctx context.Contex
 			&i.Roles,
 			&i.CurrentProfileCommitCid,
 			&i.HeldUntil,
+			&i.RefusesAlgorithmicRecommendations,
 		); err != nil {
 			return nil, err
 		}
@@ -297,6 +301,23 @@ func (q *Queries) ListCandidateActorsRequiringProfileBackfill(ctx context.Contex
 	return items, nil
 }
 
+const setActorRecommendationConsent = `-- name: SetActorRecommendationConsent :exec
+UPDATE candidate_actors ca
+SET
+    refuses_algorithmic_recommendations = $1
+WHERE did = $2
+`
+
+type SetActorRecommendationConsentParams struct {
+	RefusesAlgorithmicRecommendations bool
+	DID                               string
+}
+
+func (q *Queries) SetActorRecommendationConsent(ctx context.Context, arg SetActorRecommendationConsentParams) error {
+	_, err := q.db.Exec(ctx, setActorRecommendationConsent, arg.RefusesAlgorithmicRecommendations, arg.DID)
+	return err
+}
+
 const updateCandidateActor = `-- name: UpdateCandidateActor :one
 UPDATE candidate_actors ca
 SET
@@ -306,7 +327,7 @@ SET
     roles = COALESCE($4, ca.roles)
 WHERE
     did = $5
-RETURNING did, created_at, is_artist, comment, status, roles, current_profile_commit_cid, held_until
+RETURNING did, created_at, is_artist, comment, status, roles, current_profile_commit_cid, held_until, refuses_algorithmic_recommendations
 `
 
 type UpdateCandidateActorParams struct {
@@ -335,6 +356,7 @@ func (q *Queries) UpdateCandidateActor(ctx context.Context, arg UpdateCandidateA
 		&i.Roles,
 		&i.CurrentProfileCommitCid,
 		&i.HeldUntil,
+		&i.RefusesAlgorithmicRecommendations,
 	)
 	return i, err
 }

@@ -96,6 +96,14 @@ export declare class Actor extends Message<Actor> {
    */
   heldUntil?: Timestamp;
 
+  /**
+   * refuses_algorithmic_recommendations is true if the actor asks that their
+   * posts aren't shown in algorithmic recommendations (like the Fur You feed).
+   *
+   * @generated from field: bool refuses_algorithmic_recommendations = 9;
+   */
+  refusesAlgorithmicRecommendations: boolean;
+
   constructor(data?: PartialMessage<Actor>);
 
   static readonly runtime: typeof proto3;

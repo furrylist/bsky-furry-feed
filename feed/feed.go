@@ -280,8 +280,8 @@ func testGenerator(opts preScoredGeneratorOpts) GenerateFunc {
 		}
 		if cursor == "" {
 			params.Cursor = store.ListTestPostsCursor{
-				AfterScore:    float32(math.Inf(1)),
-				AfterURI:      "",
+				AfterScore: float32(math.Inf(1)),
+				AfterURI:   "",
 			}
 		} else {
 			var p cursorValues
@@ -289,8 +289,8 @@ func testGenerator(opts preScoredGeneratorOpts) GenerateFunc {
 				return nil, fmt.Errorf("unmarshaling cursor: %w", err)
 			}
 			params.Cursor = store.ListTestPostsCursor{
-				AfterScore:    p.AfterScore,
-				AfterURI:      p.AfterURI,
+				AfterScore: p.AfterScore,
+				AfterURI:   p.AfterURI,
 			}
 		}
 		storePosts, err := pgxStore.ListTestPosts(ctx, actorDid, params)
@@ -303,8 +303,8 @@ func testGenerator(opts preScoredGeneratorOpts) GenerateFunc {
 		posts := make([]Post, 0, len(dedupedPosts))
 		for _, p := range dedupedPosts {
 			postCursor, err := json.Marshal(cursorValues{
-				AfterScore:    float32(p.FluffRelevanceScore),
-				AfterURI:      p.URI,
+				AfterScore: float32(p.FluffRelevanceScore),
+				AfterURI:   p.URI,
 			})
 			if err != nil {
 				return nil, fmt.Errorf("marshaling cursor: %w", err)

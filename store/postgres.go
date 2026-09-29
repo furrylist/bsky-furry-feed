@@ -113,13 +113,14 @@ func actorToProto(actor gen.CandidateActor) (*v1.Actor, error) {
 		return nil, fmt.Errorf("converting status: %w", err)
 	}
 	return &v1.Actor{
-		Did:       actor.DID,
-		IsArtist:  actor.IsArtist,
-		Comment:   actor.Comment,
-		Status:    status,
-		CreatedAt: timestamppb.New(actor.CreatedAt.Time),
-		Roles:     actor.Roles,
-		HeldUntil: timestamppb.New(actor.HeldUntil.Time),
+		Did:                               actor.DID,
+		IsArtist:                          actor.IsArtist,
+		Comment:                           actor.Comment,
+		Status:                            status,
+		CreatedAt:                         timestamppb.New(actor.CreatedAt.Time),
+		Roles:                             actor.Roles,
+		HeldUntil:                         timestamppb.New(actor.HeldUntil.Time),
+		RefusesAlgorithmicRecommendations: actor.RefusesAlgorithmicRecommendations,
 	}, nil
 }
 
@@ -675,8 +676,8 @@ func (s *PGXStore) ListScoredPosts(ctx context.Context, opts ListPostsForHotFeed
 }
 
 type ListTestPostsCursor struct {
-	AfterScore    float32
-	AfterURI      string
+	AfterScore float32
+	AfterURI   string
 }
 
 type ListTestPostsOpts struct {
@@ -919,4 +920,8 @@ func (s *PGXStore) SaveAttachment(ctx context.Context, params gen.SaveAttachment
 
 func (s *PGXStore) GetAttachment(ctx context.Context, id int64) (gen.GetAttachmentRow, error) {
 	return s.queries.GetAttachment(ctx, id)
+}
+
+func (s *PGXStore) SetActorRecommendationConsent(ctx context.Context, opt gen.SetActorRecommendationConsentParams) error {
+	return s.queries.SetActorRecommendationConsent(ctx, opt)
 }

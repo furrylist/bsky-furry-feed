@@ -32,6 +32,7 @@ export const Actor = proto3.makeMessageType(
     { no: 6, name: "created_at", kind: "message", T: Timestamp },
     { no: 7, name: "roles", kind: "scalar", T: 9 /* ScalarType.STRING */, repeated: true },
     { no: 8, name: "held_until", kind: "message", T: Timestamp },
+    { no: 9, name: "refuses_algorithmic_recommendations", kind: "scalar", T: 8 /* ScalarType.BOOL */ },
   ],
 );
 
