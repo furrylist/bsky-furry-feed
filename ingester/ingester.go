@@ -93,6 +93,7 @@ func (fi *FirehoseIngester) Start(ctx context.Context) (err error) {
 		"app.bsky.feed.like",
 		"app.bsky.feed.post",
 		"app.bsky.graph.follow",
+		"app.bsky.actor.contentVisibilityDeclaration",
 	}
 
 	var activeCursor atomic.Int64
@@ -352,6 +353,15 @@ func (fi *FirehoseIngester) handleRecordCreate(
 		if err != nil {
 			return fmt.Errorf("handling app.bsky.graph.follow: %w", err)
 		}
+	case "app.bsky.actor.contentVisibilityDeclaration":
+		data := &bsky.ActorContentVisibilityDeclaration{}
+		if err := json.Unmarshal(record, data); err != nil {
+			return fmt.Errorf("unmarshalling app.bsky.actor.contentVisibilityDeclaration: %w", err)
+		}
+		err := fi.handleActorVisibilityDeclaration(ctx, repoDID, data)
+		if err != nil {
+			return fmt.Errorf("handling app.bsky.actor.contentVisibilityDeclaration: %w", err)
+		}
 	default:
 		span.AddEvent("ignoring record due to unrecognized type")
 	}
@@ -398,6 +408,10 @@ func (fi *FirehoseIngester) handleRecordDelete(
 		err = fi.handleFeedLikeDelete(ctx, recordUri)
 	case "app.bsky.graph.follow":
 		err = fi.handleGraphFollowDelete(ctx, recordUri)
+	case "app.bsky.actor.contentVisibilityDeclaration":
+		err = fi.handleActorVisibilityDeclaration(ctx, repoDID, &bsky.ActorContentVisibilityDeclaration{
+			HideFromAlgorithmicRecommendations: false,
+		})
 	default:
 		span.AddEvent("ignoring record due to unrecognized type")
 	}
@@ -440,6 +454,16 @@ func (fi *FirehoseIngester) handleRecordUpdate(
 		err := fi.handleActorProfileUpdate(ctx, repoDID, repoRev, recordUri, updatedAt, data)
 		if err != nil {
 			return fmt.Errorf("handling app.bsky.actor.profile update: %w", err)
+		}
+
+	case "app.bsky.actor.contentVisibilityDeclaration":
+		var data *bsky.ActorContentVisibilityDeclaration
+		if err := json.Unmarshal(record, data); err != nil {
+			return fmt.Errorf("unmarshalling app.bsky.actor.contentVisibilityDeclaration: %w", err)
+		}
+		err := fi.handleActorVisibilityDeclaration(ctx, repoDID, data)
+		if err != nil {
+			return fmt.Errorf("handling app.bsky.actor.contentVisibilityDeclaration: %w", err)
 		}
 	default:
 		span.AddEvent("ignoring record due to unrecognized type")

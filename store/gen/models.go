@@ -84,14 +84,15 @@ type AuditEvent struct {
 }
 
 type CandidateActor struct {
-	DID                     string
-	CreatedAt               pgtype.Timestamptz
-	IsArtist                bool
-	Comment                 string
-	Status                  ActorStatus
-	Roles                   []string
-	CurrentProfileCommitCid pgtype.Text
-	HeldUntil               pgtype.Timestamptz
+	DID                               string
+	CreatedAt                         pgtype.Timestamptz
+	IsArtist                          bool
+	Comment                           string
+	Status                            ActorStatus
+	Roles                             []string
+	CurrentProfileCommitCid           pgtype.Text
+	HeldUntil                         pgtype.Timestamptz
+	RefusesAlgorithmicRecommendations bool
 }
 
 type CandidateFollow struct {
