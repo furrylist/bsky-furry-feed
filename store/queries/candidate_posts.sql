@@ -186,7 +186,7 @@ WITH my_recent_likes AS (
 ),
 
 similar_users AS (
-    SELECT
+    (SELECT
         cl.actor_did AS did,
         COUNT(*) AS shared_likes
     FROM candidate_likes AS cl
@@ -197,6 +197,20 @@ similar_users AS (
     GROUP BY cl.actor_did
     HAVING COUNT(*) >= 2
     ORDER BY shared_likes DESC
+    LIMIT 100)
+
+    UNION ALL
+
+    -- Fallback to get 100 random users until there is a single like by the user.
+    SELECT
+        ca.did,
+        0 AS shared_likes
+    FROM candidate_actors AS ca
+    WHERE
+        ca.status = 'approved'
+        AND ca.did != sqlc.arg('actor_did')
+        AND NOT EXISTS (SELECT 1 FROM my_recent_likes)
+    ORDER BY RANDOM()
     LIMIT 100
 ),
 
